@@ -23,7 +23,7 @@ func (t *TestObject) Marshal(b []byte) ([]byte, error) {
 func (t *TestObject) Info() *Info { return t.info }
 
 func TestFetchNotFound(t *testing.T) {
-	cl, err := NewClient("localhost:8087")
+	cl, err := NewClient("localhost:8087", "testClient", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

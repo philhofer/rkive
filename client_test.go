@@ -8,7 +8,7 @@ import (
 )
 
 func TestRiakPing(t *testing.T) {
-	cl, err := NewClient("localhost:8087")
+	cl, err := NewClient("localhost:8087", "testClient", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,4 +28,23 @@ func TestRiakPing(t *testing.T) {
 		}(t)
 	}
 	wg.Wait()
+}
+
+func TestWriteClientID(t *testing.T) {
+	nconn := 3
+	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < nconn; i++ {
+		conn, err := cl.ack()
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cl.writeClientID(conn)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cl.done(conn)
+	}
 }

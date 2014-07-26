@@ -35,7 +35,12 @@ func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
 }
 
-func NewClient(addr string) (*Client, error) {
+func NewClient(addr string, clientID string, nconns *int) (*Client, error) {
+	if nconns == nil {
+		nconns = new(int)
+		*nconns = dfltConns
+	}
+
 	netaddr, err := net.ResolveTCPAddr("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -43,29 +48,83 @@ func NewClient(addr string) (*Client, error) {
 
 	cl := &Client{
 		addr:  netaddr,
-		conns: make(chan *net.TCPConn, dfltConns),
+		conns: make(chan *net.TCPConn, *nconns),
+		id:    []byte(clientID),
 	}
 
-	for i := 0; i < dfltConns; i++ {
-		conn, err := net.DialTCP("tcp", nil, netaddr)
+	// store conns until initialization
+	// is completed successfully
+	temp := make([]*net.TCPConn, *nconns)
+	for i := 0; i < *nconns; i++ {
+		conn, err := cl.dial()
 		if err != nil {
-			// clean up
-			for j := i; j >= 0; j-- {
-				c := <-cl.conns
-				c.Close()
+			// cleanup other connections
+			for j := i - 1; j >= 0; j-- {
+				temp[j].Close()
+				return nil, err
 			}
-			return nil, err
 		}
-		conn.SetKeepAlive(true)
-		cl.conns <- conn
+		temp[i] = conn
 	}
 	log.Printf("Successfully opened %d connections to %s", dfltConns, addr)
+	// send
+	for _, conn := range temp {
+		cl.conns <- conn
+	}
 	return cl, nil
 }
 
 type Client struct {
 	addr  *net.TCPAddr
 	conns chan *net.TCPConn
+	id    []byte
+}
+
+func (c *Client) dial() (*net.TCPConn, error) {
+	log.Printf("Dialing %s...", c.addr)
+	conn, err := net.DialTCP("tcp", nil, c.addr)
+	if err != nil {
+		return nil, err
+	}
+	err = c.writeClientID(conn)
+	if err != nil {
+		conn.Close()
+		return nil, err
+	}
+	conn.SetKeepAlive(true)
+	return conn, nil
+}
+
+func (c *Client) writeClientID(conn *net.TCPConn) error {
+	if c.id == nil {
+		return nil
+	}
+	req := &rpbc.RpbSetClientIdReq{
+		ClientId: c.id,
+	}
+	bts, err := proto.Marshal(req)
+	if err != nil {
+		return err
+	}
+	msglen := len(bts) + 1
+	msg := make([]byte, msglen+4)
+	binary.BigEndian.PutUint32(msg, uint32(msglen))
+	msg[4] = 5 // code for RpbSetClientIdReq
+	conn.SetWriteDeadline(time.Now().Add(DefaultReqTimeout * time.Millisecond))
+	_, err = conn.Write(msg)
+	if err != nil {
+		return err
+	}
+	conn.SetReadDeadline(time.Now().Add(DefaultReqTimeout * time.Millisecond))
+	_, err = conn.Read(msg[:5])
+	if err != nil {
+		return err
+	}
+	// expect response code 6
+	if msg[4] != 6 {
+		return ErrUnexpectedResponse
+	}
+	return nil
 }
 
 func (c *Client) ack() (*net.TCPConn, error) {
@@ -74,8 +133,7 @@ func (c *Client) ack() (*net.TCPConn, error) {
 	case con = <-c.conns:
 		return con, nil
 	case <-time.After(50 * time.Millisecond):
-		log.Println("Opening new TCP connection...")
-		con, err := net.DialTCP("tcp", nil, c.addr)
+		con, err := c.dial()
 		return con, err
 	}
 }
@@ -109,9 +167,6 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	_, err = ct.Write(msg)
 	if err != nil {
 		if err == io.EOF {
-			// connection closed
-			ct, _ = net.DialTCP("tcp", nil, c.addr)
-			c.done(ct)
 			return nil, 0, err
 		}
 		if operr, ok := err.(*net.OpError); ok {
@@ -137,9 +192,6 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	_, err = ct.Read(lead[:])
 	if err != nil {
 		if err == io.EOF {
-			// connection closed
-			ct, _ = net.DialTCP("tcp", nil, c.addr)
-			c.done(ct)
 			return nil, 0, err
 		}
 		if operr, ok := err.(*net.OpError); ok {
@@ -174,9 +226,6 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	_, err = ct.Read(msg)
 	if err != nil {
 		if err == io.EOF {
-			// connection closed
-			ct, _ = net.DialTCP("tcp", nil, c.addr)
-			c.done(ct)
 			return msg, rescode, err
 		}
 		if operr, ok := err.(*net.OpError); ok {
@@ -202,7 +251,7 @@ exit:
 	return msg, rescode, nil
 }
 
-func (c *Client) Req(msg proto.Message, code byte, res proto.Message) (byte, error) {
+func (c *Client) req(msg proto.Message, code byte, res proto.Message) (byte, error) {
 	bts, err := proto.Marshal(msg)
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
@@ -219,9 +268,11 @@ func (c *Client) Req(msg proto.Message, code byte, res proto.Message) (byte, err
 		}
 		return 0, RiakError{res: riakerr}
 	}
-	err = proto.Unmarshal(resbts, res)
-	if err != nil {
-		err = fmt.Errorf("riakpb: unmarshal err: %s", err)
+	if res != nil {
+		err = proto.Unmarshal(resbts, res)
+		if err != nil {
+			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
+		}
 	}
 	return rescode, err
 }

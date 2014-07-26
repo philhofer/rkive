@@ -80,7 +80,7 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 	}
 
 	res := rpbc.RpbGetResp{}
-	rescode, err := c.Req(req, 9, &res)
+	rescode, err := c.req(req, 9, &res)
 	if err != nil {
 		return err
 	}
