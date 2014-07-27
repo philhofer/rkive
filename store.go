@@ -12,9 +12,11 @@ var (
 	ErrExists   = errors.New("object already exists")
 )
 
+// WriteOpts are options available
+// for all write opertations.
 type WriteOpts struct {
-	W  *uint32 // writes
-	DW *uint32 // Durable writes
+	W  *uint32 // Required write acknowledgements
+	DW *uint32 // 'Durable' (to disk) write
 	PW *uint32 // Primary replica writes
 }
 
@@ -34,6 +36,10 @@ func parseOpts(opts *WriteOpts, req *rpbc.RpbPutReq) {
 	}
 }
 
+// New writes a new object into the database. If 'key'
+// is non-nil, New will attempt to use that key, and return
+// ErrExists if an object already exists at that key-bucket pair.
+// Riak will assign this object a key if 'key' is nil.
 func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) error {
 	req := &rpbc.RpbPutReq{
 		Bucket:  []byte(bucket),
@@ -90,7 +96,10 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	return err
 }
 
-// Store makes a basic write to the database
+// Store makes a basic write to the database. Store
+// will return ErrNoPath if the object does not already
+// have a key and bucket defined. (Use New() if this object
+// isn't already in the database.)
 func (c *Client) Store(o Object, opts *WriteOpts) error {
 	if o.Info().bucket == nil || o.Info().key == nil {
 		return ErrNoPath
@@ -99,8 +108,8 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 		Bucket:  o.Info().bucket,
 		Key:     o.Info().key,
 		Content: new(rpbc.RpbContent),
+		Vclock:  o.Info().vclock,
 	}
-	req.Vclock = o.Info().vclock
 	rth := true
 	req.ReturnHead = &rth
 	if o.Info().vclock != nil {
@@ -131,7 +140,9 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 }
 
 // Push makes a conditional (if-not-modified) write
-// to the database
+// to the database. This is the recommended way of making
+// writes to the database, as it minimizes the chances
+// of producing sibling objects.
 func (c *Client) Push(o Object, opts *WriteOpts) error {
 	if o.Info().bucket == nil || o.Info().key == nil {
 		return ErrNoPath
@@ -142,6 +153,8 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 		Content: new(rpbc.RpbContent),
 		Vclock:  o.Info().vclock,
 	}
+
+	// Return-Head = true; If-Not-Modified = true
 	rth := true
 	req.ReturnHead = &rth
 	req.IfNotModified = &rth
@@ -155,6 +168,11 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 
 	rescode, err := c.req(req, 11, res)
 	if err != nil {
+		if rke, ok := err.(RiakError); ok {
+			if bytes.Contains(rke.res.Errmsg, []byte("modified")) {
+				return ErrModified
+			}
+		}
 		return err
 	}
 	if rescode != 12 {

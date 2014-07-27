@@ -94,7 +94,7 @@ func TestStoreObject(t *testing.T) {
 	}
 }
 
-func BenchmarkWrite(b *testing.B) {
+func BenchmarkStore(b *testing.B) {
 	b.N /= 100
 
 	nconn := 1
