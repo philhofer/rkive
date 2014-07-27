@@ -49,6 +49,51 @@ func TestNewObject(t *testing.T) {
 	}
 }
 
+func TestPushObject(t *testing.T) {
+	nconn := 1
+	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ob := &TestObject{
+		Data: []byte("Hello World"),
+		info: &Info{},
+	}
+	// make new
+	err = cl.New(ob, "testbucket", nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// fetch 'n store
+	newob := &TestObject{
+		Data: nil,
+		info: &Info{},
+	}
+	// fetch the same
+	err = cl.Fetch(newob, "testbucket", ob.Info().Key(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// modify the data
+	newob.Data = []byte("new conflicting data!")
+	// this should work
+	err = cl.Push(newob, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// modify the old
+	ob.Data = []byte("blah blah blah")
+
+	err = cl.Push(ob, nil)
+	if err != ErrModified {
+		t.Fatalf("Expected ErrModified; got %q", err)
+	}
+
+}
+
 func TestStoreObject(t *testing.T) {
 	nconn := 1
 	cl, err := NewClient("localhost:8087", "testClient", &nconn)
