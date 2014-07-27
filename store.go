@@ -160,11 +160,13 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	if rescode != 12 {
 		return ErrUnexpectedResponse
 	}
-	if res.GetVclock() == nil || len(res.GetContent()) == 0 {
-		return ErrModified
+	if res.Vclock == nil || len(res.Content) == 0 {
+		return ErrNotFound
 	}
-	if len(res.GetContent()) > 1 {
+	if len(res.Content) > 1 {
 		return ErrMultiple
 	}
-	return readContent(o, res.GetContent()[0])
+	o.Info().vclock = res.Vclock
+	readHeader(o, res.Content[0])
+	return nil
 }

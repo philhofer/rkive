@@ -93,3 +93,60 @@ func TestStoreObject(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func BenchmarkWrite(b *testing.B) {
+	b.N /= 100
+
+	nconn := 1
+	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	ob := &TestObject{
+		Data: []byte("Hello World"),
+		info: &Info{},
+	}
+
+	err = cl.New(ob, "tesbucket", nil, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err = cl.Store(ob, nil)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkFetch(b *testing.B) {
+	b.N /= 100
+
+	nconn := 1
+	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	ob := &TestObject{
+		info: &Info{},
+		Data: []byte("Hello World"),
+	}
+
+	err = cl.New(ob, "testbucket", nil, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err = cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+
+}
