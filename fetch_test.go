@@ -16,7 +16,7 @@ func (t *TestObject) Unmarshal(b []byte) error {
 	return nil
 }
 
-func (t *TestObject) Marshal(b []byte) ([]byte, error) {
+func (t *TestObject) Marshal(_ []byte) ([]byte, error) {
 	return t.Data, nil
 }
 

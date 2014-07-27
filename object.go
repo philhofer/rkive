@@ -55,26 +55,35 @@ type Info struct {
 	value  []byte          // value
 }
 
+func readHeader(o Object, ctnt *rpbc.RpbContent) {
+	if o.Info() == nil {
+		panic("nil Info")
+	}
+	o.Info().ctype = ctnt.GetContentType()
+	o.Info().links = ctnt.GetLinks()
+	o.Info().idxs = ctnt.GetIndexes()
+	o.Info().meta = ctnt.GetUsermeta()
+}
+
 // read into 'o' from content
 func readContent(o Object, ctnt *rpbc.RpbContent) error {
 	// just in case
 	if o.Info() == nil {
-		*(o.Info()) = Info{}
+		panic("nil Info")
 	}
 
 	o.Info().ctype = ctnt.GetContentType()
-	o.Info().vclock = ctnt.GetVtag()
 	o.Info().links = ctnt.GetLinks()
 	o.Info().idxs = ctnt.GetIndexes()
 	o.Info().meta = ctnt.GetUsermeta()
 
 	// catch the ReturnHead case
-	if ctnt.Value == nil {
+	if ctnt.GetValue() == nil {
 		return nil
 	}
 	// read content
 	o.Info().value = ctnt.GetValue() // save reference
-	return o.Unmarshal(ctnt.Value)
+	return o.Unmarshal(ctnt.GetValue())
 }
 
 // write into content from 'o'
@@ -83,20 +92,11 @@ func writeContent(o Object, ctnt *rpbc.RpbContent) error {
 		panic("nil Info")
 	}
 
-	// for old []byte
-	var old []byte
-	if ctnt != nil {
-		old = ctnt.Value
-	}
-	ctnt.Reset() // ensures non-nil-ness
 	var err error
-	ctnt.Value, err = o.Marshal(old)
-	o.Info().value = ctnt.Value // for good measure - save reference
+	ctnt.Value, err = o.Marshal(nil)
 	if err != nil {
 		return err
 	}
-	ctnt.ContentType = o.Info().ctype
-	ctnt.Vtag = o.Info().vclock
 	ctnt.ContentType = o.Info().ctype
 	ctnt.Links = o.Info().links
 	ctnt.Usermeta = o.Info().meta

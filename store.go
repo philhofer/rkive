@@ -39,21 +39,31 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 		Bucket:  []byte(bucket),
 		Content: new(rpbc.RpbContent),
 	}
+	// set the bucket, because the user can't
+	o.Info().bucket = req.Bucket
+
+	// return head
 	rth := true
 	req.ReturnHead = &rth
+
+	// set keys if specified
 	if key != nil {
 		req.Key = []byte(*key)
 		req.IfNoneMatch = &rth
+		o.Info().key = req.Key
 	}
+	// write content to request
 	err := writeContent(o, req.Content)
 	if err != nil {
 		return err
 	}
+	// parse options
 	parseOpts(opts, req)
 
 	res := &rpbc.RpbPutResp{}
 	rescode, err := c.req(req, 11, res)
 	if err != nil {
+		// riak returns "match_found" on failure
 		if rke, ok := err.(RiakError); ok {
 			if bytes.Contains(rke.res.GetErrmsg(), []byte("match_found")) {
 				return ErrExists
@@ -61,15 +71,19 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 		}
 		return err
 	}
+	// not what we expected...
 	if rescode != 12 {
 		return ErrUnexpectedResponse
 	}
-
+	// multiple content items
 	if len(res.GetContent()) != 1 {
 		return ErrMultiple
 	}
-	err = readContent(o, res.GetContent()[0])
-	// pull the new key
+	// pull info from content
+	readHeader(o, res.GetContent()[0])
+	o.Info().vclock = res.Vclock
+	// pull the new key if
+	// we didn't already set it
 	if key == nil {
 		o.Info().key = res.GetKey()
 	}
@@ -86,6 +100,7 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 		Key:     o.Info().key,
 		Content: new(rpbc.RpbContent),
 	}
+	req.Vclock = o.Info().vclock
 	rth := true
 	req.ReturnHead = &rth
 	if o.Info().vclock != nil {
@@ -109,7 +124,7 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 	if len(res.GetContent()) > 1 {
 		return ErrMultiple
 	}
-	err = readContent(o, res.GetContent()[0])
+	readHeader(o, res.GetContent()[0])
 	o.Info().vclock = res.Vclock
 
 	return err

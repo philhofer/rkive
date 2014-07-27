@@ -211,7 +211,6 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	// response message size
 	msglen = binary.BigEndian.Uint32(lead[:4]) - 1
 	rescode := lead[4]
-	log.Printf("Returning %d-byte message; code %d\n", msglen, rescode)
 	if int(msglen) > cap(msg) {
 		msg = make([]byte, int(msglen))
 	} else {
@@ -245,8 +244,6 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 
 exit:
-	log.Printf("Message length %d", len(msg))
-	log.Printf("Returned message: %x", msg)
 	c.done(ct)
 	return msg, rescode, nil
 }

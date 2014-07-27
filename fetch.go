@@ -93,7 +93,9 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 	if len(res.GetContent()) > 1 {
 		return ErrMultiple
 	}
+	err = readContent(o, res.GetContent()[0])
 	o.Info().key = req.Key
 	o.Info().bucket = req.Bucket
-	return readContent(o, res.GetContent()[0])
+	o.Info().vclock = res.GetVclock()
+	return err
 }
