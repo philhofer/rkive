@@ -45,29 +45,36 @@ type Object interface {
 // about a riak object. You can use
 // it to satisfy the Object interface.
 type Info struct {
-	key    []byte
-	bucket []byte
-	links  []*rpbc.RpbLink
-	idxs   []*rpbc.RpbPair
-	meta   []*rpbc.RpbPair
-	ctype  []byte
-	vclock []byte
-	value  []byte
+	key    []byte          // key
+	bucket []byte          // bucket
+	links  []*rpbc.RpbLink // Links
+	idxs   []*rpbc.RpbPair // Indexes
+	meta   []*rpbc.RpbPair // Meta
+	ctype  []byte          // Content-Type
+	vclock []byte          // Vclock
+	value  []byte          // value
 }
 
 // read into 'o' from content
 func readContent(o Object, ctnt *rpbc.RpbContent) error {
+	// just in case
 	if o.Info() == nil {
 		*(o.Info()) = Info{}
 	}
 
 	o.Info().ctype = ctnt.GetContentType()
 	o.Info().vclock = ctnt.GetVtag()
-	o.Info().value = ctnt.GetValue()
 	o.Info().links = ctnt.GetLinks()
 	o.Info().idxs = ctnt.GetIndexes()
 	o.Info().meta = ctnt.GetUsermeta()
-	return o.Unmarshal(ctnt.GetValue())
+
+	// catch the ReturnHead case
+	if ctnt.Value == nil {
+		return nil
+	}
+	// read content
+	o.Info().value = ctnt.GetValue() // save reference
+	return o.Unmarshal(ctnt.Value)
 }
 
 // write into content from 'o'
@@ -84,6 +91,7 @@ func writeContent(o Object, ctnt *rpbc.RpbContent) error {
 	ctnt.Reset() // ensures non-nil-ness
 	var err error
 	ctnt.Value, err = o.Marshal(old)
+	o.Info().value = ctnt.Value // for good measure - save reference
 	if err != nil {
 		return err
 	}
