@@ -3,6 +3,7 @@
 package riakpb
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -34,6 +35,8 @@ func TestNewObject(t *testing.T) {
 	key := "testkey"
 	err = cl.New(nob, "testbucket", &key, nil)
 	if err != nil {
+		// we'll allow ErrExists
+		// b/c of prior test runs
 		if err != ErrExists {
 			t.Fatal(err)
 		}
@@ -77,7 +80,7 @@ func TestStoreObject(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !bcmpr(ob.Data, nob.Data) {
+	if !bytes.Equal(ob.Data, nob.Data) {
 		t.Logf("Sent: %q", ob.Data)
 		t.Logf("Returned : %q", nob.Data)
 		t.Fatal("Objects' 'data' field differs")

@@ -1,22 +1,9 @@
 package riakpb
 
 import (
-	//"bytes"
+	"bytes"
 	"github.com/philhofer/riakpb/rpbc"
 )
-
-// byte compare
-func bcmpr(a []byte, b []byte) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, av := range a {
-		if av != b[i] {
-			return false
-		}
-	}
-	return true
-}
 
 // Object is the interface that must
 // be satisfied in order to store and retrieve
@@ -109,7 +96,7 @@ func set(l *[]*rpbc.RpbPair, key, value []byte) {
 		goto add
 	}
 	for _, item := range *l {
-		if bcmpr(key, item.GetKey()) {
+		if bytes.Equal(key, item.Key) {
 			item.Key = key
 			item.Value = value
 			return
@@ -128,7 +115,7 @@ func get(l *[]*rpbc.RpbPair, key []byte) []byte {
 		return nil
 	}
 	for _, item := range *l {
-		if bcmpr(key, item.GetKey()) {
+		if bytes.Equal(key, item.Key) {
 			return item.Value
 		}
 	}
@@ -140,8 +127,8 @@ func add(l *[]*rpbc.RpbPair, key, value []byte) bool {
 		goto add
 	}
 	for _, item := range *l {
-		if bcmpr(key, item.GetKey()) {
-			if bcmpr(value, item.GetValue()) {
+		if bytes.Equal(key, item.Key) {
+			if bytes.Equal(value, item.Value) {
 				return true
 			}
 			return false
@@ -161,7 +148,7 @@ func del(l *[]*rpbc.RpbPair, key []byte) {
 	}
 	nl := len(*l)
 	for i, item := range *l {
-		if bcmpr(key, item.GetKey()) {
+		if bytes.Equal(key, item.Key) {
 			(*l)[i], (*l)[nl-1], *l = (*l)[nl-1], nil, (*l)[:nl-1]
 			return
 		}
@@ -169,105 +156,79 @@ func del(l *[]*rpbc.RpbPair, key []byte) {
 }
 
 // Key is the canonical riak key
-func (info *Info) Key() string { return string(info.key) }
+func (in *Info) Key() string { return string(in.key) }
 
 // Bucket is the canonical riak bucket
-func (info *Info) Bucket() string { return string(info.bucket) }
+func (in *Info) Bucket() string { return string(in.bucket) }
 
 // ContentType is the content-type
-func (info *Info) ContentType() string { return string(info.ctype) }
+func (in *Info) ContentType() string { return string(in.ctype) }
 
-func (info *Info) SetContentType(s string) { info.ctype = []byte(s) }
+func (in *Info) SetContentType(s string) { in.ctype = []byte(s) }
 
 // Vclock is the vector clock value as a string
-func (info *Info) Vclock() string { return string(info.vclock) }
-
-// SetVclock sets the vector clock
-func (info *Info) SetVclock(s string) { info.vclock = []byte(s) }
-
-// SetVclockBytes sets the vector clock
-func (info *Info) SetVclockBytes(b []byte) { info.vclock = b }
+func (in *Info) Vclock() string { return string(in.vclock) }
 
 // Add adds a key-value pair to an Indexes
 // object, but returns false if a key already
 // exists under that name and has a different value.
 // Returns true if the index already has this exact key-value
 // pair, or if the pair is written in with no conflicts.
-func (info *Info) AddIndex(key string, value string) bool {
-	return add(&info.idxs, []byte(key), []byte(value))
+func (in *Info) AddIndex(key string, value string) bool {
+	return add(&in.idxs, []byte(key), []byte(value))
 }
 
 // Set sets a key-value pair in an Indexes object
-func (info *Info) SetIndex(key string, value string) {
-	set(&info.idxs, []byte(key), []byte(value))
+func (in *Info) SetIndex(key string, value string) {
+	set(&in.idxs, []byte(key), []byte(value))
 }
 
 // Get gets a key-value pair in an indexes object
-func (info *Info) GetIndex(key string) (val string) {
-	return string(get(&info.idxs, []byte(key)))
+func (in *Info) GetIndex(key string) (val string) {
+	return string(get(&in.idxs, []byte(key)))
 }
 
 // Remove removes a key from an indexes object
-func (info *Info) RemoveIndex(key string) {
-	del(&info.idxs, []byte(key))
+func (in *Info) RemoveIndex(key string) {
+	del(&in.idxs, []byte(key))
 }
 
 // AddMeta conditionally adds a key-value pair
 // if it didn't exist already
-func (info *Info) AddMeta(key string, value string) bool {
-	return add(&info.meta, []byte(key), []byte(value))
-}
-
-// AddMetaBytes adds a key-value pair
-// if it didn't exist already. Note that
-// changes to the key-value byte slices
-// will be reflected in the underlying object (!)
-func (info *Info) AddMetaBytes(key []byte, value []byte) bool {
-	return add(&info.meta, key, value)
+func (in *Info) AddMeta(key string, value string) bool {
+	return add(&in.meta, []byte(key), []byte(value))
 }
 
 // SetMeta sets a key-value pair
-func (info *Info) SetMeta(key string, value string) {
-	set(&info.meta, []byte(key), []byte(value))
-}
-
-// SetMetabytes sets a key-value pair.
-// []byte caveats apply(!)
-func (info *Info) SetMetaBytes(key []byte, value []byte) {
-	set(&info.meta, key, value)
+func (in *Info) SetMeta(key string, value string) {
+	set(&in.meta, []byte(key), []byte(value))
 }
 
 // GetMeta gets a meta value
-func (info *Info) GetMeta(key string) (val string) {
-	return string(get(&info.meta, []byte(key)))
-}
-
-// GetMetaBytes returns the meta value
-// as a []byte. []byte caveats apply
-func (info *Info) GetMetaBytes(key []byte) []byte {
-	return get(&info.meta, key)
+func (in *Info) GetMeta(key string) (val string) {
+	return string(get(&in.meta, []byte(key)))
 }
 
 // RemoveMeta deletes the meta value
 // at a key
-func (info *Info) RemoveMeta(key string) {
-	del(&info.meta, []byte(key))
+func (in *Info) RemoveMeta(key string) {
+	del(&in.meta, []byte(key))
 }
 
 // AddLink adds a link conditionally. It returns true
 // if the value was already set to this bucket-key pair,
 // or if no value existed at 'name'. It returns false otherwise.
-func (info *Info) AddLink(name string, bucket string, key string) bool {
+func (in *Info) AddLink(name string, bucket string, key string) bool {
 	nm := []byte(name)
 
 	// don't duplicate
-	for _, link := range info.links {
-		if bcmpr(nm, link.GetTag()) {
+	for _, link := range in.links {
+		if bytes.Equal(nm, link.GetTag()) {
 			return false
 		}
 	}
 
-	info.links = append(info.links, &rpbc.RpbLink{
+	in.links = append(in.links, &rpbc.RpbLink{
 		Bucket: []byte(bucket),
 		Key:    []byte(key),
 		Tag:    nm,
@@ -276,16 +237,16 @@ func (info *Info) AddLink(name string, bucket string, key string) bool {
 }
 
 // SetLink sets a link
-func (info *Info) SetLink(name string, bucket string, key string) {
+func (in *Info) SetLink(name string, bucket string, key string) {
 	nm := []byte(name)
-	for _, link := range info.links {
-		if bcmpr(nm, link.GetTag()) {
+	for _, link := range in.links {
+		if bytes.Equal(nm, link.GetTag()) {
 			link.Bucket = []byte(bucket)
 			link.Key = []byte(key)
 			return
 		}
 	}
-	info.links = append(info.links, &rpbc.RpbLink{
+	in.links = append(in.links, &rpbc.RpbLink{
 		Bucket: []byte(bucket),
 		Key:    []byte(key),
 		Tag:    nm,
@@ -294,26 +255,26 @@ func (info *Info) SetLink(name string, bucket string, key string) {
 }
 
 // RemoveLink removes a link (if it exists)
-func (info *Info) RemoveLink(name string) {
+func (in *Info) RemoveLink(name string) {
 	nm := []byte(name)
-	nl := len(info.links)
+	nl := len(in.links)
 	if nl == 0 {
 		return
 	}
-	for i, link := range info.links {
-		if bcmpr(nm, link.GetTag()) {
+	for i, link := range in.links {
+		if bytes.Equal(nm, link.GetTag()) {
 			// swap and don't preserve order
-			info.links[i], info.links[nl-1], info.links = info.links[nl-1], nil, info.links[:nl-1]
+			in.links[i], in.links[nl-1], in.links = in.links[nl-1], nil, in.links[:nl-1]
 		}
 	}
 }
 
 // GetLink gets a link bucket-key pari
-func (info *Info) GetLink(name string) (bucket string, key string) {
+func (in *Info) GetLink(name string) (bucket string, key string) {
 	nm := []byte(name)
 
-	for _, link := range info.links {
-		if bcmpr(nm, link.GetTag()) {
+	for _, link := range in.links {
+		if bytes.Equal(nm, link.GetTag()) {
 			bucket = string(link.GetBucket())
 			key = string(link.GetKey())
 			return
