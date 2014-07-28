@@ -40,7 +40,6 @@ type Info struct {
 	meta   []*rpbc.RpbPair // Meta
 	ctype  []byte          // Content-Type
 	vclock []byte          // Vclock
-	value  []byte          // value
 }
 
 func readHeader(o Object, ctnt *rpbc.RpbContent) {
@@ -66,7 +65,6 @@ func readContent(o Object, ctnt *rpbc.RpbContent) error {
 	o.Info().meta = ctnt.Usermeta
 
 	// read content
-	o.Info().value = ctnt.Value // save reference
 	return o.Unmarshal(ctnt.Value)
 }
 

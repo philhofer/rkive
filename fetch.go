@@ -22,11 +22,6 @@ var (
 	// a read operation
 	ErrNotFound = errors.New("not found")
 
-	// ErrMultiple is returned when
-	// multiple objects are returned
-	// for a read operation
-	ErrMultiple = errors.New("multiple responses")
-
 	// default timeout on a request is 500ms
 	dfltreq uint32 = DefaultReqTimeout
 )
@@ -93,7 +88,7 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 		return ErrNotFound
 	}
 	if len(res.GetContent()) > 1 {
-		return ErrMultiple
+		return handleMultiple(res.Content)
 	}
 	err = readContent(o, res.GetContent()[0])
 	o.Info().key = req.Key
@@ -136,7 +131,7 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 		return false, ErrNotFound
 	}
 	if len(res.GetContent()) > 1 {
-		return false, ErrMultiple
+		return false, handleMultiple(res.Content)
 	}
 	err = readContent(o, res.Content[0])
 	o.Info().vclock = res.Vclock

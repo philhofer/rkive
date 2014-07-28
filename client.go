@@ -31,6 +31,41 @@ type RiakError struct {
 	res *rpbc.RpbErrorResp
 }
 
+// ErrMultipleResponses is the type
+// of error returned when multiple
+// siblings are retrieved for an object.
+type ErrMultipleResponses struct {
+	Responses []*Blob
+}
+
+func (m *ErrMultipleResponses) Error() string {
+	return fmt.Sprintf("%d siblings found", len(m.Responses))
+}
+
+// Blob is a generic riak container
+type Blob struct {
+	info    *Info
+	Content []byte
+}
+
+// generate *ErrMultipleResponses from multiple contents
+func handleMultiple(vs []*rpbc.RpbContent) *ErrMultipleResponses {
+	nc := len(vs)
+	em := &ErrMultipleResponses{
+		Responses: make([]*Blob, nc),
+	}
+	for i, ctnt := range vs {
+		em.Responses[i] = &Blob{info: &Info{}, Content: nil}
+		_ = readContent(em.Responses[i], ctnt)
+	}
+	return em
+}
+
+// Blob satisfies the Object interface.
+func (r *Blob) Info() *Info                      { return r.info }
+func (r *Blob) Unmarshal(b []byte) error         { r.Content = b; return nil }
+func (r *Blob) Marshal(_ []byte) ([]byte, error) { return r.Content, nil }
+
 func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
 }

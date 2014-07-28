@@ -81,9 +81,9 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	if rescode != 12 {
 		return ErrUnexpectedResponse
 	}
-	// multiple content items
-	if len(res.GetContent()) != 1 {
-		return ErrMultiple
+	// multiple content items... unlikely
+	if len(res.GetContent()) > 1 {
+		return handleMultiple(res.Content)
 	}
 	// pull info from content
 	readHeader(o, res.GetContent()[0])
@@ -131,7 +131,7 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 		return ErrUnexpectedResponse
 	}
 	if len(res.GetContent()) > 1 {
-		return ErrMultiple
+		return handleMultiple(res.Content)
 	}
 	readHeader(o, res.GetContent()[0])
 	o.Info().vclock = res.Vclock
@@ -182,7 +182,7 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 		return ErrNotFound
 	}
 	if len(res.Content) > 1 {
-		return ErrMultiple
+		return handleMultiple(res.Content)
 	}
 	o.Info().vclock = res.Vclock
 	readHeader(o, res.Content[0])
