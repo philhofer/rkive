@@ -145,15 +145,7 @@ func (c *Client) done(ct *net.TCPConn) {
 	}
 }
 
-// send the contents of a buffer and receive a response
-// back in the same buffer
-func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
-	ct, err := c.ack()
-	if err != nil {
-		// something went pretty wrong
-		return nil, 0, err
-	}
-
+func writeMsg(c *Client, ct *net.TCPConn, msg []byte, code byte) ([]byte, error) {
 	// bigendian length + code byte
 	var lead [5]byte
 
@@ -164,88 +156,117 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 
 	// send the message
 	ct.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
-	_, err = ct.Write(msg)
+	_, err := ct.Write(msg)
 	if err != nil {
 		if err == io.EOF {
-			return nil, 0, err
+			return msg, err
 		}
 		if operr, ok := err.(*net.OpError); ok {
 			if operr.Temporary() {
 				c.done(ct)
-				return nil, 0, err
+				return msg, err
 			}
 			if errno, ok := operr.Err.(syscall.Errno); ok {
 				if errno == syscall.EPIPE {
 					ct.Close()
-					return nil, 0, err
+					return msg, err
 				}
 			}
 		}
 	}
+	return msg, nil
+}
 
-	/////////////////////
-	// 	 RESPONSE 	  ///
-	/////////////////////
-
-	// read lead
+func readLead(c *Client, ct *net.TCPConn) (int, byte, error) {
+	var lead [5]byte
 	ct.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err = ct.Read(lead[:])
+	_, err := ct.Read(lead[:])
 	if err != nil {
 		if err == io.EOF {
-			return nil, 0, err
+			return 0, 0, err
 		}
 		if operr, ok := err.(*net.OpError); ok {
 			if operr.Temporary() {
 				c.done(ct)
-				return nil, 0, err
+				return 0, 0, err
 			}
 			if errno, ok := operr.Err.(syscall.Errno); ok {
 				if errno == syscall.EPIPE {
 					ct.Close()
-					return nil, 0, err
+					return 0, 0, err
 				}
 			}
 		}
 	}
-
-	// response message size
-	msglen = binary.BigEndian.Uint32(lead[:4]) - 1
+	msglen := binary.BigEndian.Uint32(lead[:4]) - 1
 	rescode := lead[4]
-	if int(msglen) > cap(msg) {
-		msg = make([]byte, int(msglen))
-	} else {
-		msg = msg[0:int(msglen)]
-	}
-	if msglen == 0 {
-		msg = nil
-		goto exit
-	}
+	return int(msglen), rescode, nil
+}
 
+func readBody(c *Client, ct *net.TCPConn, body []byte) error {
 	ct.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err = ct.Read(msg)
+	_, err := ct.Read(body)
 	if err != nil {
 		if err == io.EOF {
-			return msg, rescode, err
+			return err
 		}
 		if operr, ok := err.(*net.OpError); ok {
 			if operr.Temporary() {
 				c.done(ct)
-				return msg, rescode, err
+				return err
 			}
 			if errno, ok := operr.Err.(syscall.Errno); ok {
 				if errno == syscall.EPIPE {
 					ct.Close()
-					return msg, rescode, err
+					return err
 				}
 			}
 		}
 		c.done(ct)
-		return msg, rescode, err
+		return err
+	}
+	return err
+}
+
+// send the contents of a buffer and receive a response
+// back in the same buffer
+func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
+	ct, err := c.ack()
+	if err != nil {
+		// something went pretty wrong
+		return nil, 0, err
+	}
+
+	msg, err = writeMsg(c, ct, msg, code)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// read lead
+	var msglen int
+	// read length and code
+	msglen, code, err = readLead(c, ct)
+	if err != nil {
+		return nil, code, err
+	}
+	if msglen > cap(msg) {
+		msg = make([]byte, int(msglen))
+	} else {
+		msg = msg[0:msglen]
+	}
+	if msglen == 0 {
+		goto exit
+	}
+
+	// read body
+	err = readBody(c, ct, msg)
+	if err != nil {
+		return msg, code, err
 	}
 
 exit:
 	c.done(ct)
-	return msg, rescode, nil
+	return msg, code, nil
 }
 
 func (c *Client) req(msg proto.Message, code byte, res proto.Message) (byte, error) {
@@ -272,6 +293,85 @@ func (c *Client) req(msg proto.Message, code byte, res proto.Message) (byte, err
 		}
 	}
 	return rescode, err
+}
+
+type protoStream interface {
+	proto.Message
+	GetDone() bool
+}
+
+// streaming response -
+// returns a primed connection
+type streamRes struct {
+	c    *Client
+	conn *net.TCPConn
+	bts  []byte
+}
+
+// unmarshals; returns done / code / error
+func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
+	var msglen int
+	var code byte
+	var err error
+
+	msglen, code, err = readLead(s.c, s.conn)
+	if err != nil {
+		return true, code, err
+	}
+
+	if msglen > cap(s.bts) {
+		s.bts = make([]byte, msglen)
+	} else {
+		s.bts = s.bts[0:msglen]
+	}
+
+	err = readBody(s.c, s.conn, s.bts)
+	if err != nil {
+		return true, code, err
+	}
+	// handle a code 0
+	if code == 0 {
+		riakerr := new(rpbc.RpbErrorResp)
+		err = proto.Unmarshal(s.bts, riakerr)
+		if err != nil {
+			return true, 0, err
+		}
+		s.close()
+		return true, 0, RiakError{res: riakerr}
+	}
+
+	err = proto.Unmarshal(s.bts, res)
+	if err != nil {
+		s.close()
+		return true, code, err
+	}
+	done := res.GetDone()
+	if done {
+		s.close()
+	}
+	return done, code, nil
+}
+
+// return the connection to the client
+func (s *streamRes) close() {
+	s.c.done(s.conn)
+	s.conn = nil
+}
+
+func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
+	conn, err := c.ack()
+	if err != nil {
+		return nil, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
+	}
+	msg, err := proto.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	msg, err = writeMsg(c, conn, msg, code)
+	if err != nil {
+		return nil, err
+	}
+	return &streamRes{c: c, conn: conn, bts: msg}, nil
 }
 
 func (c *Client) Ping() error {
