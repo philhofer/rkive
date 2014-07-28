@@ -14,7 +14,9 @@ type Object interface {
 	// a reference to an Info
 	// struct, which contains
 	// this object's riak
-	// metadata.
+	// metadata. Info() must
+	// never return nil, or it
+	// will cause a panic.
 	Info() *Info
 
 	// Marshal should return the encoded
@@ -174,6 +176,8 @@ func (in *Info) Bucket() string { return string(in.bucket) }
 // ContentType is the content-type
 func (in *Info) ContentType() string { return string(in.ctype) }
 
+// SetContentType sets the content-type
+// to 's'.
 func (in *Info) SetContentType(s string) { in.ctype = []byte(s) }
 
 // Vclock is the vector clock value as a string
@@ -233,6 +237,7 @@ func (in *Info) GetIndex(key string) (val string) {
 	return string(get(&in.idxs, kv))
 }
 
+// GetIndexInt gets an integer index value
 func (in *Info) GetIndexInt(key string) *int64 {
 	kl := len(key)
 	kv := make([]byte, kl+4)
@@ -246,7 +251,7 @@ func (in *Info) GetIndexInt(key string) *int64 {
 	return &val
 }
 
-// Remove removes a key from an indexes object
+// RemoveIndex removes a key from the object
 func (in *Info) RemoveIndex(key string) {
 	kl := len(key)
 	kv := make([]byte, kl+4)
@@ -255,6 +260,8 @@ func (in *Info) RemoveIndex(key string) {
 	del(&in.idxs, kv)
 }
 
+// RemoveIndexInt removes an integer index key
+// from an object
 func (in *Info) RemoveIndexInt(key string) {
 	kl := len(key)
 	kv := make([]byte, kl+4)
@@ -265,7 +272,11 @@ func (in *Info) RemoveIndexInt(key string) {
 
 // Indexes returns a list of all of the
 // key-value pairs in this object. (Key first,
-// then value.)
+// then value.) Note that string-string
+// indexes will have keys postfixed with
+// "_bin", and string-int indexes will
+// have keys postfixed with "_int", per the
+// Riak secondary index specification.
 func (in *Info) Indexes() [][2]string {
 	return all(&in.idxs)
 }
@@ -319,7 +330,7 @@ func (in *Info) AddLink(name string, bucket string, key string) bool {
 	return true
 }
 
-// SetLink sets a link
+// SetLink sets a link for an object
 func (in *Info) SetLink(name string, bucket string, key string) {
 	nm := []byte(name)
 	for _, link := range in.links {
@@ -352,7 +363,7 @@ func (in *Info) RemoveLink(name string) {
 	}
 }
 
-// GetLink gets a link bucket-key pari
+// GetLink gets a link from the object
 func (in *Info) GetLink(name string) (bucket string, key string) {
 	nm := []byte(name)
 

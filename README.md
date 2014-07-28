@@ -11,37 +11,55 @@ In progress.
 
 ## Usage
 
-Satisfy the `Object` interface and you're off to the races. Here's the simplest possible example:
+Satisfy the `Object` interface and you're off to the races. The included 'Blob' object
+is the simplest possible Object implementation.
 
 ```go
 import (
        "github.com/philhofer/riakpb"
 )
 
-type SimpleObject struct {
-     Data []byte
-     info *riakpb.Info
+riak, err := riakpb.NewClient("127.0.0.1", "test-Client-ID", nil)
+// handle err...
+
+
+// let's make an object
+myBlob := &riakpb.Blob{
+	Data: []byte("Hello World!"),
+	RiakInfo: &riakpb.Info{},
 }
 
-// Objects need to know how to marshal
-// themselves to bytes. This value is used as the
-// value stored in the database.
-func (s *SimpleObject) Marshal(_ []byte) ([]byte, error) {
-     return s.Data
-}
+// now let's put it in the database
+err = riak.New(myBlob, "blob_bucket", nil, nil)
+// handle err...
 
-// Objects also need to know how to unmarshal
-// themselves from bytes. This is exactly the
-// reverse of the function above.
-func (s *SimpleObject) Unmarshal(b []byte) error {
-     s.Data = b
-     return nil
-}
 
-// Info() needs to return a pointer
-// to a valid riakpb.Info object. It stores
-// Riak metadata like secondary indexes, links
-// user metadata, vector clocks, etc.
-func (s *SimpleObject) Info() *riakpb.Info { return s.info }
+// since we didn't specify a key, riak assigned
+// an available key
+fmt.Printf("Our blob key is %s\n", myBlob.Info().Key())
+
+// Let's make a change to the object...
+myBlob.Data = []byte("MOAR DATA")
+
+// ... and store it!
+err = riak.Push(myBlob, nil)
+// riak.Push will return an error (riakpb.ErrModified) if
+// the object has been modified since the last
+// time you called New(), Push(), Store(), Fetch(), etc. 
+// You can retreive the latest copy of the object with:
+updated, err := riak.Update(myBlob, nil)
+// handle err
+if updated { /* the object has been changed! */ }
+
+// you can also fetch a new copy
+// of the object like so:
+
+// create a new container
+newBlob := &riakpb.Blob{ RiakInfo: &riakpb.Info{} }
+
+// fetch using the bucket and key
+err = riak.Fetch(newBlob, myBlob.Info().Bucket(), myBlob.Info().Key(), nil)
+// handle err...
+
 
 ```

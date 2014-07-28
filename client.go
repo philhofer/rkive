@@ -44,8 +44,8 @@ func (m *ErrMultipleResponses) Error() string {
 
 // Blob is a generic riak container
 type Blob struct {
-	info    *Info
-	Content []byte
+	RiakInfo *Info
+	Content  []byte
 }
 
 // generate *ErrMultipleResponses from multiple contents
@@ -55,14 +55,14 @@ func handleMultiple(vs []*rpbc.RpbContent) *ErrMultipleResponses {
 		Responses: make([]*Blob, nc),
 	}
 	for i, ctnt := range vs {
-		em.Responses[i] = &Blob{info: &Info{}, Content: nil}
+		em.Responses[i] = &Blob{RiakInfo: &Info{}, Content: nil}
 		_ = readContent(em.Responses[i], ctnt)
 	}
 	return em
 }
 
 // Blob satisfies the Object interface.
-func (r *Blob) Info() *Info              { return r.info }
+func (r *Blob) Info() *Info              { return r.RiakInfo }
 func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }
 func (r *Blob) Marshal() ([]byte, error) { return r.Content, nil }
 
