@@ -66,7 +66,7 @@ func NewClient(addr string, clientID string, nconns *int) (*Client, error) {
 		}
 		temp[i] = conn
 	}
-	log.Printf("Successfully opened %d connections to %s", dfltConns, addr)
+	log.Printf("Successfully opened %d connections to %s", *nconns, addr)
 	// send
 	for _, conn := range temp {
 		cl.conns <- conn
