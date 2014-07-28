@@ -151,6 +151,18 @@ func del(l *[]*rpbc.RpbPair, key []byte) {
 	}
 }
 
+func all(l *[]*rpbc.RpbPair) [][2]string {
+	nl := len(*l)
+	if nl == 0 {
+		return nil
+	}
+	out := make([][2]string, nl)
+	for i, item := range *l {
+		out[i] = [2]string{string(item.Key), string(item.Value)}
+	}
+	return out
+}
+
 // Key is the canonical riak key
 func (in *Info) Key() string { return string(in.key) }
 
@@ -189,6 +201,13 @@ func (in *Info) RemoveIndex(key string) {
 	del(&in.idxs, []byte(key))
 }
 
+// Indexes returns a list of all of the
+// key-value pairs in this object. (Key first,
+// then value.)
+func (in *Info) Indexes() [][2]string {
+	return all(&in.idxs)
+}
+
 // AddMeta conditionally adds a key-value pair
 // if it didn't exist already
 func (in *Info) AddMeta(key string, value string) bool {
@@ -209,6 +228,12 @@ func (in *Info) GetMeta(key string) (val string) {
 // at a key
 func (in *Info) RemoveMeta(key string) {
 	del(&in.meta, []byte(key))
+}
+
+// Metas returns all of the metadata
+// key-value pairs. (Key first, then value.)
+func (in *Info) Metas() [][2]string {
+	return all(&in.idxs)
 }
 
 // AddLink adds a link conditionally. It returns true
