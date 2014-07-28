@@ -59,18 +59,14 @@ func readContent(o Object, ctnt *rpbc.RpbContent) error {
 		panic("nil Info")
 	}
 
-	o.Info().ctype = ctnt.GetContentType()
-	o.Info().links = ctnt.GetLinks()
-	o.Info().idxs = ctnt.GetIndexes()
-	o.Info().meta = ctnt.GetUsermeta()
+	o.Info().ctype = ctnt.ContentType
+	o.Info().links = ctnt.Links
+	o.Info().idxs = ctnt.Indexes
+	o.Info().meta = ctnt.Usermeta
 
-	// catch the ReturnHead case
-	if ctnt.GetValue() == nil {
-		return nil
-	}
 	// read content
-	o.Info().value = ctnt.GetValue() // save reference
-	return o.Unmarshal(ctnt.GetValue())
+	o.Info().value = ctnt.Value // save reference
+	return o.Unmarshal(ctnt.Value)
 }
 
 // write into content from 'o'

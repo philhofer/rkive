@@ -92,4 +92,14 @@ func TestUpdate(t *testing.T) {
 	if !bytes.Equal(lb.Data, newlb.Data) {
 		t.Error("Objects are not equal after update.")
 	}
+
+	// this should return false
+	upd, err = cl.Update(lb, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if upd {
+		t.Error("Object was spuriously updated...?")
+	}
 }

@@ -129,14 +129,14 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 	if rescode != 10 {
 		return false, ErrUnexpectedResponse
 	}
+	if res.GetUnchanged() {
+		return false, nil
+	}
 	if len(res.GetContent()) == 0 {
 		return false, ErrNotFound
 	}
 	if len(res.GetContent()) > 1 {
 		return false, ErrMultiple
-	}
-	if res.GetUnchanged() {
-		return false, nil
 	}
 	err = readContent(o, res.Content[0])
 	o.Info().vclock = res.Vclock
