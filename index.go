@@ -32,7 +32,9 @@ func (i *IndexQueryRes) Keys() []string {
 
 func (c *Client) IndexLookup(bucket string, index string, value string, max *int) (*IndexQueryRes, error) {
 	bckt := []byte(bucket)
-	idx := []byte(index)
+	idx := make([]byte, len(index)+4)
+	copy(idx[0:], index)
+	copy(idx[len(index):], []byte("_bin"))
 	kv := []byte(value)
 	rth := true
 	var qtype rpbc.RpbIndexReq_IndexQueryType = 0

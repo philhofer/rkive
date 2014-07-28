@@ -37,6 +37,7 @@ func TestAddRemoveIndex(t *testing.T) {
 	val := info.GetIndex("testidx")
 	if val != "blah" {
 		t.Errorf("Val: %q", val)
+		t.Errorf("Indexes: %v", info.idxs)
 	}
 
 	info.SetIndex("testidx", "newblah")
@@ -49,5 +50,24 @@ func TestAddRemoveIndex(t *testing.T) {
 	val = info.GetIndex("testidx")
 	if val != "" {
 		t.Errorf("Val: %q", val)
+	}
+
+	info.AddIndexInt("myNum", 300)
+
+	ival := info.GetIndexInt("myNum")
+	if ival == nil || *ival != 300 {
+		t.Errorf("Ival is %d; expected %d", *ival, 300)
+	}
+
+	info.SetIndexInt("myNum", -84)
+	ival = info.GetIndexInt("myNum")
+	if ival == nil || *ival != -84 {
+		t.Errorf("Ival is %d; expected %d", *ival, -84)
+	}
+
+	info.RemoveIndexInt("myNum")
+	ival = info.GetIndexInt("myNum")
+	if ival != nil {
+		t.Errorf("Expected nil; got %d", *ival)
 	}
 }

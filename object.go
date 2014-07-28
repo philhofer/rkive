@@ -3,6 +3,7 @@ package riakpb
 import (
 	"bytes"
 	"github.com/philhofer/riakpb/rpbc"
+	"strconv"
 )
 
 // Object is the interface that must
@@ -182,23 +183,83 @@ func (in *Info) Vclock() string { return string(in.vclock) }
 // exists under that name and has a different value.
 // Returns true if the index already has this exact key-value
 // pair, or if the pair is written in with no conflicts.
+// (All XxxIndex operations append "_bin" to key values
+// internally in order to comply with the Riak secondary
+// index specification, so the user does not have to
+// include it.)
 func (in *Info) AddIndex(key string, value string) bool {
-	return add(&in.idxs, []byte(key), []byte(value))
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_bin"))
+	return add(&in.idxs, kv, []byte(value))
+}
+
+// AddIndexInt sets an integer secondary index value
+// using the same conditional rules as AddIndex
+func (in *Info) AddIndexInt(key string, value int64) bool {
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_int"))
+	return add(&in.idxs, kv, strconv.AppendInt([]byte{}, value, 10))
 }
 
 // Set sets a key-value pair in an Indexes object
 func (in *Info) SetIndex(key string, value string) {
-	set(&in.idxs, []byte(key), []byte(value))
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_bin"))
+	set(&in.idxs, kv, []byte(value))
+}
+
+// SetIndexInt sets a integer secondary index value
+func (in *Info) SetIndexInt(key string, value int64) {
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_int"))
+	set(&in.idxs, kv, strconv.AppendInt([]byte{}, value, 10))
 }
 
 // Get gets a key-value pair in an indexes object
 func (in *Info) GetIndex(key string) (val string) {
-	return string(get(&in.idxs, []byte(key)))
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_bin"))
+	return string(get(&in.idxs, kv))
+}
+
+func (in *Info) GetIndexInt(key string) *int64 {
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_int"))
+	bts := get(&in.idxs, kv)
+	if bts == nil {
+		return nil
+	}
+	val, _ := strconv.ParseInt(string(bts), 10, 64)
+	return &val
 }
 
 // Remove removes a key from an indexes object
 func (in *Info) RemoveIndex(key string) {
-	del(&in.idxs, []byte(key))
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_bin"))
+	del(&in.idxs, kv)
+}
+
+func (in *Info) RemoveIndexInt(key string) {
+	kl := len(key)
+	kv := make([]byte, kl+4)
+	copy(kv[0:], key)
+	copy(kv[kl:], []byte("_int"))
+	del(&in.idxs, kv)
 }
 
 // Indexes returns a list of all of the
