@@ -33,6 +33,9 @@ func TestIndexLookup(t *testing.T) {
 	if res.Len() < 1 {
 		t.Fatalf("Expected multiple keys; got %d.", res.Len())
 	}
+	if !res.Contains(ob.Info().Key()) {
+		t.Errorf("Response doesn't contain original key...?")
+	}
 	t.Logf("Found %d keys.", res.Len())
 }
 
@@ -62,6 +65,10 @@ func TestIndexRange(t *testing.T) {
 
 	if res.Len() < 1 {
 		t.Fatalf("Expected multiple keys; got %d", res.Len())
+	}
+
+	if !res.Contains(ob.Info().Key()) {
+		t.Errorf("Response doesn't contain original key...?")
 	}
 	t.Logf("Found %d keys.", res.Len())
 }

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrNoPath   = errors.New("bucket or key is not defined")
+	ErrNoPath   = errors.New("bucket and/or key not defined")
 	ErrModified = errors.New("object has been modified since last read")
 	ErrExists   = errors.New("object already exists")
 )
