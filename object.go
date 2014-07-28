@@ -10,9 +10,11 @@ import (
 // be satisfied in order to store and retrieve
 // an object from Riak.
 type Object interface {
-	// Satisfy this by
-	// putting an Info{}
-	// into your object.
+	// Objects must maintain
+	// a reference to an Info
+	// struct, which contains
+	// this object's riak
+	// metadata.
 	Info() *Info
 
 	// Marshal should return the encoded
@@ -21,7 +23,7 @@ type Object interface {
 	// in order to reduce allocations, although
 	// it should not count on that slice not being
 	// nil.
-	Marshal([]byte) ([]byte, error)
+	Marshal() ([]byte, error)
 
 	// Unmarshal should unmarshal the object
 	// from a []byte. It can safely use
@@ -32,6 +34,7 @@ type Object interface {
 // Info contains information
 // about a riak object. You can use
 // it to satisfy the Object interface.
+// Info's zero value (Info{}) is valid.
 type Info struct {
 	key    []byte          // key
 	bucket []byte          // bucket
@@ -75,7 +78,7 @@ func writeContent(o Object, ctnt *rpbc.RpbContent) error {
 	}
 
 	var err error
-	ctnt.Value, err = o.Marshal(nil)
+	ctnt.Value, err = o.Marshal()
 	if err != nil {
 		return err
 	}

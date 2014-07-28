@@ -62,9 +62,9 @@ func handleMultiple(vs []*rpbc.RpbContent) *ErrMultipleResponses {
 }
 
 // Blob satisfies the Object interface.
-func (r *Blob) Info() *Info                      { return r.info }
-func (r *Blob) Unmarshal(b []byte) error         { r.Content = b; return nil }
-func (r *Blob) Marshal(_ []byte) ([]byte, error) { return r.Content, nil }
+func (r *Blob) Info() *Info              { return r.info }
+func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }
+func (r *Blob) Marshal() ([]byte, error) { return r.Content, nil }
 
 func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
