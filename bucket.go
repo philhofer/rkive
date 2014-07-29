@@ -28,7 +28,18 @@ func (b *Bucket) Push(o Object) error { return b.c.Push(o, nil) }
 // Store stores an object with a bucket's default properties
 func (b *Bucket) Store(o Object) error { return b.c.Store(o, nil) }
 
+// Update updates an object in a bucket
 func (b *Bucket) Update(o Object) (bool, error) { return b.c.Update(o, nil) }
+
+// IndexLookup performs a secondary index query on the bucket
+func (b *Bucket) IndexLookup(idx string, val string) (*IndexQueryRes, error) {
+	return b.c.IndexLookup(b.nm, idx, val, nil)
+}
+
+// IndexRange performs a secondary index range query on the bucket
+func (b *Bucket) IndexRange(idx string, min int64, max int64) (*IndexQueryRes, error) {
+	return b.c.IndexRange(b.nm, idx, min, max, nil)
+}
 
 // GetProperties retreives the properties of the bucket
 func (b *Bucket) GetProperties() (*rpbc.RpbBucketProps, error) {

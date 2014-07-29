@@ -20,12 +20,14 @@ func TestIndexLookup(t *testing.T) {
 
 	ob.Info().AddIndex("testIdx", "myValue")
 
-	err = cl.New(ob, "testbucket", nil, nil)
+	bucket := cl.Bucket("testbucket")
+
+	err = bucket.New(ob, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	res, err := cl.IndexLookup("testbucket", "testIdx", "myValue", nil)
+	res, err := bucket.IndexLookup("testIdx", "myValue")
 	if err != nil {
 		t.Fatal(err)
 	}

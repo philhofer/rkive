@@ -19,7 +19,7 @@ func TestRiakPing(t *testing.T) {
 	for g := 0; g < 3; g++ {
 		go func(t *testing.T) {
 			for i := 0; i < 50; i++ {
-				err = cl.Ping()
+				err := cl.Ping()
 				if err != nil {
 					t.Fatal(err)
 				}

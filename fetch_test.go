@@ -47,12 +47,14 @@ func TestUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	test := cl.Bucket("testbucket")
+
 	lb := &TestObject{
 		Data: []byte("flibbertyibbitygibbit"),
 		info: &Info{},
 	}
 
-	err = cl.New(lb, "testbucket", nil, nil)
+	err = test.New(lb, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +63,7 @@ func TestUpdate(t *testing.T) {
 		info: &Info{},
 	}
 
-	err = cl.Fetch(newlb, "testbucket", lb.Info().Key(), nil)
+	err = test.Fetch(newlb, lb.Info().Key())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,13 +76,13 @@ func TestUpdate(t *testing.T) {
 
 	// make a modification
 	newlb.Data = []byte("new data.")
-	err = cl.Push(newlb, nil)
+	err = test.Push(newlb)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// this should return true
-	upd, err := cl.Update(lb, nil)
+	upd, err := test.Update(lb)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +96,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	// this should return false
-	upd, err = cl.Update(lb, nil)
+	upd, err = test.Update(newlb)
 	if err != nil {
 		t.Fatal(err)
 	}
