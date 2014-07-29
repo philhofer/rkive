@@ -93,11 +93,9 @@ func NewClient(addr string, clientID string, nconns *int) (*Client, error) {
 	for i := 0; i < *nconns; i++ {
 		conn, err := cl.dial()
 		if err != nil {
-			// cleanup other connections
-			for j := i - 1; j >= 0; j-- {
-				temp[j].Close()
-				return nil, err
-			}
+			// dial takes care of closing
+			// bad connections
+			return nil, err
 		}
 		temp[i] = conn
 	}

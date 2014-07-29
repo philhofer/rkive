@@ -36,6 +36,24 @@ func TestIndexLookup(t *testing.T) {
 	if !res.Contains(ob.Info().Key()) {
 		t.Errorf("Response doesn't contain original key...?")
 	}
+
+	hasCorrectIndex := func(o Object) bool {
+		val := o.Info().GetIndex("testIdx")
+		if val != "myValue" {
+			t.Logf("Found incorrect: %v", o.Info().idxs)
+			return false
+		}
+		return true
+	}
+
+	ncorrect, err := res.Which(ob, hasCorrectIndex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ncorrect) != res.Len() {
+		t.Errorf("Ncorrect is %d; response length is %d", len(ncorrect), res.Len())
+	}
+
 	t.Logf("Found %d keys.", res.Len())
 }
 

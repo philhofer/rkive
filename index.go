@@ -3,14 +3,19 @@ package riakpb
 import (
 	"bytes"
 	"github.com/philhofer/riakpb/rpbc"
+	"io"
 	"strconv"
 )
 
 type IndexQueryRes struct {
+	c      *Client
+	ftchd  int
 	bucket []byte
 	keys   [][]byte
 }
 
+// Contains returns whether or not the query
+// response contains this particular key
 func (i *IndexQueryRes) Contains(key string) bool {
 	kb := []byte(key)
 	for _, kv := range i.keys {
@@ -21,14 +26,55 @@ func (i *IndexQueryRes) Contains(key string) bool {
 	return false
 }
 
+// Len returns the number of keys in the response
 func (i *IndexQueryRes) Len() int { return len(i.keys) }
 
+// Keys returns the complete list of response keys
 func (i *IndexQueryRes) Keys() []string {
 	out := make([]string, i.Len())
 	for i, kv := range i.keys {
 		out[i] = string(kv)
 	}
 	return out
+}
+
+// Fetch fetches the next object in the query. Fetch
+// returns whether or not there are objects remaining
+// in the query result, and any error encountered in
+// fetching that object.
+func (i *IndexQueryRes) FetchNext(o Object) (done bool, err error) {
+	if i.ftchd >= len(i.keys) {
+		return true, io.EOF
+	}
+
+	err = i.c.Fetch(o, string(i.bucket), string(i.keys[i.ftchd]), nil)
+	i.ftchd++
+	if i.ftchd == len(i.keys) {
+		done = true
+	}
+	return
+}
+
+// Which searches within the query result for objects that satisfy
+// the given condition functions.
+func (i *IndexQueryRes) Which(o Object, conds ...func(Object) bool) ([]string, error) {
+	var out []string
+	bckt := string(i.bucket)
+search:
+	for j := 0; j < i.Len(); j++ {
+		key := string(i.keys[j])
+		err := i.c.Fetch(o, bckt, key, nil)
+		if err != nil {
+			return out, err
+		}
+		for _, cond := range conds {
+			if !cond(o) {
+				continue search
+			}
+		}
+		out = append(out, key)
+	}
+	return out, nil
 }
 
 // IndexLookup returns the keys that match the index-value pair specified. You
@@ -56,6 +102,7 @@ func (c *Client) IndexLookup(bucket string, index string, value string, max *int
 	}
 
 	queryres := &IndexQueryRes{
+		c:      c,
 		bucket: bckt,
 	}
 

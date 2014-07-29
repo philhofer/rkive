@@ -22,6 +22,8 @@ import (
 riak, err := riakpb.NewClient("127.0.0.1", "test-Client-ID", nil)
 // handle err...
 
+blobs := riak.Bucket("blob_bucket")
+
 
 // let's make an object
 myBlob := &riakpb.Blob{
@@ -30,7 +32,7 @@ myBlob := &riakpb.Blob{
 }
 
 // now let's put it in the database
-err = riak.New(myBlob, "blob_bucket", nil, nil)
+err = blobs.New(myBlob, nil)
 // handle err...
 
 
@@ -42,24 +44,23 @@ fmt.Printf("Our blob key is %s\n", myBlob.Info().Key())
 myBlob.Data = []byte("MOAR DATA")
 
 // ... and store it!
-err = riak.Push(myBlob, nil)
+err = blobs.Push(myBlob)
 // riak.Push will return an error (riakpb.ErrModified) if
 // the object has been modified since the last
 // time you called New(), Push(), Store(), Fetch(), etc. 
 // You can retreive the latest copy of the object with:
-updated, err := riak.Update(myBlob, nil)
+updated, err := blobs.Update(myBlob)
 // handle err
 if updated { /* the object has been changed! */ }
 
 // you can also fetch a new copy
 // of the object like so:
 
-// create a new container
+// create a new container...
 newBlob := &riakpb.Blob{ RiakInfo: &riakpb.Info{} }
 
-// fetch using the bucket and key
-err = riak.Fetch(newBlob, myBlob.Info().Bucket(), myBlob.Info().Key(), nil)
+// ... and fetch using the old blob's key
+err = blobs.Fetch(newBlob, myBlob.Info().Key())
 // handle err...
-
 
 ```
