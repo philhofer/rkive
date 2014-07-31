@@ -24,8 +24,7 @@ func (t *TestObject) Marshal() ([]byte, error) {
 func (t *TestObject) Info() *Info { return t.info }
 
 func TestFetchNotFound(t *testing.T) {
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := Dial([]string{"localhost:8087"}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,11 +37,11 @@ func TestFetchNotFound(t *testing.T) {
 	if err != ErrNotFound {
 		t.Errorf("err is not ErrNotFound: %q", err)
 	}
+	cl.Close()
 }
 
 func TestUpdate(t *testing.T) {
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := Dial([]string{"localhost:8087"}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,4 +103,5 @@ func TestUpdate(t *testing.T) {
 	if upd {
 		t.Error("Object was spuriously updated...?")
 	}
+	cl.Close()
 }

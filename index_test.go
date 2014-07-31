@@ -7,8 +7,7 @@ import (
 )
 
 func TestIndexLookup(t *testing.T) {
-	nconns := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconns)
+	cl, err := Dial([]string{"localhost:8087"}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,8 +59,7 @@ func TestIndexLookup(t *testing.T) {
 }
 
 func TestIndexRange(t *testing.T) {
-	nconns := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconns)
+	cl, err := Dial([]string{"localhost:8087"}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}

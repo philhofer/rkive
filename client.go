@@ -3,29 +3,18 @@ package riakpb
 import (
 	"code.google.com/p/gogoprotobuf/proto"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"github.com/philhofer/riakpb/rpbc"
-	"io"
 	"log"
 	"net"
-	"syscall"
 	"time"
 )
-
-// default open connections
-const dfltConns = 3
 
 // read timeout (ms)
 const readTimeout = 1000
 
 // write timeout (ms)
 const writeTimeout = 1000
-
-var (
-	ErrWriteTimeout = errors.New("TCP write timeout")
-	ErrReadTimeout  = errors.New("TCP read timeout")
-)
 
 type RiakError struct {
 	res *rpbc.RpbErrorResp
@@ -70,62 +59,57 @@ func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
 }
 
-func NewClient(addr string, clientID string, nconns *int) (*Client, error) {
-	if nconns == nil {
-		nconns = new(int)
-		*nconns = dfltConns
-	}
-
-	netaddr, err := net.ResolveTCPAddr("tcp", addr)
-	if err != nil {
-		return nil, err
-	}
-
+func Dial(addrs []string, clientID string) (*Client, error) {
 	cl := &Client{
-		addr:  netaddr,
-		conns: make(chan *net.TCPConn, *nconns),
 		id:    []byte(clientID),
+		dones: make(chan *node, len(addrs)),
 	}
 
-	// store conns until initialization
-	// is completed successfully
-	temp := make([]*net.TCPConn, *nconns)
-	for i := 0; i < *nconns; i++ {
-		conn, err := cl.dial()
+	naddrs := make([]*net.TCPAddr, len(addrs))
+
+	var err error
+	for i, addr := range addrs {
+		naddrs[i], err = net.ResolveTCPAddr("tcp", addr)
 		if err != nil {
-			// dial takes care of closing
-			// bad connections
 			return nil, err
 		}
-		temp[i] = conn
 	}
-	log.Printf("Successfully opened %d connections to %s", *nconns, addr)
-	// send
-	for _, conn := range temp {
-		cl.conns <- conn
+
+	for _, naddr := range naddrs {
+		tnode := &node{
+			addr:        naddr,
+			parent:      cl,
+			isConnected: false,
+			conn:        nil,
+		}
+		go cl.redialLoop(tnode)
 	}
+
 	return cl, nil
 }
 
-type Client struct {
-	addr  *net.TCPAddr
-	conns chan *net.TCPConn
-	id    []byte
+func (c *Client) Close() {
+	close(c.dones)
+	for node := range c.dones {
+		log.Printf("Closing TCP tunnel to %s", node.addr.String())
+		node.conn.Close()
+	}
+	return
 }
 
-func (c *Client) dial() (*net.TCPConn, error) {
-	log.Printf("Dialing %s...", c.addr)
-	conn, err := net.DialTCP("tcp", nil, c.addr)
-	if err != nil {
-		return nil, err
+type Client struct {
+	id    []byte
+	dones chan *node // holds good nodes
+}
+
+func (c *Client) redialLoop(n *node) {
+	log.Printf("Redialing TCP %s...", n.addr.String())
+	var nd int
+	for err := n.Dial(); err != nil; nd++ {
+		log.Printf("Dial error #%d: %s", n, err)
+		time.Sleep(3 * time.Second)
 	}
-	err = c.writeClientID(conn)
-	if err != nil {
-		conn.Close()
-		return nil, err
-	}
-	conn.SetKeepAlive(true)
-	return conn, nil
+	c.dones <- n
 }
 
 func (c *Client) writeClientID(conn *net.TCPConn) error {
@@ -143,12 +127,12 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	msg := make([]byte, msglen+4)
 	binary.BigEndian.PutUint32(msg, uint32(msglen))
 	msg[4] = 5 // code for RpbSetClientIdReq
-	conn.SetWriteDeadline(time.Now().Add(DefaultReqTimeout * time.Millisecond))
+	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
 	_, err = conn.Write(msg)
 	if err != nil {
 		return err
 	}
-	conn.SetReadDeadline(time.Now().Add(DefaultReqTimeout * time.Millisecond))
+	conn.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
 	_, err = conn.Read(msg[:5])
 	if err != nil {
 		return err
@@ -160,25 +144,22 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	return nil
 }
 
-func (c *Client) ack() (*net.TCPConn, error) {
-	var con *net.TCPConn
-	select {
-	case con = <-c.conns:
-		return con, nil
-	case <-time.After(50 * time.Millisecond):
-		con, err := c.dial()
-		return con, err
-	}
+// acquire node
+func (c *Client) ack() *node {
+	return <-c.dones
 }
 
-func (c *Client) done(ct *net.TCPConn) {
-	select {
-	case c.conns <- ct:
-	default:
-	}
+// finish node (success)
+func (c *Client) done(n *node) {
+	c.dones <- n
 }
 
-func writeMsg(c *Client, ct *net.TCPConn, msg []byte, code byte) ([]byte, error) {
+// finish node (error)
+func (c *Client) err(n *node) {
+	go c.redialLoop(n)
+}
+
+func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
 	// bigendian length + code byte
 	var lead [5]byte
 
@@ -188,89 +169,42 @@ func writeMsg(c *Client, ct *net.TCPConn, msg []byte, code byte) ([]byte, error)
 	msg = append(lead[:], msg...)
 
 	// send the message
-	ct.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
-	_, err := ct.Write(msg)
+	_, err := n.Write(msg)
 	if err != nil {
-		if err == io.EOF {
-			return msg, err
-		}
-		if operr, ok := err.(*net.OpError); ok {
-			if operr.Temporary() {
-				c.done(ct)
-				return msg, err
-			}
-			if errno, ok := operr.Err.(syscall.Errno); ok {
-				if errno == syscall.EPIPE {
-					ct.Close()
-					return msg, err
-				}
-			}
-		}
+		n.Err()
+		return msg, err
 	}
 	return msg, nil
 }
 
-func readLead(c *Client, ct *net.TCPConn) (int, byte, error) {
+func readLead(c *Client, n *node) (int, byte, error) {
 	var lead [5]byte
-	ct.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err := ct.Read(lead[:])
+	_, err := n.Read(lead[:])
 	if err != nil {
-		if err == io.EOF {
-			return 0, 0, err
-		}
-		if operr, ok := err.(*net.OpError); ok {
-			if operr.Temporary() {
-				c.done(ct)
-				return 0, 0, err
-			}
-			if errno, ok := operr.Err.(syscall.Errno); ok {
-				if errno == syscall.EPIPE {
-					ct.Close()
-					return 0, 0, err
-				}
-			}
-		}
+		n.Err()
+		return 0, lead[4], err
 	}
 	msglen := binary.BigEndian.Uint32(lead[:4]) - 1
 	rescode := lead[4]
 	return int(msglen), rescode, nil
 }
 
-func readBody(c *Client, ct *net.TCPConn, body []byte) error {
-	ct.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err := ct.Read(body)
+func readBody(c *Client, n *node, body []byte) error {
+	_, err := n.Read(body)
 	if err != nil {
-		if err == io.EOF {
-			return err
-		}
-		if operr, ok := err.(*net.OpError); ok {
-			if operr.Temporary() {
-				c.done(ct)
-				return err
-			}
-			if errno, ok := operr.Err.(syscall.Errno); ok {
-				if errno == syscall.EPIPE {
-					ct.Close()
-					return err
-				}
-			}
-		}
-		c.done(ct)
+		n.Err()
 		return err
 	}
-	return err
+	return nil
 }
 
 // send the contents of a buffer and receive a response
 // back in the same buffer
 func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
-	ct, err := c.ack()
-	if err != nil {
-		// something went pretty wrong
-		return nil, 0, err
-	}
+	node := c.ack()
+	var err error
 
-	msg, err = writeMsg(c, ct, msg, code)
+	msg, err = writeMsg(c, node, msg, code)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -278,7 +212,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	// read lead
 	var msglen int
 	// read length and code
-	msglen, code, err = readLead(c, ct)
+	msglen, code, err = readLead(c, node)
 	if err != nil {
 		return nil, code, err
 	}
@@ -292,13 +226,13 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 
 	// read body
-	err = readBody(c, ct, msg)
+	err = readBody(c, node, msg)
 	if err != nil {
 		return msg, code, err
 	}
 
 exit:
-	c.done(ct)
+	node.Done()
 	return msg, code, nil
 }
 
@@ -337,7 +271,7 @@ type protoStream interface {
 // returns a primed connection
 type streamRes struct {
 	c    *Client
-	conn *net.TCPConn
+	node *node
 	bts  []byte
 }
 
@@ -347,7 +281,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 	var code byte
 	var err error
 
-	msglen, code, err = readLead(s.c, s.conn)
+	msglen, code, err = readLead(s.c, s.node)
 	if err != nil {
 		return true, code, err
 	}
@@ -358,18 +292,20 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		s.bts = s.bts[0:msglen]
 	}
 
-	err = readBody(s.c, s.conn, s.bts)
+	err = readBody(s.c, s.node, s.bts)
 	if err != nil {
 		return true, code, err
 	}
 	// handle a code 0
 	if code == 0 {
+		// we're done
+		s.close()
+
 		riakerr := new(rpbc.RpbErrorResp)
 		err = proto.Unmarshal(s.bts, riakerr)
 		if err != nil {
 			return true, 0, err
 		}
-		s.close()
 		return true, 0, RiakError{res: riakerr}
 	}
 
@@ -386,43 +322,36 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 }
 
 // return the connection to the client
-func (s *streamRes) close() {
-	s.c.done(s.conn)
-	s.conn = nil
-}
+func (s *streamRes) close() { s.node.Done() }
 
 func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
-	conn, err := c.ack()
-	if err != nil {
-		return nil, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
-	}
+	node := c.ack()
+	var err error
+
 	msg, err := proto.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-	msg, err = writeMsg(c, conn, msg, code)
+	msg, err = writeMsg(c, node, msg, code)
 	if err != nil {
 		return nil, err
 	}
-	return &streamRes{c: c, conn: conn, bts: msg}, nil
+	return &streamRes{c: c, node: node, bts: msg}, nil
 }
 
 func (c *Client) Ping() error {
-	conn, err := c.ack()
-	if err != nil {
-		return err
-	}
-	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
-	_, err = conn.Write([]byte{0, 0, 0, 1, 1})
+	node := c.ack()
+	var err error
+
+	_, err = node.Write([]byte{0, 0, 0, 1, 1})
 	if err != nil {
 		return err
 	}
 	var res [5]byte
-	conn.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err = conn.Read(res[:])
+	_, err = node.Read(res[:])
 	if err != nil {
 		return err
 	}
-	c.done(conn)
+	node.Done()
 	return nil
 }
