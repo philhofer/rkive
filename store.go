@@ -42,11 +42,10 @@ func parseOpts(opts *WriteOpts, req *rpbc.RpbPutReq) {
 // Riak will assign this object a key if 'key' is nil.
 func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) error {
 	req := &rpbc.RpbPutReq{
-		Bucket:  []byte(bucket),
+		Bucket:  ustr(bucket),
 		Content: new(rpbc.RpbContent),
 	}
 	// set the bucket, because the user can't
-	o.Info().bucket = req.Bucket
 
 	// return head
 	rth := true
@@ -54,9 +53,8 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 
 	// set keys if specified
 	if key != nil {
-		req.Key = []byte(*key)
+		req.Key = ustr(*key)
 		req.IfNoneMatch = &rth
-		o.Info().key = req.Key
 	}
 	// write content to request
 	err := writeContent(o, req.Content)
@@ -87,12 +85,10 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	}
 	// pull info from content
 	readHeader(o, res.GetContent()[0])
+	// set data
 	o.Info().vclock = res.Vclock
-	// pull the new key if
-	// we didn't already set it
-	if key == nil {
-		o.Info().key = res.GetKey()
-	}
+	o.Info().bucket = req.Bucket
+	o.Info().key = res.GetKey()
 	return err
 }
 

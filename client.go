@@ -364,6 +364,8 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 		msg = msg[0:0] // mark empty (necessary for ErrNotFound)
 		goto exit
 	}
+	// no alloc if response is smaller
+	// than request
 	if msglen > cap(msg) {
 		msg = make([]byte, msglen)
 	} else {
@@ -405,8 +407,6 @@ func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byt
 		if len(resbts) == 0 {
 			return 0, ErrNotFound
 		}
-		//obuf := proto.NewBuffer(resbts)
-		//err = obuf.Unmarshal(res)
 		err = res.Unmarshal(resbts)
 		if err != nil {
 			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
