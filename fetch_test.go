@@ -24,7 +24,7 @@ func (t *TestObject) Marshal() ([]byte, error) {
 func (t *TestObject) Info() *Info { return t.info }
 
 func TestFetchNotFound(t *testing.T) {
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func TestFetchNotFound(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}

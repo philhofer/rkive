@@ -3,11 +3,17 @@ package riakpb
 import (
 	"code.google.com/p/gogoprotobuf/proto"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"github.com/philhofer/riakpb/rpbc"
 	"log"
 	"net"
+	"sync/atomic"
 	"time"
+)
+
+var (
+	ErrClosing = errors.New("connection closing")
 )
 
 // read timeout (ms)
@@ -59,57 +65,97 @@ func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
 }
 
-func Dial(addrs []string, clientID string) (*Client, error) {
-	cl := &Client{
-		id:    []byte(clientID),
-		dones: make(chan *node, len(addrs)),
+// A Node is a Riak physical node
+type Node struct {
+	Addr   string // address (e.g. 127.0.0.1:8078)
+	NConns uint   // Number of simultaneous TCP connections
+}
+
+// Dial creates a client connected to one
+// or many Riak nodes
+func Dial(nodes []Node, clientID string) (*Client, error) {
+
+	// count total connections
+	nconns := 0
+	for _, node := range nodes {
+		nconns += int(node.NConns)
 	}
 
-	naddrs := make([]*net.TCPAddr, len(addrs))
+	naddrs := make([]*net.TCPAddr, len(nodes))
 
 	var err error
-	for i, addr := range addrs {
-		naddrs[i], err = net.ResolveTCPAddr("tcp", addr)
+	for i, node := range nodes {
+		naddrs[i], err = net.ResolveTCPAddr("tcp", node.Addr)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	for _, naddr := range naddrs {
-		tnode := &node{
-			addr:        naddr,
-			parent:      cl,
-			isConnected: false,
-			conn:        nil,
-		}
-		go cl.redialLoop(tnode)
+	cl := &Client{
+		tag:   0,
+		id:    []byte(clientID),
+		dones: make(chan *node, nconns),
+		lock:  make(chan struct{}, 1),
 	}
+
+	// dial up all the nodes
+	for i, naddr := range naddrs {
+		for j := 0; j < int(nodes[i].NConns); j++ {
+			tnode := &node{
+				addr:        naddr,
+				parent:      cl,
+				isConnected: false,
+				conn:        nil,
+			}
+			go cl.redialLoop(tnode)
+		}
+	}
+	cl.lock <- struct{}{}
 
 	return cl, nil
 }
 
+func DialOne(addr string, clientID string) (*Client, error) {
+	return Dial([]Node{{Addr: addr, NConns: 1}}, clientID)
+}
+
 func (c *Client) Close() {
+	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
+		return
+	}
+	<-c.lock
 	close(c.dones)
 	for node := range c.dones {
 		log.Printf("Closing TCP tunnel to %s", node.addr.String())
 		node.conn.Close()
 	}
+	c.lock <- struct{}{}
 	return
 }
 
+func (c *Client) closed() bool {
+	return atomic.LoadInt64(&c.tag) == 1
+}
+
 type Client struct {
+	tag   int64
 	id    []byte
 	dones chan *node // holds good nodes
+	lock  chan struct{}
 }
 
 func (c *Client) redialLoop(n *node) {
-	log.Printf("Redialing TCP %s...", n.addr.String())
+	log.Printf("Dialing TCP %s...", n.addr.String())
 	var nd int
 	for err := n.Dial(); err != nil; nd++ {
+		if c.closed() {
+			n.Drop()
+			return
+		}
 		log.Printf("Dial error #%d: %s", n, err)
 		time.Sleep(3 * time.Second)
 	}
-	c.dones <- n
+	c.done(n)
 }
 
 func (c *Client) writeClientID(conn *net.TCPConn) error {
@@ -145,17 +191,33 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 }
 
 // acquire node
-func (c *Client) ack() *node {
-	return <-c.dones
+func (c *Client) ack() (*node, bool) {
+	node, ok := <-c.dones
+	return node, ok
 }
 
 // finish node (success)
 func (c *Client) done(n *node) {
+	// we need to lock
+	// in order ensure that the
+	// channel cannot be closed
+	// while sending
+	<-c.lock
+	if c.closed() {
+		c.lock <- struct{}{}
+		n.Drop()
+		return
+	}
 	c.dones <- n
+	c.lock <- struct{}{}
 }
 
 // finish node (error)
 func (c *Client) err(n *node) {
+	if c.closed() {
+		n.Drop()
+		return
+	}
 	go c.redialLoop(n)
 }
 
@@ -201,7 +263,10 @@ func readBody(c *Client, n *node, body []byte) error {
 // send the contents of a buffer and receive a response
 // back in the same buffer
 func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
-	node := c.ack()
+	node, ok := c.ack()
+	if !ok {
+		return nil, 0, ErrClosing
+	}
 	var err error
 
 	msg, err = writeMsg(c, node, msg, code)
@@ -325,9 +390,10 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 func (s *streamRes) close() { s.node.Done() }
 
 func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
-	node := c.ack()
-	var err error
-
+	node, ok := c.ack()
+	if !ok {
+		return nil, ErrClosing
+	}
 	msg, err := proto.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -340,10 +406,11 @@ func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
 }
 
 func (c *Client) Ping() error {
-	node := c.ack()
-	var err error
-
-	_, err = node.Write([]byte{0, 0, 0, 1, 1})
+	node, ok := c.ack()
+	if !ok {
+		return ErrClosing
+	}
+	_, err := node.Write([]byte{0, 0, 0, 1, 1})
 	if err != nil {
 		return err
 	}

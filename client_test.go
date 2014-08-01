@@ -8,7 +8,7 @@ import (
 )
 
 func TestRiakPing(t *testing.T) {
-	cl, err := Dial([]string{"localhost:8087", "localhost:8087"}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}

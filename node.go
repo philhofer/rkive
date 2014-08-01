@@ -60,3 +60,9 @@ func (n *node) Done() {
 func (n *node) Err() {
 	n.parent.err(n)
 }
+
+func (n *node) Drop() {
+	log.Printf("Closing TCP connection to %s", n.addr.String())
+	n.conn.Close()
+	n.isConnected = false
+}

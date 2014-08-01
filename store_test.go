@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewObject(t *testing.T) {
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := Dial([]Node{{"localhost:8087", 3}}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestNewObject(t *testing.T) {
 }
 
 func TestPushObject(t *testing.T) {
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := Dial([]Node{{"localhost:8087", 2}}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +95,7 @@ func TestPushObject(t *testing.T) {
 }
 
 func TestStoreObject(t *testing.T) {
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,7 +142,7 @@ func TestStoreObject(t *testing.T) {
 func BenchmarkStore(b *testing.B) {
 	b.N /= 100
 
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -170,7 +170,7 @@ func BenchmarkStore(b *testing.B) {
 func BenchmarkFetch(b *testing.B) {
 	b.N /= 100
 
-	cl, err := Dial([]string{"localhost:8087"}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		b.Fatal(err)
 	}
