@@ -60,3 +60,18 @@ func (b *Bucket) SetProperties(props *rpbc.RpbBucketProps) error {
 	_, err := b.c.req(req, 21, nil)
 	return err
 }
+
+// Reset resets the bucket's properties
+func (b *Bucket) Reset() error {
+	req := &rpbc.RpbResetBucketReq{
+		Bucket: ustr(b.nm),
+	}
+	code, err := b.c.req(req, 29, nil)
+	if err != nil {
+		return err
+	}
+	if code != 30 {
+		return ErrUnexpectedResponse
+	}
+	return nil
+}

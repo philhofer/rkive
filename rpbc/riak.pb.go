@@ -3,7 +3,7 @@
 // DO NOT EDIT!
 
 /*
-	Package riak is a generated protocol buffer package.
+	Package rpbc is a generated protocol buffer package.
 
 	It is generated from these files:
 		riak.proto
@@ -379,7 +379,7 @@ type RpbBucketProps struct {
 	Backend []byte `protobuf:"bytes,22,opt,name=backend" json:"backend,omitempty"`
 	// Used by riak_search bucket fixup
 	Search *bool                       `protobuf:"varint,23,opt,name=search" json:"search,omitempty"`
-	Repl   *RpbBucketProps_RpbReplMode `protobuf:"varint,24,opt,name=repl,enum=RpbBucketProps_RpbReplMode" json:"repl,omitempty"`
+	Repl   *RpbBucketProps_RpbReplMode `protobuf:"varint,24,opt,name=repl,enum=rpbc.RpbBucketProps_RpbReplMode" json:"repl,omitempty"`
 	// Search index
 	SearchIndex []byte `protobuf:"bytes,25,opt,name=search_index" json:"search_index,omitempty"`
 	// KV Datatypes
@@ -611,7 +611,7 @@ func (m *RpbAuthReq) GetPassword() []byte {
 }
 
 func init() {
-	proto.RegisterEnum("RpbBucketProps_RpbReplMode", RpbBucketProps_RpbReplMode_name, RpbBucketProps_RpbReplMode_value)
+	proto.RegisterEnum("rpbc.RpbBucketProps_RpbReplMode", RpbBucketProps_RpbReplMode_name, RpbBucketProps_RpbReplMode_value)
 }
 func (m *RpbErrorResp) Unmarshal(data []byte) error {
 	l := len(data)

@@ -68,8 +68,8 @@ func parseROpts(req *rpbc.RpbGetReq, opts *ReadOpts) {
 func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) error {
 	// make request object
 	req := &rpbc.RpbGetReq{
-		Bucket: ustr(bucket),
-		Key:    ustr(key),
+		Bucket: []byte(bucket),
+		Key:    []byte(key),
 	}
 	// set 500ms reqeust timeout
 	req.Timeout = &dfltreq

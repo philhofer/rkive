@@ -25,19 +25,22 @@
 ** Revision: 1.4
 */
 
-package "rpbc";
+package rpbc;
 
 import "gogo.proto";
 
-option (gogoproto.unsafe_marshaler_all) = true;
 option (gogoproto.unsafe_unmarshaler_all) = true;
-option (gogoproto.populate_all) = true;
+option (gogoproto.unsafe_marshaler_all) = true;
 option (gogoproto.equal_all) = true;
-option (gogoproto.sizer_all) = true;
 option (gogoproto.testgen_all) = true;
+option (gogoproto.populate_all) = true;
 option (gogoproto.benchgen_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_stringer_all) = true;
 
-import "riak.proto"; // for RpbPair
+
+import "riak.proto";
+
 
 // Get ClientId Request - no message defined, just send RpbGetClientIdReq message code
 message RpbGetClientIdResp {
