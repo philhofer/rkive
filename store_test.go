@@ -8,8 +8,7 @@ import (
 )
 
 func TestNewObject(t *testing.T) {
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := Dial([]Node{{"localhost:8087", 3}}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,11 +46,11 @@ func TestNewObject(t *testing.T) {
 	if ob.Info().Key() == "" {
 		t.Errorf("object didn't get assigned a key")
 	}
+	cl.Close()
 }
 
 func TestPushObject(t *testing.T) {
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := Dial([]Node{{"localhost:8087", 2}}, "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,11 +91,11 @@ func TestPushObject(t *testing.T) {
 		t.Fatalf("Expected ErrModified; got %q", err)
 	}
 
+	cl.Close()
 }
 
 func TestStoreObject(t *testing.T) {
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,13 +136,13 @@ func TestStoreObject(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	cl.Close()
 }
 
 func BenchmarkStore(b *testing.B) {
 	b.N /= 100
 
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -159,19 +158,20 @@ func BenchmarkStore(b *testing.B) {
 	}
 
 	b.ResetTimer()
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		err = cl.Store(ob, nil)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
+	cl.Close()
 }
 
 func BenchmarkFetch(b *testing.B) {
 	b.N /= 100
 
-	nconn := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconn)
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -187,6 +187,7 @@ func BenchmarkFetch(b *testing.B) {
 	}
 
 	b.ResetTimer()
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		err = cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
 		if err != nil {
@@ -194,4 +195,5 @@ func BenchmarkFetch(b *testing.B) {
 		}
 	}
 
+	cl.Close()
 }

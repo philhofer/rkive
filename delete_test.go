@@ -7,8 +7,7 @@ import (
 )
 
 func TestDelete(t *testing.T) {
-	nconns := 1
-	cl, err := NewClient("localhost:8087", "testClient", &nconns)
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,4 +31,5 @@ func TestDelete(t *testing.T) {
 	if err != ErrNotFound {
 		t.Fatalf("Expected ErrNotFound; got %s", err)
 	}
+	cl.Close()
 }
