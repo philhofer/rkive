@@ -55,6 +55,7 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	if key != nil {
 		req.Key = ustr(*key)
 		req.IfNoneMatch = &rth
+		o.Info().key = req.Key
 	}
 	// write content to request
 	err := writeContent(o, req.Content)
@@ -88,7 +89,9 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	// set data
 	o.Info().vclock = res.Vclock
 	o.Info().bucket = req.Bucket
-	o.Info().key = res.GetKey()
+	if len(res.Key) > 0 {
+		o.Info().key = res.GetKey()
+	}
 	return err
 }
 
