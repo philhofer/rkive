@@ -141,7 +141,6 @@ func TestStoreObject(t *testing.T) {
 
 func BenchmarkStore(b *testing.B) {
 	b.N /= 100
-	b.ReportAllocs()
 
 	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
@@ -159,6 +158,7 @@ func BenchmarkStore(b *testing.B) {
 	}
 
 	b.ResetTimer()
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		err = cl.Store(ob, nil)
 		if err != nil {
@@ -170,7 +170,6 @@ func BenchmarkStore(b *testing.B) {
 
 func BenchmarkFetch(b *testing.B) {
 	b.N /= 100
-	b.ReportAllocs()
 
 	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
@@ -188,6 +187,7 @@ func BenchmarkFetch(b *testing.B) {
 	}
 
 	b.ResetTimer()
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		err = cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
 		if err != nil {

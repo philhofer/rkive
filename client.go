@@ -8,13 +8,36 @@ import (
 	"github.com/philhofer/riakpb/rpbc"
 	"log"
 	"net"
+	"sync"
 	"sync/atomic"
 	"time"
 )
 
 var (
-	ErrClosing = errors.New("connection closing")
+	// ErrAck is returned when all of the connections
+	// in the connection pool are unavailable for longer
+	// than 250ms, or when the pool is closing
+	ErrAck = errors.New("connection unavailable")
+
+	bufPool *sync.Pool
 )
+
+func init() {
+	bufPool = new(sync.Pool)
+}
+
+func getBuf() *proto.Buffer {
+	pb, ok := bufPool.Get().(*proto.Buffer)
+	if !ok {
+		return proto.NewBuffer(nil)
+	}
+	pb.Reset()
+	return pb
+}
+
+func putBuf(p *proto.Buffer) {
+	bufPool.Put(p)
+}
 
 // read timeout (ms)
 const readTimeout = 1000
@@ -22,6 +45,9 @@ const readTimeout = 1000
 // write timeout (ms)
 const writeTimeout = 1000
 
+// RiakError is an error
+// returned from the Riak server
+// iteself.
 type RiakError struct {
 	res *rpbc.RpbErrorResp
 }
@@ -37,7 +63,7 @@ func (m *ErrMultipleResponses) Error() string {
 	return fmt.Sprintf("%d siblings found", len(m.Responses))
 }
 
-// Blob is a generic riak container
+// Blob is a generic riak key/value container
 type Blob struct {
 	RiakInfo *Info
 	Content  []byte
@@ -65,7 +91,7 @@ func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
 }
 
-// A Node is a Riak physical node
+// A Node is a Riak physical node.
 type Node struct {
 	Addr   string // address (e.g. 127.0.0.1:8078)
 	NConns uint   // Number of simultaneous TCP connections
@@ -122,6 +148,8 @@ func DialOne(addr string, clientID string) (*Client, error) {
 	return Dial([]Node{{Addr: addr, NConns: 1}}, clientID)
 }
 
+// Close() closes the client. This cannot
+// be reversed.
 func (c *Client) Close() {
 	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
 		return
@@ -169,7 +197,7 @@ func (c *Client) redialLoop(n *node) {
 			n.Drop()
 			return
 		}
-		log.Printf("Dial error #%d: %s", n, err)
+		log.Printf("Dial error #%d: %s", nd, err)
 		time.Sleep(3 * time.Second)
 	}
 	c.done(n)
@@ -182,14 +210,23 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	req := &rpbc.RpbSetClientIdReq{
 		ClientId: c.id,
 	}
-	bts, err := proto.Marshal(req)
+	buf := getBuf()
+	err := buf.Marshal(req)
 	if err != nil {
 		return err
 	}
-	msglen := len(bts) + 1
+	/*
+		bts, err := proto.Marshal(req)
+		if err != nil {
+			return err
+		}*/
+	msglen := len(buf.Bytes()) + 1
 	msg := make([]byte, msglen+4)
 	binary.BigEndian.PutUint32(msg, uint32(msglen))
 	msg[4] = 5 // code for RpbSetClientIdReq
+	copy(msg[5:], buf.Bytes())
+	putBuf(buf)
+	buf = nil
 	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
 	_, err = conn.Write(msg)
 	if err != nil {
@@ -202,6 +239,9 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	}
 	// expect response code 6
 	if msg[4] != 6 {
+		if msg[4] == 0 {
+			return ErrRiakError
+		}
 		return ErrUnexpectedResponse
 	}
 	return nil
@@ -290,7 +330,7 @@ func readBody(c *Client, n *node, body []byte) error {
 func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	node, ok := c.ack()
 	if !ok {
-		return nil, 0, ErrClosing
+		return nil, 0, ErrAck
 	}
 	var err error
 
@@ -307,7 +347,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 		return nil, code, err
 	}
 	if msglen > cap(msg) {
-		msg = make([]byte, int(msglen))
+		msg = make([]byte, msglen)
 	} else {
 		msg = msg[0:msglen]
 	}
@@ -327,10 +367,17 @@ exit:
 }
 
 func (c *Client) req(msg proto.Message, code byte, res proto.Message) (byte, error) {
-	bts, err := proto.Marshal(msg)
+	buf := getBuf()
+	err := buf.Marshal(msg)
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
 	}
+	/*
+		bts, err := proto.Marshal(msg)
+		if err != nil {
+			return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
+		}*/
+	bts := buf.Bytes()
 	resbts, rescode, err := c.doBuf(code, bts)
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
@@ -344,11 +391,15 @@ func (c *Client) req(msg proto.Message, code byte, res proto.Message) (byte, err
 		return 0, RiakError{res: riakerr}
 	}
 	if res != nil {
-		err = proto.Unmarshal(resbts, res)
+		obuf := getBuf()
+		obuf.SetBuf(resbts)
+		err = obuf.Unmarshal(res)
 		if err != nil {
 			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
 		}
+		putBuf(obuf)
 	}
+	putBuf(buf)
 	return rescode, err
 }
 
@@ -417,7 +468,7 @@ func (s *streamRes) close() { s.node.Done() }
 func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
 	node, ok := c.ack()
 	if !ok {
-		return nil, ErrClosing
+		return nil, ErrAck
 	}
 	msg, err := proto.Marshal(req)
 	if err != nil {
@@ -433,7 +484,7 @@ func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
 func (c *Client) Ping() error {
 	node, ok := c.ack()
 	if !ok {
-		return ErrClosing
+		return ErrAck
 	}
 	err := node.Ping()
 	if err != nil {
