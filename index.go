@@ -17,7 +17,7 @@ type IndexQueryRes struct {
 // Contains returns whether or not the query
 // response contains this particular key
 func (i *IndexQueryRes) Contains(key string) bool {
-	kb := []byte(key)
+	kb := ustr(key)
 	for _, kv := range i.keys {
 		if bytes.Equal(kv, kb) {
 			return true

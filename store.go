@@ -42,7 +42,7 @@ func parseOpts(opts *WriteOpts, req *rpbc.RpbPutReq) {
 // Riak will assign this object a key if 'key' is nil.
 func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) error {
 	req := &rpbc.RpbPutReq{
-		Bucket:  ustr(bucket),
+		Bucket:  []byte(bucket),
 		Content: new(rpbc.RpbContent),
 	}
 	// set the bucket, because the user can't

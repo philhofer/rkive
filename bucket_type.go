@@ -9,6 +9,8 @@ import (
 // *NOTE* bucket types are a Riak 2.0 feature.
 func (c *Client) GetBucketTypeProperties(typeName string) (*rpbc.RpbBucketProps, error) {
 	req := &rpbc.RpbGetBucketTypeReq{}
+	// unsafe string is allowed b/c typeName
+	// it is not referenced outside of this scope
 	req.Type = ustr(typeName)
 	res := &rpbc.RpbBucketProps{}
 	_, err := c.req(req, 31, res)

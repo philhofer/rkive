@@ -8,6 +8,9 @@ import (
 )
 
 // unsafe string-to-byte
+// only use this when 's' has the same scope
+// as the returned byte slice, and there are guarantees
+// that the slice will not be mutated.
 func ustr(s string) []byte { return *(*[]byte)(unsafe.Pointer(&s)) }
 
 // Object is the interface that must
