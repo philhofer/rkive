@@ -8,6 +8,7 @@ import (
 	"github.com/philhofer/riakpb/rpbc"
 	"log"
 	"net"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -103,6 +104,7 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 		id:    []byte(clientID),
 		dones: make(chan *node, nconns),
 		lock:  make(chan struct{}, 3),
+		wg:    new(sync.WaitGroup),
 	}
 
 	// dial up all the nodes
@@ -114,9 +116,12 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 				isConnected: false,
 				conn:        nil,
 			}
+			cl.wg.Add(1)
 			go cl.redialLoop(tnode)
 		}
 	}
+	cl.wg.Add(1)
+	go cl.pingLoop()
 	cl.dunlock()
 
 	return cl, nil
@@ -141,6 +146,7 @@ func (c *Client) Close() {
 		node.conn.Close()
 	}
 	c.dunlock()
+	c.wg.Wait()
 	return
 }
 
@@ -167,20 +173,64 @@ type Client struct {
 	id    []byte
 	dones chan *node    // holds good nodes
 	lock  chan struct{} // used as RWmutex
+	wg    *sync.WaitGroup
 }
 
 func (c *Client) redialLoop(n *node) {
-	log.Printf("Dialing TCP %s...", n.addr.String())
 	var nd int
+	if c.closed() {
+		n.Drop()
+		goto exit
+	}
+	log.Printf("Dialing TCP %s...", n.addr.String())
 	for err := n.Dial(); err != nil; nd++ {
 		if c.closed() {
 			n.Drop()
-			return
+			goto exit
 		}
 		log.Printf("Dial error #%d: %s", nd, err)
 		time.Sleep(3 * time.Second)
 	}
 	c.done(n)
+exit:
+	c.wg.Done()
+}
+
+func (c *Client) pingLoop() {
+	var node *node
+	var err error
+	var ok bool
+inspect:
+	for {
+	check:
+		if c.closed() {
+			goto exit
+		}
+		select {
+		case node, ok = <-c.dones:
+			if !ok {
+				goto exit
+			}
+			err = node.Ping()
+			if err != nil {
+				if c.closed() {
+					node.Drop()
+					goto exit
+				}
+				c.wg.Add(1)
+				go c.redialLoop(node)
+			} else {
+				c.done(node)
+				time.Sleep(2 * time.Second)
+			}
+			continue inspect
+
+		case <-time.After(1 * time.Second):
+			goto check
+		}
+	}
+exit:
+	c.wg.Done()
 }
 
 func (c *Client) writeClientID(conn *net.TCPConn) error {
@@ -258,6 +308,7 @@ func (c *Client) err(n *node) {
 	// do a quick test
 	err := n.Ping()
 	if err != nil {
+		c.wg.Add(1)
 		go c.redialLoop(n)
 		return
 	}

@@ -15,15 +15,13 @@ This client library was built with performance in mind.
 To run benchmarks, start up Riak locally and run:
 `go test -v -tags 'riak' -bench .`
 
-I get 0.44ms reads and 0.75ms writes on my laptop (Core i7 / 8GB RAM) running the eLevelDB backend.
-
 (You must be running the eLevelDB or memory backend with secondary
 indexes enabled.)
 
 Remember that TCP is a synchronous protocol, so using multiple
 TCP connections per node dramatically improves overall transaction
-throughput. In production, you would want to run about five live
-connections per node. (See: riakpb.Dial())
+throughput. In production, you would want to run *about* five live
+connections per node. (See: riakpb.Dial()) On my computer, I get 1300 writes and 2340 reads per second with one connection and 4000 writes and 7000 reads per second with 5 connections. Those numbers suggest that my computer would asymptotically approach 9000 writes and 14000 reads per second with an arbitrarily large number of connections. As always, you should benchmark on your production hardware with your specific use case. Remember, too, that Riak is specifically *not* optimized for the single-node case.
 
 ## Usage
 
