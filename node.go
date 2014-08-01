@@ -58,7 +58,7 @@ func (n *node) Done() {
 }
 
 func (n *node) Err() {
-	n.parent.err(n)
+	go n.parent.err(n)
 }
 
 func (n *node) Drop() {

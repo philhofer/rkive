@@ -19,7 +19,7 @@ import (
        "github.com/philhofer/riakpb"
 )
 
-riak, err := riakpb.NewClient("127.0.0.1", "test-Client-ID", nil)
+riak, err := riakpb.DialOne("127.0.0.1", "test-Client-ID")
 // handle err...
 
 blobs := riak.Bucket("blob_bucket")

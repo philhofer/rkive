@@ -72,7 +72,8 @@ type Node struct {
 }
 
 // Dial creates a client connected to one
-// or many Riak nodes
+// or many Riak nodes. It will try to reconnect to
+// downed nodes in the background.
 func Dial(nodes []Node, clientID string) (*Client, error) {
 
 	// count total connections
@@ -95,7 +96,7 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 		tag:   0,
 		id:    []byte(clientID),
 		dones: make(chan *node, nconns),
-		lock:  make(chan struct{}, 1),
+		lock:  make(chan struct{}, 3),
 	}
 
 	// dial up all the nodes
@@ -110,11 +111,13 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 			go cl.redialLoop(tnode)
 		}
 	}
-	cl.lock <- struct{}{}
+	cl.dunlock()
 
 	return cl, nil
 }
 
+// DialOne returns a client with one TCP connection
+// to a single Riak node.
 func DialOne(addr string, clientID string) (*Client, error) {
 	return Dial([]Node{{Addr: addr, NConns: 1}}, clientID)
 }
@@ -123,14 +126,28 @@ func (c *Client) Close() {
 	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
 		return
 	}
-	<-c.lock
+	c.dlock()
 	close(c.dones)
 	for node := range c.dones {
 		log.Printf("Closing TCP tunnel to %s", node.addr.String())
 		node.conn.Close()
 	}
-	c.lock <- struct{}{}
+	c.dunlock()
 	return
+}
+
+// lock completely
+func (c *Client) dlock() {
+	<-c.lock
+	<-c.lock
+	<-c.lock
+}
+
+// unlock completely
+func (c *Client) dunlock() {
+	c.lock <- struct{}{}
+	c.lock <- struct{}{}
+	c.lock <- struct{}{}
 }
 
 func (c *Client) closed() bool {
@@ -218,7 +235,15 @@ func (c *Client) err(n *node) {
 		n.Drop()
 		return
 	}
-	go c.redialLoop(n)
+	// do a quick test
+	err := n.Ping()
+	if err != nil {
+		go c.redialLoop(n)
+		return
+	}
+	<-c.lock
+	c.dones <- n
+	c.lock <- struct{}{}
 }
 
 func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
@@ -410,15 +435,24 @@ func (c *Client) Ping() error {
 	if !ok {
 		return ErrClosing
 	}
-	_, err := node.Write([]byte{0, 0, 0, 1, 1})
+	err := node.Ping()
+	if err != nil {
+		node.Err()
+		return err
+	}
+	node.Done()
+	return nil
+}
+
+func (n *node) Ping() error {
+	_, err := n.Write([]byte{0, 0, 0, 1, 1})
 	if err != nil {
 		return err
 	}
 	var res [5]byte
-	_, err = node.Read(res[:])
+	_, err = n.Read(res[:])
 	if err != nil {
 		return err
 	}
-	node.Done()
 	return nil
 }
