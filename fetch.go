@@ -68,8 +68,8 @@ func parseROpts(req *rpbc.RpbGetReq, opts *ReadOpts) {
 func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) error {
 	// make request object
 	req := &rpbc.RpbGetReq{
-		Bucket: []byte(bucket),
-		Key:    []byte(key),
+		Bucket: ustr(bucket),
+		Key:    ustr(key),
 	}
 	// set 500ms reqeust timeout
 	req.Timeout = &dfltreq
@@ -84,6 +84,8 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 	if rescode != 10 {
 		return ErrUnexpectedResponse
 	}
+	// this *should* be handled by req(),
+	// but just in case:
 	if len(res.GetContent()) == 0 {
 		return ErrNotFound
 	}

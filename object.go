@@ -4,7 +4,11 @@ import (
 	"bytes"
 	"github.com/philhofer/riakpb/rpbc"
 	"strconv"
+	"unsafe"
 )
+
+// unsafe string-to-byte
+func ustr(s string) []byte { return *(*[]byte)(unsafe.Pointer(&s)) }
 
 // Object is the interface that must
 // be satisfied in order to store and retrieve
@@ -217,7 +221,7 @@ func (in *Info) AddIndex(key string, value string) bool {
 // AddIndexInt sets an integer secondary index value
 // using the same conditional rules as AddIndex
 func (in *Info) AddIndexInt(key string, value int64) bool {
-	return add(&in.idxs, fmtint(key), strconv.AppendInt([]byte{}, value, 10))
+	return add(&in.idxs, fmtint(key), ustr(strconv.FormatInt(value, 10)))
 }
 
 // Set sets a key-value pair in an Indexes object
@@ -227,7 +231,7 @@ func (in *Info) SetIndex(key string, value string) {
 
 // SetIndexInt sets a integer secondary index value
 func (in *Info) SetIndexInt(key string, value int64) {
-	set(&in.idxs, fmtint(key), strconv.AppendInt([]byte{}, value, 10))
+	set(&in.idxs, fmtint(key), ustr(strconv.FormatInt(value, 10)))
 }
 
 // Get gets a key-value pair in an indexes object

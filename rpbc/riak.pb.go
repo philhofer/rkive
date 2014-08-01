@@ -3,31 +3,38 @@
 // DO NOT EDIT!
 
 /*
-Package riak is a generated protocol buffer package.
+	Package riak is a generated protocol buffer package.
 
-It is generated from these files:
-	riak.proto
+	It is generated from these files:
+		riak.proto
 
-It has these top-level messages:
-	RpbErrorResp
-	RpbGetServerInfoResp
-	RpbPair
-	RpbGetBucketReq
-	RpbGetBucketResp
-	RpbSetBucketReq
-	RpbResetBucketReq
-	RpbGetBucketTypeReq
-	RpbSetBucketTypeReq
-	RpbModFun
-	RpbCommitHook
-	RpbBucketProps
-	RpbAuthReq
+	It has these top-level messages:
+		RpbErrorResp
+		RpbGetServerInfoResp
+		RpbPair
+		RpbGetBucketReq
+		RpbGetBucketResp
+		RpbSetBucketReq
+		RpbResetBucketReq
+		RpbGetBucketTypeReq
+		RpbSetBucketTypeReq
+		RpbModFun
+		RpbCommitHook
+		RpbBucketProps
+		RpbAuthReq
 */
 package rpbc
 
 import proto "code.google.com/p/gogoprotobuf/proto"
 import json "encoding/json"
 import math "math"
+
+// discarding unused import gogoproto "gogo.pb"
+
+import io "io"
+import code_google_com_p_gogoprotobuf_proto "code.google.com/p/gogoprotobuf/proto"
+
+import bytes "bytes"
 
 // Reference proto, json, and math imports to suppress error if they are not otherwise used.
 var _ = proto.Marshal
@@ -605,4 +612,3570 @@ func (m *RpbAuthReq) GetPassword() []byte {
 
 func init() {
 	proto.RegisterEnum("RpbBucketProps_RpbReplMode", RpbBucketProps_RpbReplMode_name, RpbBucketProps_RpbReplMode_value)
+}
+func (m *RpbErrorResp) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Errmsg = append(m.Errmsg, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Errcode = &v
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbGetServerInfoResp) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Node = append(m.Node, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ServerVersion = append(m.ServerVersion, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbPair) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Key = append(m.Key, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Value = append(m.Value, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbGetBucketReq) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Bucket = append(m.Bucket, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = append(m.Type, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbGetBucketResp) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Props == nil {
+				m.Props = &RpbBucketProps{}
+			}
+			if err := m.Props.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbSetBucketReq) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Bucket = append(m.Bucket, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Props == nil {
+				m.Props = &RpbBucketProps{}
+			}
+			if err := m.Props.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		case 3:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = append(m.Type, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbResetBucketReq) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Bucket = append(m.Bucket, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = append(m.Type, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbGetBucketTypeReq) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = append(m.Type, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbSetBucketTypeReq) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Type = append(m.Type, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Props == nil {
+				m.Props = &RpbBucketProps{}
+			}
+			if err := m.Props.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbModFun) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Module = append(m.Module, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Function = append(m.Function, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbCommitHook) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Modfun == nil {
+				m.Modfun = &RpbModFun{}
+			}
+			if err := m.Modfun.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = append(m.Name, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbBucketProps) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.NVal = &v
+		case 2:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.AllowMult = &b
+		case 3:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.LastWriteWins = &b
+		case 4:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Precommit = append(m.Precommit, &RpbCommitHook{})
+			m.Precommit[len(m.Precommit)-1].Unmarshal(data[index:postIndex])
+			index = postIndex
+		case 5:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.HasPrecommit = &b
+		case 6:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Postcommit = append(m.Postcommit, &RpbCommitHook{})
+			m.Postcommit[len(m.Postcommit)-1].Unmarshal(data[index:postIndex])
+			index = postIndex
+		case 7:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.HasPostcommit = &b
+		case 8:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ChashKeyfun == nil {
+				m.ChashKeyfun = &RpbModFun{}
+			}
+			if err := m.ChashKeyfun.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		case 9:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Linkfun == nil {
+				m.Linkfun = &RpbModFun{}
+			}
+			if err := m.Linkfun.Unmarshal(data[index:postIndex]); err != nil {
+				return err
+			}
+			index = postIndex
+		case 10:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.OldVclock = &v
+		case 11:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.YoungVclock = &v
+		case 12:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.BigVclock = &v
+		case 13:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SmallVclock = &v
+		case 14:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Pr = &v
+		case 15:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.R = &v
+		case 16:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.W = &v
+		case 17:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Pw = &v
+		case 18:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Dw = &v
+		case 19:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Rw = &v
+		case 20:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.BasicQuorum = &b
+		case 21:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.NotfoundOk = &b
+		case 22:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Backend = append(m.Backend, data[index:postIndex]...)
+			index = postIndex
+		case 23:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.Search = &b
+		case 24:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v RpbBucketProps_RpbReplMode
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (RpbBucketProps_RpbReplMode(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Repl = &v
+		case 25:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SearchIndex = append(m.SearchIndex, data[index:postIndex]...)
+			index = postIndex
+		case 26:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Datatype = append(m.Datatype, data[index:postIndex]...)
+			index = postIndex
+		case 27:
+			if wireType != 0 {
+				return proto.ErrWrongType
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.Consistent = &b
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbAuthReq) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.User = append(m.User, data[index:postIndex]...)
+			index = postIndex
+		case 2:
+			if wireType != 2 {
+				return proto.ErrWrongType
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Password = append(m.Password, data[index:postIndex]...)
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (m *RpbErrorResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbErrorResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Errmsg != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Errmsg)))
+		i += copy(data[i:], m.Errmsg)
+	}
+	if m.Errcode != nil {
+		data[i] = 0x10
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.Errcode))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbGetServerInfoResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetServerInfoResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Node != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Node)))
+		i += copy(data[i:], m.Node)
+	}
+	if m.ServerVersion != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.ServerVersion)))
+		i += copy(data[i:], m.ServerVersion)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbPair) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbPair) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Key != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Value != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Value)))
+		i += copy(data[i:], m.Value)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbGetBucketReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetBucketReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Type != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbGetBucketResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetBucketResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Props != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(m.Props.Size()))
+		n1, err := m.Props.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbSetBucketReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbSetBucketReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Props != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(m.Props.Size()))
+		n2, err := m.Props.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.Type != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbResetBucketReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbResetBucketReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Type != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbGetBucketTypeReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetBucketTypeReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Type != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbSetBucketTypeReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbSetBucketTypeReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Type != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.Props != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(m.Props.Size()))
+		n3, err := m.Props.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbModFun) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbModFun) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Module != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Module)))
+		i += copy(data[i:], m.Module)
+	}
+	if m.Function != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Function)))
+		i += copy(data[i:], m.Function)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCommitHook) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCommitHook) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Modfun != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(m.Modfun.Size()))
+		n4, err := m.Modfun.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n4
+	}
+	if m.Name != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbBucketProps) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbBucketProps) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.NVal != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.NVal))
+	}
+	if m.AllowMult != nil {
+		data[i] = 0x10
+		i++
+		if *m.AllowMult {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.LastWriteWins != nil {
+		data[i] = 0x18
+		i++
+		if *m.LastWriteWins {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if len(m.Precommit) > 0 {
+		for _, msg := range m.Precommit {
+			data[i] = 0x22
+			i++
+			i = encodeVarintRiak(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.HasPrecommit != nil {
+		data[i] = 0x28
+		i++
+		if *m.HasPrecommit {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if len(m.Postcommit) > 0 {
+		for _, msg := range m.Postcommit {
+			data[i] = 0x32
+			i++
+			i = encodeVarintRiak(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.HasPostcommit != nil {
+		data[i] = 0x38
+		i++
+		if *m.HasPostcommit {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.ChashKeyfun != nil {
+		data[i] = 0x42
+		i++
+		i = encodeVarintRiak(data, i, uint64(m.ChashKeyfun.Size()))
+		n5, err := m.ChashKeyfun.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
+	}
+	if m.Linkfun != nil {
+		data[i] = 0x4a
+		i++
+		i = encodeVarintRiak(data, i, uint64(m.Linkfun.Size()))
+		n6, err := m.Linkfun.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	if m.OldVclock != nil {
+		data[i] = 0x50
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.OldVclock))
+	}
+	if m.YoungVclock != nil {
+		data[i] = 0x58
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.YoungVclock))
+	}
+	if m.BigVclock != nil {
+		data[i] = 0x60
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.BigVclock))
+	}
+	if m.SmallVclock != nil {
+		data[i] = 0x68
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.SmallVclock))
+	}
+	if m.Pr != nil {
+		data[i] = 0x70
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.Pr))
+	}
+	if m.R != nil {
+		data[i] = 0x78
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.R))
+	}
+	if m.W != nil {
+		data[i] = 0x80
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.W))
+	}
+	if m.Pw != nil {
+		data[i] = 0x88
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.Pw))
+	}
+	if m.Dw != nil {
+		data[i] = 0x90
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.Dw))
+	}
+	if m.Rw != nil {
+		data[i] = 0x98
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.Rw))
+	}
+	if m.BasicQuorum != nil {
+		data[i] = 0xa0
+		i++
+		data[i] = 0x1
+		i++
+		if *m.BasicQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NotfoundOk != nil {
+		data[i] = 0xa8
+		i++
+		data[i] = 0x1
+		i++
+		if *m.NotfoundOk {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Backend != nil {
+		data[i] = 0xb2
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Backend)))
+		i += copy(data[i:], m.Backend)
+	}
+	if m.Search != nil {
+		data[i] = 0xb8
+		i++
+		data[i] = 0x1
+		i++
+		if *m.Search {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Repl != nil {
+		data[i] = 0xc0
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(*m.Repl))
+	}
+	if m.SearchIndex != nil {
+		data[i] = 0xca
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.SearchIndex)))
+		i += copy(data[i:], m.SearchIndex)
+	}
+	if m.Datatype != nil {
+		data[i] = 0xd2
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Datatype)))
+		i += copy(data[i:], m.Datatype)
+	}
+	if m.Consistent != nil {
+		data[i] = 0xd8
+		i++
+		data[i] = 0x1
+		i++
+		if *m.Consistent {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbAuthReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbAuthReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.User != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.User)))
+		i += copy(data[i:], m.User)
+	}
+	if m.Password != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiak(data, i, uint64(len(m.Password)))
+		i += copy(data[i:], m.Password)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func encodeFixed64Riak(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32Riak(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintRiak(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
+}
+func (m *RpbErrorResp) Size() (n int) {
+	var l int
+	_ = l
+	if m.Errmsg != nil {
+		l = len(m.Errmsg)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Errcode != nil {
+		n += 1 + sovRiak(uint64(*m.Errcode))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbGetServerInfoResp) Size() (n int) {
+	var l int
+	_ = l
+	if m.Node != nil {
+		l = len(m.Node)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.ServerVersion != nil {
+		l = len(m.ServerVersion)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbPair) Size() (n int) {
+	var l int
+	_ = l
+	if m.Key != nil {
+		l = len(m.Key)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Value != nil {
+		l = len(m.Value)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbGetBucketReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		l = len(m.Bucket)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Type != nil {
+		l = len(m.Type)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbGetBucketResp) Size() (n int) {
+	var l int
+	_ = l
+	if m.Props != nil {
+		l = m.Props.Size()
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbSetBucketReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		l = len(m.Bucket)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Props != nil {
+		l = m.Props.Size()
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Type != nil {
+		l = len(m.Type)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbResetBucketReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		l = len(m.Bucket)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Type != nil {
+		l = len(m.Type)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbGetBucketTypeReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.Type != nil {
+		l = len(m.Type)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbSetBucketTypeReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.Type != nil {
+		l = len(m.Type)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Props != nil {
+		l = m.Props.Size()
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbModFun) Size() (n int) {
+	var l int
+	_ = l
+	if m.Module != nil {
+		l = len(m.Module)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Function != nil {
+		l = len(m.Function)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbCommitHook) Size() (n int) {
+	var l int
+	_ = l
+	if m.Modfun != nil {
+		l = m.Modfun.Size()
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Name != nil {
+		l = len(m.Name)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbBucketProps) Size() (n int) {
+	var l int
+	_ = l
+	if m.NVal != nil {
+		n += 1 + sovRiak(uint64(*m.NVal))
+	}
+	if m.AllowMult != nil {
+		n += 2
+	}
+	if m.LastWriteWins != nil {
+		n += 2
+	}
+	if len(m.Precommit) > 0 {
+		for _, e := range m.Precommit {
+			l = e.Size()
+			n += 1 + l + sovRiak(uint64(l))
+		}
+	}
+	if m.HasPrecommit != nil {
+		n += 2
+	}
+	if len(m.Postcommit) > 0 {
+		for _, e := range m.Postcommit {
+			l = e.Size()
+			n += 1 + l + sovRiak(uint64(l))
+		}
+	}
+	if m.HasPostcommit != nil {
+		n += 2
+	}
+	if m.ChashKeyfun != nil {
+		l = m.ChashKeyfun.Size()
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Linkfun != nil {
+		l = m.Linkfun.Size()
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.OldVclock != nil {
+		n += 1 + sovRiak(uint64(*m.OldVclock))
+	}
+	if m.YoungVclock != nil {
+		n += 1 + sovRiak(uint64(*m.YoungVclock))
+	}
+	if m.BigVclock != nil {
+		n += 1 + sovRiak(uint64(*m.BigVclock))
+	}
+	if m.SmallVclock != nil {
+		n += 1 + sovRiak(uint64(*m.SmallVclock))
+	}
+	if m.Pr != nil {
+		n += 1 + sovRiak(uint64(*m.Pr))
+	}
+	if m.R != nil {
+		n += 1 + sovRiak(uint64(*m.R))
+	}
+	if m.W != nil {
+		n += 2 + sovRiak(uint64(*m.W))
+	}
+	if m.Pw != nil {
+		n += 2 + sovRiak(uint64(*m.Pw))
+	}
+	if m.Dw != nil {
+		n += 2 + sovRiak(uint64(*m.Dw))
+	}
+	if m.Rw != nil {
+		n += 2 + sovRiak(uint64(*m.Rw))
+	}
+	if m.BasicQuorum != nil {
+		n += 3
+	}
+	if m.NotfoundOk != nil {
+		n += 3
+	}
+	if m.Backend != nil {
+		l = len(m.Backend)
+		n += 2 + l + sovRiak(uint64(l))
+	}
+	if m.Search != nil {
+		n += 3
+	}
+	if m.Repl != nil {
+		n += 2 + sovRiak(uint64(*m.Repl))
+	}
+	if m.SearchIndex != nil {
+		l = len(m.SearchIndex)
+		n += 2 + l + sovRiak(uint64(l))
+	}
+	if m.Datatype != nil {
+		l = len(m.Datatype)
+		n += 2 + l + sovRiak(uint64(l))
+	}
+	if m.Consistent != nil {
+		n += 3
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+func (m *RpbAuthReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.User != nil {
+		l = len(m.User)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.Password != nil {
+		l = len(m.Password)
+		n += 1 + l + sovRiak(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func sovRiak(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+func sozRiak(x uint64) (n int) {
+	return sovRiak(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func NewPopulatedRpbErrorResp(r randyRiak, easy bool) *RpbErrorResp {
+	this := &RpbErrorResp{}
+	v1 := r.Intn(100)
+	this.Errmsg = make([]byte, v1)
+	for i := 0; i < v1; i++ {
+		this.Errmsg[i] = byte(r.Intn(256))
+	}
+	v2 := r.Uint32()
+	this.Errcode = &v2
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbGetServerInfoResp(r randyRiak, easy bool) *RpbGetServerInfoResp {
+	this := &RpbGetServerInfoResp{}
+	if r.Intn(10) != 0 {
+		v3 := r.Intn(100)
+		this.Node = make([]byte, v3)
+		for i := 0; i < v3; i++ {
+			this.Node[i] = byte(r.Intn(256))
+		}
+	}
+	if r.Intn(10) != 0 {
+		v4 := r.Intn(100)
+		this.ServerVersion = make([]byte, v4)
+		for i := 0; i < v4; i++ {
+			this.ServerVersion[i] = byte(r.Intn(256))
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbPair(r randyRiak, easy bool) *RpbPair {
+	this := &RpbPair{}
+	v5 := r.Intn(100)
+	this.Key = make([]byte, v5)
+	for i := 0; i < v5; i++ {
+		this.Key[i] = byte(r.Intn(256))
+	}
+	if r.Intn(10) != 0 {
+		v6 := r.Intn(100)
+		this.Value = make([]byte, v6)
+		for i := 0; i < v6; i++ {
+			this.Value[i] = byte(r.Intn(256))
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbGetBucketReq(r randyRiak, easy bool) *RpbGetBucketReq {
+	this := &RpbGetBucketReq{}
+	v7 := r.Intn(100)
+	this.Bucket = make([]byte, v7)
+	for i := 0; i < v7; i++ {
+		this.Bucket[i] = byte(r.Intn(256))
+	}
+	if r.Intn(10) != 0 {
+		v8 := r.Intn(100)
+		this.Type = make([]byte, v8)
+		for i := 0; i < v8; i++ {
+			this.Type[i] = byte(r.Intn(256))
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbGetBucketResp(r randyRiak, easy bool) *RpbGetBucketResp {
+	this := &RpbGetBucketResp{}
+	this.Props = NewPopulatedRpbBucketProps(r, easy)
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 2)
+	}
+	return this
+}
+
+func NewPopulatedRpbSetBucketReq(r randyRiak, easy bool) *RpbSetBucketReq {
+	this := &RpbSetBucketReq{}
+	v9 := r.Intn(100)
+	this.Bucket = make([]byte, v9)
+	for i := 0; i < v9; i++ {
+		this.Bucket[i] = byte(r.Intn(256))
+	}
+	this.Props = NewPopulatedRpbBucketProps(r, easy)
+	if r.Intn(10) != 0 {
+		v10 := r.Intn(100)
+		this.Type = make([]byte, v10)
+		for i := 0; i < v10; i++ {
+			this.Type[i] = byte(r.Intn(256))
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 4)
+	}
+	return this
+}
+
+func NewPopulatedRpbResetBucketReq(r randyRiak, easy bool) *RpbResetBucketReq {
+	this := &RpbResetBucketReq{}
+	v11 := r.Intn(100)
+	this.Bucket = make([]byte, v11)
+	for i := 0; i < v11; i++ {
+		this.Bucket[i] = byte(r.Intn(256))
+	}
+	if r.Intn(10) != 0 {
+		v12 := r.Intn(100)
+		this.Type = make([]byte, v12)
+		for i := 0; i < v12; i++ {
+			this.Type[i] = byte(r.Intn(256))
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbGetBucketTypeReq(r randyRiak, easy bool) *RpbGetBucketTypeReq {
+	this := &RpbGetBucketTypeReq{}
+	v13 := r.Intn(100)
+	this.Type = make([]byte, v13)
+	for i := 0; i < v13; i++ {
+		this.Type[i] = byte(r.Intn(256))
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 2)
+	}
+	return this
+}
+
+func NewPopulatedRpbSetBucketTypeReq(r randyRiak, easy bool) *RpbSetBucketTypeReq {
+	this := &RpbSetBucketTypeReq{}
+	v14 := r.Intn(100)
+	this.Type = make([]byte, v14)
+	for i := 0; i < v14; i++ {
+		this.Type[i] = byte(r.Intn(256))
+	}
+	this.Props = NewPopulatedRpbBucketProps(r, easy)
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbModFun(r randyRiak, easy bool) *RpbModFun {
+	this := &RpbModFun{}
+	v15 := r.Intn(100)
+	this.Module = make([]byte, v15)
+	for i := 0; i < v15; i++ {
+		this.Module[i] = byte(r.Intn(256))
+	}
+	v16 := r.Intn(100)
+	this.Function = make([]byte, v16)
+	for i := 0; i < v16; i++ {
+		this.Function[i] = byte(r.Intn(256))
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbCommitHook(r randyRiak, easy bool) *RpbCommitHook {
+	this := &RpbCommitHook{}
+	if r.Intn(10) != 0 {
+		this.Modfun = NewPopulatedRpbModFun(r, easy)
+	}
+	if r.Intn(10) != 0 {
+		v17 := r.Intn(100)
+		this.Name = make([]byte, v17)
+		for i := 0; i < v17; i++ {
+			this.Name[i] = byte(r.Intn(256))
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+func NewPopulatedRpbBucketProps(r randyRiak, easy bool) *RpbBucketProps {
+	this := &RpbBucketProps{}
+	if r.Intn(10) != 0 {
+		v18 := r.Uint32()
+		this.NVal = &v18
+	}
+	if r.Intn(10) != 0 {
+		v19 := bool(r.Intn(2) == 0)
+		this.AllowMult = &v19
+	}
+	if r.Intn(10) != 0 {
+		v20 := bool(r.Intn(2) == 0)
+		this.LastWriteWins = &v20
+	}
+	if r.Intn(10) != 0 {
+		v21 := r.Intn(10)
+		this.Precommit = make([]*RpbCommitHook, v21)
+		for i := 0; i < v21; i++ {
+			this.Precommit[i] = NewPopulatedRpbCommitHook(r, easy)
+		}
+	}
+	if r.Intn(10) != 0 {
+		v22 := bool(r.Intn(2) == 0)
+		this.HasPrecommit = &v22
+	}
+	if r.Intn(10) != 0 {
+		v23 := r.Intn(10)
+		this.Postcommit = make([]*RpbCommitHook, v23)
+		for i := 0; i < v23; i++ {
+			this.Postcommit[i] = NewPopulatedRpbCommitHook(r, easy)
+		}
+	}
+	if r.Intn(10) != 0 {
+		v24 := bool(r.Intn(2) == 0)
+		this.HasPostcommit = &v24
+	}
+	if r.Intn(10) != 0 {
+		this.ChashKeyfun = NewPopulatedRpbModFun(r, easy)
+	}
+	if r.Intn(10) != 0 {
+		this.Linkfun = NewPopulatedRpbModFun(r, easy)
+	}
+	if r.Intn(10) != 0 {
+		v25 := r.Uint32()
+		this.OldVclock = &v25
+	}
+	if r.Intn(10) != 0 {
+		v26 := r.Uint32()
+		this.YoungVclock = &v26
+	}
+	if r.Intn(10) != 0 {
+		v27 := r.Uint32()
+		this.BigVclock = &v27
+	}
+	if r.Intn(10) != 0 {
+		v28 := r.Uint32()
+		this.SmallVclock = &v28
+	}
+	if r.Intn(10) != 0 {
+		v29 := r.Uint32()
+		this.Pr = &v29
+	}
+	if r.Intn(10) != 0 {
+		v30 := r.Uint32()
+		this.R = &v30
+	}
+	if r.Intn(10) != 0 {
+		v31 := r.Uint32()
+		this.W = &v31
+	}
+	if r.Intn(10) != 0 {
+		v32 := r.Uint32()
+		this.Pw = &v32
+	}
+	if r.Intn(10) != 0 {
+		v33 := r.Uint32()
+		this.Dw = &v33
+	}
+	if r.Intn(10) != 0 {
+		v34 := r.Uint32()
+		this.Rw = &v34
+	}
+	if r.Intn(10) != 0 {
+		v35 := bool(r.Intn(2) == 0)
+		this.BasicQuorum = &v35
+	}
+	if r.Intn(10) != 0 {
+		v36 := bool(r.Intn(2) == 0)
+		this.NotfoundOk = &v36
+	}
+	if r.Intn(10) != 0 {
+		v37 := r.Intn(100)
+		this.Backend = make([]byte, v37)
+		for i := 0; i < v37; i++ {
+			this.Backend[i] = byte(r.Intn(256))
+		}
+	}
+	if r.Intn(10) != 0 {
+		v38 := bool(r.Intn(2) == 0)
+		this.Search = &v38
+	}
+	if r.Intn(10) != 0 {
+		v39 := RpbBucketProps_RpbReplMode([]int32{0, 1, 2, 3}[r.Intn(4)])
+		this.Repl = &v39
+	}
+	if r.Intn(10) != 0 {
+		v40 := r.Intn(100)
+		this.SearchIndex = make([]byte, v40)
+		for i := 0; i < v40; i++ {
+			this.SearchIndex[i] = byte(r.Intn(256))
+		}
+	}
+	if r.Intn(10) != 0 {
+		v41 := r.Intn(100)
+		this.Datatype = make([]byte, v41)
+		for i := 0; i < v41; i++ {
+			this.Datatype[i] = byte(r.Intn(256))
+		}
+	}
+	if r.Intn(10) != 0 {
+		v42 := bool(r.Intn(2) == 0)
+		this.Consistent = &v42
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 28)
+	}
+	return this
+}
+
+func NewPopulatedRpbAuthReq(r randyRiak, easy bool) *RpbAuthReq {
+	this := &RpbAuthReq{}
+	v43 := r.Intn(100)
+	this.User = make([]byte, v43)
+	for i := 0; i < v43; i++ {
+		this.User[i] = byte(r.Intn(256))
+	}
+	v44 := r.Intn(100)
+	this.Password = make([]byte, v44)
+	for i := 0; i < v44; i++ {
+		this.Password[i] = byte(r.Intn(256))
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedRiak(r, 3)
+	}
+	return this
+}
+
+type randyRiak interface {
+	Float32() float32
+	Float64() float64
+	Int63() int64
+	Int31() int32
+	Uint32() uint32
+	Intn(n int) int
+}
+
+func randUTF8RuneRiak(r randyRiak) rune {
+	res := rune(r.Uint32() % 1112064)
+	if 55296 <= res {
+		res += 2047
+	}
+	return res
+}
+func randStringRiak(r randyRiak) string {
+	v45 := r.Intn(100)
+	tmps := make([]rune, v45)
+	for i := 0; i < v45; i++ {
+		tmps[i] = randUTF8RuneRiak(r)
+	}
+	return string(tmps)
+}
+func randUnrecognizedRiak(r randyRiak, maxFieldNumber int) (data []byte) {
+	l := r.Intn(5)
+	for i := 0; i < l; i++ {
+		wire := r.Intn(4)
+		if wire == 3 {
+			wire = 5
+		}
+		fieldNumber := maxFieldNumber + r.Intn(100)
+		data = randFieldRiak(data, r, fieldNumber, wire)
+	}
+	return data
+}
+func randFieldRiak(data []byte, r randyRiak, fieldNumber int, wire int) []byte {
+	key := uint32(fieldNumber)<<3 | uint32(wire)
+	switch wire {
+	case 0:
+		data = encodeVarintPopulateRiak(data, uint64(key))
+		v46 := r.Int63()
+		if r.Intn(2) == 0 {
+			v46 *= -1
+		}
+		data = encodeVarintPopulateRiak(data, uint64(v46))
+	case 1:
+		data = encodeVarintPopulateRiak(data, uint64(key))
+		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
+	case 2:
+		data = encodeVarintPopulateRiak(data, uint64(key))
+		ll := r.Intn(100)
+		data = encodeVarintPopulateRiak(data, uint64(ll))
+		for j := 0; j < ll; j++ {
+			data = append(data, byte(r.Intn(256)))
+		}
+	default:
+		data = encodeVarintPopulateRiak(data, uint64(key))
+		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
+	}
+	return data
+}
+func encodeVarintPopulateRiak(data []byte, v uint64) []byte {
+	for v >= 1<<7 {
+		data = append(data, uint8(uint64(v)&0x7f|0x80))
+		v >>= 7
+	}
+	data = append(data, uint8(v))
+	return data
+}
+func (this *RpbErrorResp) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbErrorResp)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Errmsg, that1.Errmsg) {
+		return false
+	}
+	if this.Errcode != nil && that1.Errcode != nil {
+		if *this.Errcode != *that1.Errcode {
+			return false
+		}
+	} else if this.Errcode != nil {
+		return false
+	} else if that1.Errcode != nil {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbGetServerInfoResp) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbGetServerInfoResp)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Node, that1.Node) {
+		return false
+	}
+	if !bytes.Equal(this.ServerVersion, that1.ServerVersion) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbPair) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbPair)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Key, that1.Key) {
+		return false
+	}
+	if !bytes.Equal(this.Value, that1.Value) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbGetBucketReq) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbGetBucketReq)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Bucket, that1.Bucket) {
+		return false
+	}
+	if !bytes.Equal(this.Type, that1.Type) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbGetBucketResp) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbGetBucketResp)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Props.Equal(that1.Props) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbSetBucketReq) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbSetBucketReq)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Bucket, that1.Bucket) {
+		return false
+	}
+	if !this.Props.Equal(that1.Props) {
+		return false
+	}
+	if !bytes.Equal(this.Type, that1.Type) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbResetBucketReq) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbResetBucketReq)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Bucket, that1.Bucket) {
+		return false
+	}
+	if !bytes.Equal(this.Type, that1.Type) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbGetBucketTypeReq) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbGetBucketTypeReq)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Type, that1.Type) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbSetBucketTypeReq) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbSetBucketTypeReq)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Type, that1.Type) {
+		return false
+	}
+	if !this.Props.Equal(that1.Props) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbModFun) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbModFun)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Module, that1.Module) {
+		return false
+	}
+	if !bytes.Equal(this.Function, that1.Function) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbCommitHook) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbCommitHook)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Modfun.Equal(that1.Modfun) {
+		return false
+	}
+	if !bytes.Equal(this.Name, that1.Name) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbBucketProps) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbBucketProps)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.NVal != nil && that1.NVal != nil {
+		if *this.NVal != *that1.NVal {
+			return false
+		}
+	} else if this.NVal != nil {
+		return false
+	} else if that1.NVal != nil {
+		return false
+	}
+	if this.AllowMult != nil && that1.AllowMult != nil {
+		if *this.AllowMult != *that1.AllowMult {
+			return false
+		}
+	} else if this.AllowMult != nil {
+		return false
+	} else if that1.AllowMult != nil {
+		return false
+	}
+	if this.LastWriteWins != nil && that1.LastWriteWins != nil {
+		if *this.LastWriteWins != *that1.LastWriteWins {
+			return false
+		}
+	} else if this.LastWriteWins != nil {
+		return false
+	} else if that1.LastWriteWins != nil {
+		return false
+	}
+	if len(this.Precommit) != len(that1.Precommit) {
+		return false
+	}
+	for i := range this.Precommit {
+		if !this.Precommit[i].Equal(that1.Precommit[i]) {
+			return false
+		}
+	}
+	if this.HasPrecommit != nil && that1.HasPrecommit != nil {
+		if *this.HasPrecommit != *that1.HasPrecommit {
+			return false
+		}
+	} else if this.HasPrecommit != nil {
+		return false
+	} else if that1.HasPrecommit != nil {
+		return false
+	}
+	if len(this.Postcommit) != len(that1.Postcommit) {
+		return false
+	}
+	for i := range this.Postcommit {
+		if !this.Postcommit[i].Equal(that1.Postcommit[i]) {
+			return false
+		}
+	}
+	if this.HasPostcommit != nil && that1.HasPostcommit != nil {
+		if *this.HasPostcommit != *that1.HasPostcommit {
+			return false
+		}
+	} else if this.HasPostcommit != nil {
+		return false
+	} else if that1.HasPostcommit != nil {
+		return false
+	}
+	if !this.ChashKeyfun.Equal(that1.ChashKeyfun) {
+		return false
+	}
+	if !this.Linkfun.Equal(that1.Linkfun) {
+		return false
+	}
+	if this.OldVclock != nil && that1.OldVclock != nil {
+		if *this.OldVclock != *that1.OldVclock {
+			return false
+		}
+	} else if this.OldVclock != nil {
+		return false
+	} else if that1.OldVclock != nil {
+		return false
+	}
+	if this.YoungVclock != nil && that1.YoungVclock != nil {
+		if *this.YoungVclock != *that1.YoungVclock {
+			return false
+		}
+	} else if this.YoungVclock != nil {
+		return false
+	} else if that1.YoungVclock != nil {
+		return false
+	}
+	if this.BigVclock != nil && that1.BigVclock != nil {
+		if *this.BigVclock != *that1.BigVclock {
+			return false
+		}
+	} else if this.BigVclock != nil {
+		return false
+	} else if that1.BigVclock != nil {
+		return false
+	}
+	if this.SmallVclock != nil && that1.SmallVclock != nil {
+		if *this.SmallVclock != *that1.SmallVclock {
+			return false
+		}
+	} else if this.SmallVclock != nil {
+		return false
+	} else if that1.SmallVclock != nil {
+		return false
+	}
+	if this.Pr != nil && that1.Pr != nil {
+		if *this.Pr != *that1.Pr {
+			return false
+		}
+	} else if this.Pr != nil {
+		return false
+	} else if that1.Pr != nil {
+		return false
+	}
+	if this.R != nil && that1.R != nil {
+		if *this.R != *that1.R {
+			return false
+		}
+	} else if this.R != nil {
+		return false
+	} else if that1.R != nil {
+		return false
+	}
+	if this.W != nil && that1.W != nil {
+		if *this.W != *that1.W {
+			return false
+		}
+	} else if this.W != nil {
+		return false
+	} else if that1.W != nil {
+		return false
+	}
+	if this.Pw != nil && that1.Pw != nil {
+		if *this.Pw != *that1.Pw {
+			return false
+		}
+	} else if this.Pw != nil {
+		return false
+	} else if that1.Pw != nil {
+		return false
+	}
+	if this.Dw != nil && that1.Dw != nil {
+		if *this.Dw != *that1.Dw {
+			return false
+		}
+	} else if this.Dw != nil {
+		return false
+	} else if that1.Dw != nil {
+		return false
+	}
+	if this.Rw != nil && that1.Rw != nil {
+		if *this.Rw != *that1.Rw {
+			return false
+		}
+	} else if this.Rw != nil {
+		return false
+	} else if that1.Rw != nil {
+		return false
+	}
+	if this.BasicQuorum != nil && that1.BasicQuorum != nil {
+		if *this.BasicQuorum != *that1.BasicQuorum {
+			return false
+		}
+	} else if this.BasicQuorum != nil {
+		return false
+	} else if that1.BasicQuorum != nil {
+		return false
+	}
+	if this.NotfoundOk != nil && that1.NotfoundOk != nil {
+		if *this.NotfoundOk != *that1.NotfoundOk {
+			return false
+		}
+	} else if this.NotfoundOk != nil {
+		return false
+	} else if that1.NotfoundOk != nil {
+		return false
+	}
+	if !bytes.Equal(this.Backend, that1.Backend) {
+		return false
+	}
+	if this.Search != nil && that1.Search != nil {
+		if *this.Search != *that1.Search {
+			return false
+		}
+	} else if this.Search != nil {
+		return false
+	} else if that1.Search != nil {
+		return false
+	}
+	if this.Repl != nil && that1.Repl != nil {
+		if *this.Repl != *that1.Repl {
+			return false
+		}
+	} else if this.Repl != nil {
+		return false
+	} else if that1.Repl != nil {
+		return false
+	}
+	if !bytes.Equal(this.SearchIndex, that1.SearchIndex) {
+		return false
+	}
+	if !bytes.Equal(this.Datatype, that1.Datatype) {
+		return false
+	}
+	if this.Consistent != nil && that1.Consistent != nil {
+		if *this.Consistent != *that1.Consistent {
+			return false
+		}
+	} else if this.Consistent != nil {
+		return false
+	} else if that1.Consistent != nil {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
+}
+func (this *RpbAuthReq) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*RpbAuthReq)
+	if !ok {
+		return false
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.User, that1.User) {
+		return false
+	}
+	if !bytes.Equal(this.Password, that1.Password) {
+		return false
+	}
+	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+		return false
+	}
+	return true
 }

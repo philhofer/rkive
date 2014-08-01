@@ -8,7 +8,6 @@ import (
 	"github.com/philhofer/riakpb/rpbc"
 	"log"
 	"net"
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -18,26 +17,7 @@ var (
 	// in the connection pool are unavailable for longer
 	// than 250ms, or when the pool is closing
 	ErrAck = errors.New("connection unavailable")
-
-	bufPool *sync.Pool
 )
-
-func init() {
-	bufPool = new(sync.Pool)
-}
-
-func getBuf() *proto.Buffer {
-	pb, ok := bufPool.Get().(*proto.Buffer)
-	if !ok {
-		return proto.NewBuffer(nil)
-	}
-	pb.Reset()
-	return pb
-}
-
-func putBuf(p *proto.Buffer) {
-	bufPool.Put(p)
-}
 
 // read timeout (ms)
 const readTimeout = 1000
@@ -210,8 +190,10 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	req := &rpbc.RpbSetClientIdReq{
 		ClientId: c.id,
 	}
-	buf := getBuf()
-	err := buf.Marshal(req)
+	/*
+		buf := getBuf()
+		err := buf.Marshal(req)*/
+	bts, err := req.Marshal()
 	if err != nil {
 		return err
 	}
@@ -220,13 +202,11 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 		if err != nil {
 			return err
 		}*/
-	msglen := len(buf.Bytes()) + 1
+	msglen := len(bts) + 1
 	msg := make([]byte, msglen+4)
 	binary.BigEndian.PutUint32(msg, uint32(msglen))
 	msg[4] = 5 // code for RpbSetClientIdReq
-	copy(msg[5:], buf.Bytes())
-	putBuf(buf)
-	buf = nil
+	copy(msg[5:], bts)
 	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
 	_, err = conn.Write(msg)
 	if err != nil {
@@ -286,6 +266,10 @@ func (c *Client) err(n *node) {
 	c.lock <- struct{}{}
 }
 
+// writes the message to the node with
+// the appropriate leading message size
+// and the given message code, returning
+// the extended []byte
 func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
 	// bigendian length + code byte
 	var lead [5]byte
@@ -293,6 +277,9 @@ func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
 	msglen := uint32(len(msg) + 1)
 	binary.BigEndian.PutUint32(lead[:4], msglen)
 	lead[4] = code
+
+	// if msg is large enough, shift
+	// otherwise, append
 	msg = append(lead[:], msg...)
 
 	// send the message
@@ -304,6 +291,7 @@ func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
 	return msg, nil
 }
 
+// readLead reads the size of the inbound message
 func readLead(c *Client, n *node) (int, byte, error) {
 	var lead [5]byte
 	_, err := n.Read(lead[:])
@@ -316,6 +304,8 @@ func readLead(c *Client, n *node) (int, byte, error) {
 	return int(msglen), rescode, nil
 }
 
+// readBody reads from the node into 'body'
+// body should be sized by the result from readLead
 func readBody(c *Client, n *node, body []byte) error {
 	_, err := n.Read(body)
 	if err != nil {
@@ -346,13 +336,16 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	if err != nil {
 		return nil, code, err
 	}
+	if msglen == 0 { // no response body
+		msg = msg[0:0] // mark empty (necessary for ErrNotFound)
+		goto exit
+	}
+	// no alloc if response is smaller
+	// than request
 	if msglen > cap(msg) {
 		msg = make([]byte, msglen)
 	} else {
 		msg = msg[0:msglen]
-	}
-	if msglen == 0 {
-		goto exit
 	}
 
 	// read body
@@ -366,45 +359,40 @@ exit:
 	return msg, code, nil
 }
 
-func (c *Client) req(msg proto.Message, code byte, res proto.Message) (byte, error) {
-	buf := getBuf()
-	err := buf.Marshal(msg)
+func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byte, error) {
+	bts, err := msg.Marshal()
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
 	}
-	/*
-		bts, err := proto.Marshal(msg)
-		if err != nil {
-			return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
-		}*/
-	bts := buf.Bytes()
 	resbts, rescode, err := c.doBuf(code, bts)
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
 	}
 	if rescode == 0 {
 		riakerr := new(rpbc.RpbErrorResp)
-		err = proto.Unmarshal(resbts, riakerr)
+		err = riakerr.Unmarshal(resbts)
+		//err = proto.Unmarshal(resbts, riakerr)
 		if err != nil {
 			return 0, err
 		}
 		return 0, RiakError{res: riakerr}
 	}
 	if res != nil {
-		obuf := getBuf()
-		obuf.SetBuf(resbts)
-		err = obuf.Unmarshal(res)
+		// expected response body,
+		// but we got none
+		if len(resbts) == 0 {
+			return 0, ErrNotFound
+		}
+		err = res.Unmarshal(resbts)
 		if err != nil {
 			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
 		}
-		putBuf(obuf)
 	}
-	putBuf(buf)
 	return rescode, err
 }
 
 type protoStream interface {
-	proto.Message
+	proto.Unmarshaler
 	GetDone() bool
 }
 
@@ -433,6 +421,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		s.bts = s.bts[0:msglen]
 	}
 
+	// read into s.bts
 	err = readBody(s.c, s.node, s.bts)
 	if err != nil {
 		return true, code, err
@@ -443,14 +432,17 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		s.close()
 
 		riakerr := new(rpbc.RpbErrorResp)
-		err = proto.Unmarshal(s.bts, riakerr)
+		//err = buf.Unmarshal(riakerr)
+		//putBuf(buf)
+		//err = proto.Unmarshal(s.bts, riakerr)
+		err = riakerr.Unmarshal(s.bts)
 		if err != nil {
 			return true, 0, err
 		}
 		return true, 0, RiakError{res: riakerr}
 	}
 
-	err = proto.Unmarshal(s.bts, res)
+	err = res.Unmarshal(s.bts)
 	if err != nil {
 		s.close()
 		return true, code, err
@@ -465,16 +457,24 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 // return the connection to the client
 func (s *streamRes) close() { s.node.Done() }
 
-func (c *Client) streamReq(req proto.Message, code byte) (*streamRes, error) {
+func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
+	//buf := getBuf()
+	//err := buf.Marshal(req)
+	bts, err := req.Marshal()
+	if err != nil {
+		return nil, err
+	}
 	node, ok := c.ack()
 	if !ok {
 		return nil, ErrAck
 	}
-	msg, err := proto.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-	msg, err = writeMsg(c, node, msg, code)
+
+	//msg, err := proto.Marshal(req)
+	//if err != nil {
+	//	return nil, err
+	//}
+	var msg []byte
+	msg, err = writeMsg(c, node, bts, code)
 	if err != nil {
 		return nil, err
 	}
