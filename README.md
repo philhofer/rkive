@@ -1,4 +1,4 @@
-Riak (protocol buffers) Client for Go
+Riak (protocol buffers) Client for Go [![docs examples](https://sourcegraph.com/api/repos/github.com/philhofer/riakpb/.badges/docs-examples.png)](https://sourcegraph.com/github.com/philhofer/riakpb) [![dependencies](https://sourcegraph.com/api/repos/github.com/philhofer/riakpb/.badges/dependencies.png)](https://sourcegraph.com/github.com/philhofer/riakpb)
 ================
 
 A Riak client that doesn't use `interface{}`, but does use protocol buffers over
