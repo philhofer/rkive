@@ -3,7 +3,7 @@
 // DO NOT EDIT!
 
 /*
-Package riak_kv is a generated protocol buffer package.
+Package rpbc is a generated protocol buffer package.
 
 It is generated from these files:
 	riak_kv.proto

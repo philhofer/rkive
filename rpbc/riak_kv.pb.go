@@ -3,7 +3,7 @@
 // DO NOT EDIT!
 
 /*
-	Package riak_kv is a generated protocol buffer package.
+	Package rpbc is a generated protocol buffer package.
 
 	It is generated from these files:
 		riak_kv.proto
@@ -730,7 +730,7 @@ func (m *RpbMapRedResp) GetDone() bool {
 type RpbIndexReq struct {
 	Bucket       []byte                      `protobuf:"bytes,1,req,name=bucket" json:"bucket,omitempty"`
 	Index        []byte                      `protobuf:"bytes,2,req,name=index" json:"index,omitempty"`
-	Qtype        *RpbIndexReq_IndexQueryType `protobuf:"varint,3,req,name=qtype,enum=RpbIndexReq_IndexQueryType" json:"qtype,omitempty"`
+	Qtype        *RpbIndexReq_IndexQueryType `protobuf:"varint,3,req,name=qtype,enum=rpbc.RpbIndexReq_IndexQueryType" json:"qtype,omitempty"`
 	Key          []byte                      `protobuf:"bytes,4,opt,name=key" json:"key,omitempty"`
 	RangeMin     []byte                      `protobuf:"bytes,5,opt,name=range_min" json:"range_min,omitempty"`
 	RangeMax     []byte                      `protobuf:"bytes,6,opt,name=range_max" json:"range_max,omitempty"`
@@ -1320,7 +1320,7 @@ func (m *RpbCounterGetResp) GetValue() int64 {
 }
 
 func init() {
-	proto.RegisterEnum("RpbIndexReq_IndexQueryType", RpbIndexReq_IndexQueryType_name, RpbIndexReq_IndexQueryType_value)
+	proto.RegisterEnum("rpbc.RpbIndexReq_IndexQueryType", RpbIndexReq_IndexQueryType_name, RpbIndexReq_IndexQueryType_value)
 }
 func (m *RpbGetClientIdResp) Unmarshal(data []byte) error {
 	l := len(data)
