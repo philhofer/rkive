@@ -136,7 +136,7 @@ func (c *Client) Close() {
 	return
 }
 
-// lock completely
+// lock completely (for closing)
 func (c *Client) dlock() {
 	<-c.lock
 	<-c.lock
@@ -157,8 +157,8 @@ func (c *Client) closed() bool {
 type Client struct {
 	tag   int64
 	id    []byte
-	dones chan *node // holds good nodes
-	lock  chan struct{}
+	dones chan *node    // holds good nodes
+	lock  chan struct{} // used as RWmutex
 }
 
 func (c *Client) redialLoop(n *node) {
