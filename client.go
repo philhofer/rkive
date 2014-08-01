@@ -8,7 +8,6 @@ import (
 	"github.com/philhofer/riakpb/rpbc"
 	"log"
 	"net"
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -18,30 +17,7 @@ var (
 	// in the connection pool are unavailable for longer
 	// than 250ms, or when the pool is closing
 	ErrAck = errors.New("connection unavailable")
-
-	// free list of
-	// proto.Buffers
-	bufPool *sync.Pool
 )
-
-func init() {
-	bufPool = new(sync.Pool)
-}
-
-/*
-func getBuf() *proto.Buffer {
-	pb, ok := bufPool.Get().(*proto.Buffer)
-	if !ok {
-		return proto.NewBuffer(nil)
-	}
-	pb.Reset()
-	return pb
-}
-
-func putBuf(p *proto.Buffer) {
-	bufPool.Put(p)
-}
-*/
 
 // read timeout (ms)
 const readTimeout = 1000
