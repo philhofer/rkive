@@ -37,11 +37,7 @@ func (b *buf) Set(p protom) error {
 }
 
 func getBuf() *buf {
-	b, ok := bufPool.Get().(*buf)
-	if !ok {
-		return new(buf)
-	}
-	return b
+	return bufPool.Get().(*buf)
 }
 
 func putBuf(b *buf) { bufPool.Put(b) }
