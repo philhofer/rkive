@@ -23,6 +23,7 @@ type protom interface {
 	Size() int
 }
 
+// opportunistic MarshalTo
 func (b *buf) Set(p protom) error {
 	sz := p.Size()
 	var err error
