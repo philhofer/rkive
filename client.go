@@ -313,30 +313,27 @@ func (c *Client) err(n *node) {
 // the appropriate leading message size
 // and the given message code, returning
 // the extended []byte
-func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
+func writeMsg(c *Client, n *node, msg []byte, code byte) error {
 	// bigendian length + code byte
 	var lead [5]byte
-
 	msglen := uint32(len(msg) + 1)
 	binary.BigEndian.PutUint32(lead[:4], msglen)
 	lead[4] = code
 
-	// keep this on the stack!
+	// keep this on the stack -
+	// don't allocate just for the
+	// five byte frame
 	mbd := make([]byte, len(msg)+5)
 	copy(mbd, lead[:])
 	copy(mbd[5:], msg)
-
-	// if msg is large enough, shift
-	// otherwise, append
-	// OLD msg = append(lead[:], msg...)
 
 	// send the message
 	_, err := n.Write(mbd)
 	if err != nil {
 		n.Err()
-		return msg, err
+		return err
 	}
-	return msg, nil
+	return nil
 }
 
 // readLead reads the size of the inbound message
@@ -372,7 +369,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 	var err error
 
-	msg, err = writeMsg(c, node, msg, code)
+	err = writeMsg(c, node, msg, code)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -506,7 +503,6 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 func (s *streamRes) close() { s.node.Done() }
 
 func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
-
 	bts, err := req.Marshal()
 	if err != nil {
 		return nil, err
@@ -516,12 +512,11 @@ func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
 		return nil, ErrAck
 	}
 
-	var msg []byte
-	msg, err = writeMsg(c, node, bts, code)
+	err = writeMsg(c, node, bts, code)
 	if err != nil {
 		return nil, err
 	}
-	return &streamRes{c: c, node: node, bts: msg}, nil
+	return &streamRes{c: c, node: node, bts: bts}, nil
 }
 
 func (c *Client) Ping() error {
