@@ -240,18 +240,10 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	req := &rpbc.RpbSetClientIdReq{
 		ClientId: c.id,
 	}
-	/*
-		buf := getBuf()
-		err := buf.Marshal(req)*/
 	bts, err := req.Marshal()
 	if err != nil {
 		return err
 	}
-	/*
-		bts, err := proto.Marshal(req)
-		if err != nil {
-			return err
-		}*/
 	msglen := len(bts) + 1
 	msg := make([]byte, msglen+4)
 	binary.BigEndian.PutUint32(msg, uint32(msglen))
@@ -410,12 +402,14 @@ exit:
 	return msg, code, nil
 }
 
-func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byte, error) {
-	bts, err := msg.Marshal()
+func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error) {
+	buf := getBuf() // maybe we've already
+	err := buf.Set(msg)
+	//bts, err := msg.Marshal()
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
 	}
-	resbts, rescode, err := c.doBuf(code, bts)
+	resbts, rescode, err := c.doBuf(code, buf.Body)
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
 	}
@@ -423,6 +417,7 @@ func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byt
 		riakerr := new(rpbc.RpbErrorResp)
 		err = riakerr.Unmarshal(resbts)
 		//err = proto.Unmarshal(resbts, riakerr)
+		putBuf(buf)
 		if err != nil {
 			return 0, err
 		}
@@ -439,6 +434,7 @@ func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byt
 			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
 		}
 	}
+	putBuf(buf) // save the bytes we allocated
 	return rescode, err
 }
 
