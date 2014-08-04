@@ -321,12 +321,17 @@ func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
 	binary.BigEndian.PutUint32(lead[:4], msglen)
 	lead[4] = code
 
+	// keep this on the stack!
+	mbd := make([]byte, len(msg)+5)
+	copy(mbd, lead[:])
+	copy(mbd[5:], msg)
+
 	// if msg is large enough, shift
 	// otherwise, append
-	msg = append(lead[:], msg...)
+	// OLD msg = append(lead[:], msg...)
 
 	// send the message
-	_, err := n.Write(msg)
+	_, err := n.Write(mbd)
 	if err != nil {
 		n.Err()
 		return msg, err
@@ -478,9 +483,6 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		s.close()
 
 		riakerr := new(rpbc.RpbErrorResp)
-		//err = buf.Unmarshal(riakerr)
-		//putBuf(buf)
-		//err = proto.Unmarshal(s.bts, riakerr)
 		err = riakerr.Unmarshal(s.bts)
 		if err != nil {
 			return true, 0, err
@@ -504,8 +506,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 func (s *streamRes) close() { s.node.Done() }
 
 func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
-	//buf := getBuf()
-	//err := buf.Marshal(req)
+
 	bts, err := req.Marshal()
 	if err != nil {
 		return nil, err
@@ -515,10 +516,6 @@ func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
 		return nil, ErrAck
 	}
 
-	//msg, err := proto.Marshal(req)
-	//if err != nil {
-	//	return nil, err
-	//}
 	var msg []byte
 	msg, err = writeMsg(c, node, bts, code)
 	if err != nil {
