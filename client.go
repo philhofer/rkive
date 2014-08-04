@@ -403,20 +403,19 @@ exit:
 }
 
 func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error) {
-	buf := getBuf() // maybe we've already
+	buf := getBuf() // maybe we've already allocated
 	err := buf.Set(msg)
-	//bts, err := msg.Marshal()
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
 	}
 	resbts, rescode, err := c.doBuf(code, buf.Body)
+	buf.Body = resbts // save the largest-cap byte slice
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
 	}
 	if rescode == 0 {
 		riakerr := new(rpbc.RpbErrorResp)
 		err = riakerr.Unmarshal(resbts)
-		//err = proto.Unmarshal(resbts, riakerr)
 		putBuf(buf)
 		if err != nil {
 			return 0, err
