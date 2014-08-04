@@ -240,18 +240,10 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	req := &rpbc.RpbSetClientIdReq{
 		ClientId: c.id,
 	}
-	/*
-		buf := getBuf()
-		err := buf.Marshal(req)*/
 	bts, err := req.Marshal()
 	if err != nil {
 		return err
 	}
-	/*
-		bts, err := proto.Marshal(req)
-		if err != nil {
-			return err
-		}*/
 	msglen := len(bts) + 1
 	msg := make([]byte, msglen+4)
 	binary.BigEndian.PutUint32(msg, uint32(msglen))
@@ -321,25 +313,27 @@ func (c *Client) err(n *node) {
 // the appropriate leading message size
 // and the given message code, returning
 // the extended []byte
-func writeMsg(c *Client, n *node, msg []byte, code byte) ([]byte, error) {
+func writeMsg(c *Client, n *node, msg []byte, code byte) error {
 	// bigendian length + code byte
 	var lead [5]byte
-
 	msglen := uint32(len(msg) + 1)
 	binary.BigEndian.PutUint32(lead[:4], msglen)
 	lead[4] = code
 
-	// if msg is large enough, shift
-	// otherwise, append
-	msg = append(lead[:], msg...)
+	// keep this on the stack -
+	// don't allocate just for the
+	// five byte frame
+	mbd := make([]byte, len(msg)+5)
+	copy(mbd, lead[:])
+	copy(mbd[5:], msg)
 
 	// send the message
-	_, err := n.Write(msg)
+	_, err := n.Write(mbd)
 	if err != nil {
 		n.Err()
-		return msg, err
+		return err
 	}
-	return msg, nil
+	return nil
 }
 
 // readLead reads the size of the inbound message
@@ -375,7 +369,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 	var err error
 
-	msg, err = writeMsg(c, node, msg, code)
+	err = writeMsg(c, node, msg, code)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -410,19 +404,21 @@ exit:
 	return msg, code, nil
 }
 
-func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byte, error) {
-	bts, err := msg.Marshal()
+func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error) {
+	buf := getBuf() // maybe we've already allocated
+	err := buf.Set(msg)
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
 	}
-	resbts, rescode, err := c.doBuf(code, bts)
+	resbts, rescode, err := c.doBuf(code, buf.Body)
+	buf.Body = resbts // save the largest-cap byte slice
 	if err != nil {
 		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
 	}
 	if rescode == 0 {
 		riakerr := new(rpbc.RpbErrorResp)
 		err = riakerr.Unmarshal(resbts)
-		//err = proto.Unmarshal(resbts, riakerr)
+		putBuf(buf)
 		if err != nil {
 			return 0, err
 		}
@@ -439,6 +435,7 @@ func (c *Client) req(msg proto.Marshaler, code byte, res proto.Unmarshaler) (byt
 			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
 		}
 	}
+	putBuf(buf) // save the bytes we allocated
 	return rescode, err
 }
 
@@ -483,9 +480,6 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		s.close()
 
 		riakerr := new(rpbc.RpbErrorResp)
-		//err = buf.Unmarshal(riakerr)
-		//putBuf(buf)
-		//err = proto.Unmarshal(s.bts, riakerr)
 		err = riakerr.Unmarshal(s.bts)
 		if err != nil {
 			return true, 0, err
@@ -509,8 +503,6 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 func (s *streamRes) close() { s.node.Done() }
 
 func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
-	//buf := getBuf()
-	//err := buf.Marshal(req)
 	bts, err := req.Marshal()
 	if err != nil {
 		return nil, err
@@ -520,16 +512,11 @@ func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
 		return nil, ErrAck
 	}
 
-	//msg, err := proto.Marshal(req)
-	//if err != nil {
-	//	return nil, err
-	//}
-	var msg []byte
-	msg, err = writeMsg(c, node, bts, code)
+	err = writeMsg(c, node, bts, code)
 	if err != nil {
 		return nil, err
 	}
-	return &streamRes{c: c, node: node, bts: msg}, nil
+	return &streamRes{c: c, node: node, bts: bts}, nil
 }
 
 func (c *Client) Ping() error {

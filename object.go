@@ -14,8 +14,8 @@ import (
 func ustr(s string) []byte { return *(*[]byte)(unsafe.Pointer(&s)) }
 
 // Object is the interface that must
-// be satisfied in order to store and retrieve
-// an object from Riak.
+// be satisfied in order to fetch or
+// store an object in Riak.
 type Object interface {
 	// Objects must maintain
 	// a reference to an Info
@@ -27,23 +27,27 @@ type Object interface {
 	Info() *Info
 
 	// Marshal should return the encoded
-	// value of the object. It may use
-	// the bytes passed to it as an argument
-	// in order to reduce allocations, although
-	// it should not count on that slice not being
-	// nil.
+	// value of the object, and any
+	// relevant errors.
 	Marshal() ([]byte, error)
 
 	// Unmarshal should unmarshal the object
 	// from a []byte. It can safely use
-	// zero-copy methods.
+	// zero-copy methods, as the byte slice
+	// passed to it will "belong" to the
+	// object.
 	Unmarshal([]byte) error
 }
 
 // Info contains information
-// about a riak object. You can use
+// about a specific Riak object. You can use
 // it to satisfy the Object interface.
 // Info's zero value (Info{}) is valid.
+// You can use the Info object to add
+// links, seconary indexes, and user metadata
+// to the object referencing this Info object.
+// Calls to Fetch(), Push(), Store(), New(),
+// etc. will changes the contents of this struct.
 type Info struct {
 	key    []byte          // key
 	bucket []byte          // bucket
@@ -190,6 +194,7 @@ func (in *Info) SetContentType(s string) { in.ctype = []byte(s) }
 // Vclock is the vector clock value as a string
 func (in *Info) Vclock() string { return string(in.vclock) }
 
+// format key as key_bin
 func fmtbin(key string) []byte {
 	kl := len(key)
 	kv := make([]byte, kl+4)
@@ -199,6 +204,7 @@ func fmtbin(key string) []byte {
 	return kv
 }
 
+// format key as key_int
 func fmtint(key string) []byte {
 	kl := len(key)
 	kv := make([]byte, kl+4)
