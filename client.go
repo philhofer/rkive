@@ -196,6 +196,7 @@ exit:
 	c.wg.Done()
 }
 
+// ping nodes
 func (c *Client) pingLoop() {
 	var node *node
 	var err error
@@ -212,6 +213,12 @@ inspect:
 				goto exit
 			}
 			err = node.Ping()
+
+			// we don't sleep
+			// if an error is returned;
+			// instead, we start a redial
+			// on the node. otherwise, we
+			// sleep.
 			if err != nil {
 				if c.closed() {
 					node.Drop()
@@ -225,6 +232,8 @@ inspect:
 			}
 			continue inspect
 
+			// don't block forever;
+			// we could be closing
 		case <-time.After(1 * time.Second):
 			goto check
 		}
@@ -291,7 +300,7 @@ func (c *Client) done(n *node) {
 	c.lock <- struct{}{}
 }
 
-// finish node (error)
+// finish node with err
 func (c *Client) err(n *node) {
 	if c.closed() {
 		n.Drop()
