@@ -458,7 +458,6 @@ type protoStream interface {
 type streamRes struct {
 	c    *Client
 	node *node
-	bts  []byte
 }
 
 // unmarshals; returns done / code / error
@@ -472,15 +471,13 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		return true, code, err
 	}
 
-	if msglen > cap(s.bts) {
-		s.bts = make([]byte, msglen)
-	} else {
-		s.bts = s.bts[0:msglen]
-	}
+	buf := getBuf()
+	buf.setSz(msglen)
 
 	// read into s.bts
-	err = readBody(s.c, s.node, s.bts)
+	err = readBody(s.c, s.node, buf.Body)
 	if err != nil {
+		putBuf(buf)
 		return true, code, err
 	}
 	// handle a code 0
@@ -489,14 +486,16 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 		s.close()
 
 		riakerr := new(rpbc.RpbErrorResp)
-		err = riakerr.Unmarshal(s.bts)
+		err = riakerr.Unmarshal(buf.Body)
+		putBuf(buf)
 		if err != nil {
 			return true, 0, err
 		}
 		return true, 0, RiakError{res: riakerr}
 	}
 
-	err = res.Unmarshal(s.bts)
+	err = res.Unmarshal(buf.Body)
+	putBuf(buf)
 	if err != nil {
 		s.close()
 		return true, code, err
@@ -511,21 +510,27 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 // return the connection to the client
 func (s *streamRes) close() { s.node.Done() }
 
-func (c *Client) streamReq(req proto.Marshaler, code byte) (*streamRes, error) {
-	bts, err := req.Marshal()
+func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
+
+	buf := getBuf()
+	err := buf.Set(req)
+	//bts, err := req.Marshal()
 	if err != nil {
+		putBuf(buf)
 		return nil, err
 	}
 	node, ok := c.ack()
 	if !ok {
+		putBuf(buf)
 		return nil, ErrAck
 	}
 
-	err = writeMsg(c, node, bts, code)
+	err = writeMsg(c, node, buf.Body, code)
+	putBuf(buf)
 	if err != nil {
 		return nil, err
 	}
-	return &streamRes{c: c, node: node, bts: bts}, nil
+	return &streamRes{c: c, node: node}, nil
 }
 
 func (c *Client) Ping() error {
