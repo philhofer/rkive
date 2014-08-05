@@ -37,6 +37,14 @@ func (b *buf) Set(p protom) error {
 	return err
 }
 
+func (b *buf) setSz(n int) {
+	if cap(b.Body) >= n {
+		b.Body = b.Body[0:n]
+	} else {
+		b.Body = make([]byte, n)
+	}
+}
+
 func getBuf() *buf {
 	return bufPool.Get().(*buf)
 }
