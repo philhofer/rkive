@@ -422,6 +422,7 @@ func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error)
 	resbts, rescode, err := c.doBuf(code, buf.Body)
 	buf.Body = resbts // save the largest-cap byte slice
 	if err != nil {
+		putBuf(buf)
 		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
 	}
 	if rescode == 0 {
@@ -437,6 +438,7 @@ func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error)
 		// expected response body,
 		// but we got none
 		if len(resbts) == 0 {
+			putBuf(buf)
 			return 0, ErrNotFound
 		}
 		err = res.Unmarshal(resbts)
