@@ -4,6 +4,9 @@ services:
 build:
     steps:
         - script:
+            name: install
+            code: go install ./... -tags 'riak'
+        - script:
             name: test
             code: go test -v -tags 'riak'
     after-steps:
