@@ -26,7 +26,7 @@ blobs := riak.Bucket("blob_bucket")
 
 
 // let's make an object
-myBlob := &riakpb.Blob{
+myBlob := &rkive.Blob{
 	Data: []byte("Hello World!"),
 	RiakInfo: &rkive.Info{},
 }
