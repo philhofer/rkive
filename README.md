@@ -65,6 +65,44 @@ err = blobs.Fetch(newBlob, myBlob.Info().Key())
 
 ```
 
+If you want to run Riak with `allow_mult=true` (which you should *strongly* consider), take a look
+at the `ObjectM` interface, which allows you to specify a `Merge()` operation to be used for
+your object when multiple values are encountered on a read or write operation. If you have `allow_mult=true`
+and your object does not satisfy the `ObjectM` interface, then read and write operations on a key/bucket
+pair with siblings will return a `*ErrMultipleResponses`. (In the degenerate case where 10 consecutive merge 
+conflict resolution attempts fail, `*ErrMultipleResponses` will be returned for `ObjectM` operations. This is to 
+avoid "sibling explosion.")
+
+As an example, here's what the `Blob` type would have to define (internally) if it were
+to satisfy the `ObjectM` interface:
+
+```go
+// NewEmpty should always return a properly-initialized
+// zero value for the type in question. The client
+// will marshal data into this object and pass it to
+// Merge().
+func (b *Blob) NewEmpty() ObjectM {
+     return &Blob{RiakInfo: &Info{}}
+}
+
+// Merge should make a best-effort attempt to merge
+// data from its argument into the method receiver.
+// It should be prepared to handle nil/zero values
+// for either object.
+func (b *Blob) Merge(o ObjectM) {
+     // you can always type-assert the argument
+     // to Merge() to be the same type returned
+     // by NewEmtpy(), which should also be the
+     // same type as the method receiver
+     nb := o.(*Blob)
+
+     // we don't really have a good way of handling
+     // this conflict, so we'll set the content
+     // to be the combination of both
+     b.Content = append(b.Content, nb.Content...)
+}
+```
+
 ## Performance
 
 This client library was built with performance in mind.
