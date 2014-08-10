@@ -1,4 +1,4 @@
-Riak for Go [![docs examples](https://sourcegraph.com/api/repos/github.com/philhofer/riakpb/.badges/docs-examples.png)](https://sourcegraph.com/github.com/philhofer/riakpb) [![dependencies](https://sourcegraph.com/api/repos/github.com/philhofer/riakpb/.badges/dependencies.png)](https://sourcegraph.com/github.com/philhofer/riakpb)
+Riak for Go [![docs examples](https://sourcegraph.com/api/repos/github.com/philhofer/rkive/.badges/docs-examples.png)](https://sourcegraph.com/github.com/philhofer/rkive) [![dependencies](https://sourcegraph.com/api/repos/github.com/philhofer/rkive/.badges/dependencies.png)](https://sourcegraph.com/github.com/philhofer/rkive)
 ================
 
 A Riak client designed for performance-critical Go programs.
