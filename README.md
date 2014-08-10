@@ -15,11 +15,11 @@ Satisfy the `Object` interface and you're off to the races. The included 'Blob' 
 
 ```go
 import (
-       "github.com/philhofer/riakpb"
+       "github.com/philhofer/rkive"
 )
 
 // Open up one connection
-riak, err := riakpb.DialOne("127.0.0.1:8087", "test-Client-ID")
+riak, err := rkive.DialOne("127.0.0.1:8087", "test-Client-ID")
 // handle err...
 
 blobs := riak.Bucket("blob_bucket")
@@ -28,7 +28,7 @@ blobs := riak.Bucket("blob_bucket")
 // let's make an object
 myBlob := &riakpb.Blob{
 	Data: []byte("Hello World!"),
-	RiakInfo: &riakpb.Info{},
+	RiakInfo: &rkive.Info{},
 }
 
 // now let's put it in the database
@@ -57,7 +57,7 @@ if updated { /* the object has been changed! */ }
 // of the object like so:
 
 // create a new container...
-newBlob := &riakpb.Blob{ RiakInfo: &riakpb.Info{} }
+newBlob := &rkive.Blob{ RiakInfo: &rkive.Info{} }
 
 // ... and fetch using the old blob's key
 err = blobs.Fetch(newBlob, myBlob.Info().Key())
