@@ -6,6 +6,10 @@ import (
 	"github.com/philhofer/riakpb/rpbc"
 )
 
+const (
+	maxMerges = 10
+)
+
 var (
 	ErrNoPath   = errors.New("bucket and/or key not defined")
 	ErrModified = errors.New("object has been modified since last read")
@@ -103,6 +107,9 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 	if o.Info().bucket == nil || o.Info().key == nil {
 		return ErrNoPath
 	}
+	ntry := 0 // merge attempts
+
+dostore:
 	req := &rpbc.RpbPutReq{
 		Bucket:  o.Info().bucket,
 		Key:     o.Info().key,
@@ -130,6 +137,9 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 		return ErrUnexpectedResponse
 	}
 	if len(res.GetContent()) > 1 {
+		if ntry > maxMerges {
+			return handleMultiple(res.Content)
+		}
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
 			// load the old value(s) into nom
@@ -141,8 +151,9 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 			// merge old values
 			om.Merge(nom)
 			om.Info().vclock = nom.Info().vclock
+			ntry++
 			// retry the store
-			return c.Store(om, nil)
+			goto dostore
 		} else {
 			return handleMultiple(res.Content)
 		}
@@ -161,6 +172,9 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	if o.Info().bucket == nil || o.Info().key == nil {
 		return ErrNoPath
 	}
+	ntry := 0
+
+dopush:
 	req := &rpbc.RpbPutReq{
 		Bucket:  o.Info().bucket,
 		Key:     o.Info().key,
@@ -196,6 +210,9 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 		return ErrNotFound
 	}
 	if len(res.Content) > 1 {
+		if ntry > maxMerges {
+			return handleMultiple(res.Content)
+		}
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
 			nom := om.NewEmpty()
@@ -205,7 +222,8 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 			}
 			om.Merge(nom)
 			om.Info().vclock = nom.Info().vclock
-			return c.Push(om, nil)
+			ntry++
+			goto dopush
 		} else {
 			return handleMultiple(res.Content)
 		}

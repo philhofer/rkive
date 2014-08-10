@@ -144,12 +144,12 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 	}
 	if len(res.GetContent()) > 1 {
 		if om, ok := o.(ObjectM); ok {
+			// like Fetch, we merge the results
+			// here and hope for reconciliation
+			// on write
 			om.Info().vclock = res.GetVclock()
 			err = handleMerge(om, res.Content)
-			if err != nil {
-				return false, err
-			}
-			return true, c.Store(om, nil)
+			return true, err
 		}
 		return false, handleMultiple(res.Content)
 	}
