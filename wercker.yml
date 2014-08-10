@@ -3,7 +3,9 @@ services:
     - mjdsys/riak@0.0.7
 build:
     steps:
-        - go test -v -tags 'riak'
+        - script:
+            name: test
+            code: go test -v -tags 'riak'
     after-steps:
         - wantedly/pretty-slack-notify:
             team: $SLACK_TEAM
