@@ -5,7 +5,7 @@ build:
     steps:
         - script:
             name: install
-            code: go install ./... -tags 'riak'
+            code: go get -d -u -t ./... && go install ./...
         - script:
             name: test
             code: go test -v -tags 'riak'
