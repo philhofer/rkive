@@ -53,26 +53,28 @@ func TestMultipleVclocks(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// The store operations should not error,
+	// because we are doing a fetch and merge
+	// when we detect multiple responses on
+	// Store()
+	err = cl.Store(obb, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	err = cl.Store(oba, nil)
 	if err != nil {
-		if _, ok := err.(*ErrMultipleResponses); !ok {
-			t.Fatal(err)
-		}
-	}
-	err = cl.Store(obb, nil)
-	if err == nil {
-		t.Error("Expected error; got nil")
-	}
-	if _, ok := err.(*ErrMultipleResponses); !ok {
 		t.Fatal(err)
 	}
 
-	obc := &TestObject{info: &Info{}}
-
-	// despite the conflict, this should not error
-	err = cl.Fetch(obc, "testbucket", "conflict", nil)
+	// Since our Merge() function takes the longer of the
+	// two Data fields, the body should always be "Body 2..."
+	err = cl.Fetch(oba, "testbucket", "conflict", nil)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if !bytes.Equal(oba.Data, []byte("Body 2...")) {
+		t.Errorf("Data should be %q; got %q", "Body 2...", oba.Data)
 	}
 }
 

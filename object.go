@@ -71,8 +71,10 @@ func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
 			continue
 		}
 
+		// read into new empty
 		nom := om.NewEmpty()
-		err = readContent(om, ctt)
+		err = readContent(nom, ctt)
+		nom.Info().vclock = ctt.Vtag
 		if err != nil {
 			return err
 		}

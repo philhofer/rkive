@@ -90,17 +90,17 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 		return ErrNotFound
 	}
 	if len(res.GetContent()) > 1 {
+		// merge objects; repair happens
+		// on write to prevent sibling
+		// explosion
 		if om, ok := o.(ObjectM); ok {
 			om.Info().key = req.Key
 			om.Info().bucket = req.Bucket
-			om.Info().vclock = res.GetVclock()
-			err = handleMerge(om, res.Content)
-			if err != nil {
-				return err
-			}
-			return c.Store(om, nil)
+			om.Info().vclock = res.Vclock
+			return handleMerge(om, res.Content)
+		} else {
+			return handleMultiple(res.Content)
 		}
-		return handleMultiple(res.Content)
 	}
 	err = readContent(o, res.GetContent()[0])
 	o.Info().key = req.Key
