@@ -1,10 +1,10 @@
-package riakpb
+package rkive
 
 import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/philhofer/riakpb/rpbc"
+	"github.com/philhofer/rkive/rpbc"
 	"log"
 	"net"
 	"sync"

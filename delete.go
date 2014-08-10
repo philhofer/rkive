@@ -1,7 +1,7 @@
-package riakpb
+package rkive
 
 import (
-	"github.com/philhofer/riakpb/rpbc"
+	"github.com/philhofer/rkive/rpbc"
 )
 
 type DelOpts struct {

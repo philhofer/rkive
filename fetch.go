@@ -1,8 +1,8 @@
-package riakpb
+package rkive
 
 import (
 	"errors"
-	"github.com/philhofer/riakpb/rpbc"
+	"github.com/philhofer/rkive/rpbc"
 )
 
 const (

@@ -1,4 +1,4 @@
-package riakpb
+package rkive
 
 import (
 	"sync"

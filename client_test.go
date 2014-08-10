@@ -1,6 +1,6 @@
 // +build riak
 
-package riakpb
+package rkive
 
 import (
 	"sync"
