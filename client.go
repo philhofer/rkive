@@ -319,8 +319,7 @@ func (c *Client) err(n *node) {
 
 // writes the message to the node with
 // the appropriate leading message size
-// and the given message code, returning
-// the extended []byte
+// and the given message code
 func writeMsg(c *Client, n *node, msg []byte, code byte) error {
 	// bigendian length + code byte
 	var lead [5]byte
@@ -363,9 +362,8 @@ func readBody(c *Client, n *node, body []byte) error {
 	_, err := n.Read(body)
 	if err != nil {
 		n.Err()
-		return err
 	}
-	return nil
+	return err
 }
 
 // send the contents of a buffer and receive a response
@@ -389,7 +387,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	if err != nil {
 		return nil, code, err
 	}
-	if msglen == 0 { // no response body
+	if msglen == 0 {
 		msg = msg[0:0] // mark empty (necessary for ErrNotFound)
 		goto exit
 	}

@@ -39,6 +39,53 @@ type Object interface {
 	Unmarshal([]byte) error
 }
 
+// ObjectM is an object that also knows how to merge
+// itself with siblings. If an object has this interface
+// defined, this package will use the Merge method to transparently
+// handle siblings returned from Riak.
+type ObjectM interface {
+	Object
+
+	// Empty should return an initialized
+	// (zero-value) object of the same underlying
+	// type as the parent.
+	NewEmtpy() ObjectM
+
+	// Merge should merge the argument object into the method receiver. It
+	// is safe to type-assert the argument of Merge to the same type
+	// as the type of the object satisfying the inteface. (Under the hood,
+	// the argument passed to Merge is simply the value of NewEmpty() after
+	// data has been read into it.) Merge is used to iteratively merge many sibling objects.
+	Merge(o ObjectM)
+}
+
+// sibling merge - object should be Store()d after call
+func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
+	var err error
+	for i, ctt := range ct {
+		if i == 0 {
+			err = readContent(om, ctt)
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		nom := om.NewEmtpy()
+		err = readContent(om, ctt)
+		if err != nil {
+			return err
+		}
+		om.Merge(nom)
+
+		// transfer vclocks if we didn't have one before
+		if len(om.Info().vclock) == 0 && len(nom.Info().vclock) > 0 {
+			om.Info().vclock = nom.Info().vclock
+		}
+	}
+	return nil
+}
+
 // Info contains information
 // about a specific Riak object. You can use
 // it to satisfy the Object interface.

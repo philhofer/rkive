@@ -90,6 +90,13 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 		return ErrNotFound
 	}
 	if len(res.GetContent()) > 1 {
+		if om, ok := o.(ObjectM); ok {
+			err = handleMerge(om, res.Content)
+			if err != nil {
+				return err
+			}
+			return c.Store(om, nil)
+		}
 		return handleMultiple(res.Content)
 	}
 	err = readContent(o, res.GetContent()[0])
@@ -133,6 +140,13 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 		return false, ErrNotFound
 	}
 	if len(res.GetContent()) > 1 {
+		if om, ok := o.(ObjectM); ok {
+			err = handleMerge(om, res.Content)
+			if err != nil {
+				return false, err
+			}
+			return true, c.Store(om, nil)
+		}
 		return false, handleMultiple(res.Content)
 	}
 	err = readContent(o, res.Content[0])
