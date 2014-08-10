@@ -172,9 +172,7 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	if o.Info().bucket == nil || o.Info().key == nil {
 		return ErrNoPath
 	}
-	ntry := 0
 
-dopush:
 	req := &rpbc.RpbPutReq{
 		Bucket:  o.Info().bucket,
 		Key:     o.Info().key,
@@ -210,9 +208,6 @@ dopush:
 		return ErrNotFound
 	}
 	if len(res.Content) > 1 {
-		if ntry > maxMerges {
-			return handleMultiple(res.Content)
-		}
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
 			nom := om.NewEmpty()
@@ -222,8 +217,7 @@ dopush:
 			}
 			om.Merge(nom)
 			om.Info().vclock = nom.Info().vclock
-			ntry++
-			goto dopush
+			return c.Store(om, nil)
 		} else {
 			return handleMultiple(res.Content)
 		}
