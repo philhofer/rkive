@@ -91,6 +91,9 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 	}
 	if len(res.GetContent()) > 1 {
 		if om, ok := o.(ObjectM); ok {
+			om.Info().key = req.Key
+			om.Info().bucket = req.Bucket
+			om.Info().vclock = res.GetVclock()
 			err = handleMerge(om, res.Content)
 			if err != nil {
 				return err
@@ -141,6 +144,7 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 	}
 	if len(res.GetContent()) > 1 {
 		if om, ok := o.(ObjectM); ok {
+			om.Info().vclock = res.GetVclock()
 			err = handleMerge(om, res.Content)
 			if err != nil {
 				return false, err

@@ -49,7 +49,7 @@ type ObjectM interface {
 	// Empty should return an initialized
 	// (zero-value) object of the same underlying
 	// type as the parent.
-	NewEmtpy() ObjectM
+	NewEmpty() ObjectM
 
 	// Merge should merge the argument object into the method receiver. It
 	// is safe to type-assert the argument of Merge to the same type
@@ -71,7 +71,7 @@ func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
 			continue
 		}
 
-		nom := om.NewEmtpy()
+		nom := om.NewEmpty()
 		err = readContent(om, ctt)
 		if err != nil {
 			return err
