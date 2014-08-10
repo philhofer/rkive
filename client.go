@@ -1,7 +1,6 @@
 package riakpb
 
 import (
-	"code.google.com/p/gogoprotobuf/proto"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -413,7 +412,7 @@ exit:
 	return msg, code, nil
 }
 
-func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error) {
+func (c *Client) req(msg protom, code byte, res unmarshaler) (byte, error) {
 	buf := getBuf() // maybe we've already allocated
 	err := buf.Set(msg)
 	if err != nil {
@@ -451,8 +450,13 @@ func (c *Client) req(msg protom, code byte, res proto.Unmarshaler) (byte, error)
 }
 
 type protoStream interface {
-	proto.Unmarshaler
+	Unmarshal([]byte) error
 	GetDone() bool
+}
+
+type unmarshaler interface {
+	Unmarshal([]byte) error
+	ProtoMessage()
 }
 
 // streaming response -
