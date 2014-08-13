@@ -10,9 +10,6 @@ const (
 )
 
 var (
-	// ErrRiakError is returned when riak returns a 5XX code
-	ErrRiakError = errors.New("riak error")
-
 	// ErrUnexpectedResponse is returned when riak returns the wrong
 	// message type
 	ErrUnexpectedResponse = errors.New("unexpected response")

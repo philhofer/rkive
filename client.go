@@ -269,9 +269,6 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	}
 	// expect response code 6
 	if msg[4] != 6 {
-		if msg[4] == 0 {
-			return ErrRiakError
-		}
 		return ErrUnexpectedResponse
 	}
 	return nil
