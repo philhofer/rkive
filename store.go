@@ -23,10 +23,12 @@ func init() {
 	ctntPool.New = func() interface{} { return &rpbc.RpbContent{} }
 }
 
+// push content
 func ctput(c *rpbc.RpbContent) {
 	ctntPool.Put(c)
 }
 
+// create RpbContent from object
 func ctpop(o Object) (*rpbc.RpbContent, error) {
 	ctnt := ctntPool.Get().(*rpbc.RpbContent)
 	return ctnt, writeContent(o, ctnt)
@@ -105,10 +107,10 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	// pull info from content
 	readHeader(o, res.GetContent()[0])
 	// set data
-	o.Info().vclock = append(o.Info().vclock, res.Vclock...)
-	o.Info().bucket = append(o.Info().bucket, req.Bucket...)
+	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	o.Info().bucket = append(o.Info().bucket[0:0], req.Bucket...)
 	if len(res.Key) > 0 {
-		o.Info().key = append(o.Info().key, res.GetKey()...)
+		o.Info().key = append(o.Info().key[0:0], res.Key...)
 	}
 	return err
 }
@@ -133,7 +135,7 @@ dostore:
 	rth := true
 	req.ReturnHead = &rth
 	if o.Info().vclock != nil {
-		req.Vclock = o.Info().vclock
+		req.Vclock = append(req.Vclock, o.Info().vclock...)
 	}
 	parseOpts(opts, &req)
 
@@ -231,7 +233,7 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 				return err
 			}
 			om.Merge(nom)
-			om.Info().vclock = nom.Info().vclock
+			om.Info().vclock = append(om.Info().vclock[0:0], nom.Info().vclock...)
 			return c.Store(om, nil)
 		} else {
 			return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())

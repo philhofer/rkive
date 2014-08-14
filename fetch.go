@@ -3,6 +3,7 @@ package rkive
 import (
 	"errors"
 	"github.com/philhofer/rkive/rpbc"
+	"sync"
 )
 
 const (
@@ -21,7 +22,27 @@ var (
 
 	// default timeout on a request is 500ms
 	dfltreq uint32 = DefaultReqTimeout
+
+	gresPool *sync.Pool
 )
+
+func init() {
+	gresPool = new(sync.Pool)
+	gresPool.New = func() interface{} { return &rpbc.RpbGetResp{} }
+}
+
+// pop response from cache
+func gresPop() *rpbc.RpbGetResp {
+	return gresPool.Get().(*rpbc.RpbGetResp)
+}
+
+// push response to cache
+func gresPush(r *rpbc.RpbGetResp) {
+	r.Content = r.Content[0:0]
+	r.Vclock = r.Vclock[0:0]
+	r.Unchanged = nil
+	gresPool.Put(r)
+}
 
 // ReadOpts are read options
 // that can be specified when
@@ -73,8 +94,8 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 	// get opts
 	parseROpts(req, opts)
 
-	res := rpbc.RpbGetResp{}
-	rescode, err := c.req(req, 9, &res)
+	res := gresPop()
+	rescode, err := c.req(req, 9, res)
 	if err != nil {
 		return err
 	}
@@ -99,10 +120,11 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 			return handleMultiple(len(res.Content), key, bucket)
 		}
 	}
-	err = readContent(o, res.GetContent()[0])
-	o.Info().key = req.Key
-	o.Info().bucket = req.Bucket
-	o.Info().vclock = res.GetVclock()
+	err = readContent(o, res.Content[0])
+	o.Info().key = append(o.Info().key[0:0], req.Key...)
+	o.Info().bucket = append(o.Info().bucket[0:0], req.Bucket...)
+	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	gresPush(res)
 	return err
 }
 
@@ -125,8 +147,8 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 
 	parseROpts(req, opts)
 
-	res := rpbc.RpbGetResp{}
-	rescode, err := c.req(req, 9, &res)
+	res := gresPop()
+	rescode, err := c.req(req, 9, res)
 	if err != nil {
 		return false, err
 	}
@@ -144,13 +166,14 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 			// like Fetch, we merge the results
 			// here and hope for reconciliation
 			// on write
-			om.Info().vclock = res.GetVclock()
+			om.Info().vclock = append(o.Info().vclock[0:0], res.GetVclock()...)
 			err = handleMerge(om, res.Content)
 			return true, err
 		}
 		return false, handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
 	}
 	err = readContent(o, res.Content[0])
-	o.Info().vclock = res.Vclock
+	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	gresPush(res)
 	return true, err
 }

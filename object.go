@@ -74,7 +74,7 @@ func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
 		// read into new empty
 		nom := om.NewEmpty()
 		err = readContent(nom, ctt)
-		nom.Info().vclock = ctt.Vtag
+		nom.Info().vclock = append(nom.Info().vclock[0:0], ctt.Vtag...)
 		if err != nil {
 			return err
 		}
@@ -82,7 +82,7 @@ func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
 
 		// transfer vclocks if we didn't have one before
 		if len(om.Info().vclock) == 0 && len(nom.Info().vclock) > 0 {
-			om.Info().vclock = nom.Info().vclock
+			om.Info().vclock = append(om.Info().vclock, nom.Info().vclock...)
 		}
 	}
 	return nil
