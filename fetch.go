@@ -96,7 +96,7 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 			om.Info().vclock = res.Vclock
 			return handleMerge(om, res.Content)
 		} else {
-			return handleMultiple(res.Content)
+			return handleMultiple(len(res.Content), key, bucket)
 		}
 	}
 	err = readContent(o, res.GetContent()[0])
@@ -148,7 +148,7 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 			err = handleMerge(om, res.Content)
 			return true, err
 		}
-		return false, handleMultiple(res.Content)
+		return false, handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
 	}
 	err = readContent(o, res.Content[0])
 	o.Info().vclock = res.Vclock

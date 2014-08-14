@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/philhofer/rkive/rpbc"
+	"sync"
 )
 
 const (
@@ -14,7 +15,22 @@ var (
 	ErrNoPath   = errors.New("bucket and/or key not defined")
 	ErrModified = errors.New("object has been modified since last read")
 	ErrExists   = errors.New("object already exists")
+	ctntPool    *sync.Pool
 )
+
+func init() {
+	ctntPool = new(sync.Pool)
+	ctntPool.New = func() interface{} { return &rpbc.RpbContent{} }
+}
+
+func ctput(c *rpbc.RpbContent) {
+	ctntPool.Put(c)
+}
+
+func ctpop(o Object) (*rpbc.RpbContent, error) {
+	ctnt := ctntPool.Get().(*rpbc.RpbContent)
+	return ctnt, writeContent(o, ctnt)
+}
 
 // WriteOpts are options available
 // for all write opertations.
@@ -45,11 +61,9 @@ func parseOpts(opts *WriteOpts, req *rpbc.RpbPutReq) {
 // ErrExists if an object already exists at that key-bucket pair.
 // Riak will assign this object a key if 'key' is nil.
 func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) error {
-	req := &rpbc.RpbPutReq{
-		Bucket:  []byte(bucket),
-		Content: new(rpbc.RpbContent),
+	req := rpbc.RpbPutReq{
+		Bucket: []byte(bucket),
 	}
-	// set the bucket, because the user can't
 
 	// return head
 	rth := true
@@ -61,16 +75,16 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 		req.IfNoneMatch = &rth
 		o.Info().key = req.Key
 	}
-	// write content to request
-	err := writeContent(o, req.Content)
+	var err error
+	req.Content, err = ctpop(o)
 	if err != nil {
 		return err
 	}
 	// parse options
-	parseOpts(opts, req)
-
-	res := &rpbc.RpbPutResp{}
-	rescode, err := c.req(req, 11, res)
+	parseOpts(opts, &req)
+	res := rpbc.RpbPutResp{}
+	rescode, err := c.req(&req, 11, &res)
+	ctput(req.Content)
 	if err != nil {
 		// riak returns "match_found" on failure
 		if rke, ok := err.(RiakError); ok {
@@ -86,15 +100,15 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	}
 	// multiple content items
 	if len(res.GetContent()) > 1 {
-		return handleMultiple(res.Content)
+		return handleMultiple(len(res.GetContent()), string(req.Key), string(req.Bucket))
 	}
 	// pull info from content
 	readHeader(o, res.GetContent()[0])
 	// set data
-	o.Info().vclock = res.Vclock
-	o.Info().bucket = req.Bucket
+	o.Info().vclock = append(o.Info().vclock, res.Vclock...)
+	o.Info().bucket = append(o.Info().bucket, req.Bucket...)
 	if len(res.Key) > 0 {
-		o.Info().key = res.GetKey()
+		o.Info().key = append(o.Info().key, res.GetKey()...)
 	}
 	return err
 }
@@ -110,26 +124,28 @@ func (c *Client) Store(o Object, opts *WriteOpts) error {
 	ntry := 0 // merge attempts
 
 dostore:
-	req := &rpbc.RpbPutReq{
-		Bucket:  o.Info().bucket,
-		Key:     o.Info().key,
-		Content: new(rpbc.RpbContent),
-		Vclock:  o.Info().vclock,
+	req := rpbc.RpbPutReq{
+		Bucket: o.Info().bucket,
+		Key:    o.Info().key,
+		Vclock: o.Info().vclock,
 	}
+
 	rth := true
 	req.ReturnHead = &rth
 	if o.Info().vclock != nil {
 		req.Vclock = o.Info().vclock
 	}
-	parseOpts(opts, req)
+	parseOpts(opts, &req)
 
 	// write content
-	err := writeContent(o, req.Content)
+	var err error
+	req.Content, err = ctpop(o)
 	if err != nil {
 		return err
 	}
-	res := &rpbc.RpbPutResp{}
-	rescode, err := c.req(req, 11, res)
+	res := rpbc.RpbPutResp{}
+	rescode, err := c.req(&req, 11, &res)
+	ctput(req.Content)
 	if err != nil {
 		return err
 	}
@@ -138,7 +154,7 @@ dostore:
 	}
 	if len(res.GetContent()) > 1 {
 		if ntry > maxMerges {
-			return handleMultiple(res.Content)
+			return handleMultiple(len(res.GetContent()), o.Info().Key(), o.Info().Bucket())
 		}
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
@@ -155,13 +171,12 @@ dostore:
 			// retry the store
 			goto dostore
 		} else {
-			return handleMultiple(res.Content)
+			return handleMultiple(len(res.GetContent()), o.Info().Key(), o.Info().Bucket())
 		}
 	}
 	readHeader(o, res.GetContent()[0])
-	o.Info().vclock = res.Vclock
-
-	return err
+	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	return nil
 }
 
 // Push makes a conditional (if-not-modified) write
@@ -173,26 +188,26 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 		return ErrNoPath
 	}
 
-	req := &rpbc.RpbPutReq{
-		Bucket:  o.Info().bucket,
-		Key:     o.Info().key,
-		Content: new(rpbc.RpbContent),
-		Vclock:  o.Info().vclock,
+	req := rpbc.RpbPutReq{
+		Bucket: o.Info().bucket,
+		Key:    o.Info().key,
+		Vclock: o.Info().vclock,
 	}
 
 	// Return-Head = true; If-Not-Modified = true
 	rth := true
 	req.ReturnHead = &rth
 	req.IfNotModified = &rth
-	parseOpts(opts, req)
+	parseOpts(opts, &req)
 
-	res := &rpbc.RpbPutResp{}
-	err := writeContent(o, req.Content)
+	var err error
+	req.Content, err = ctpop(o)
 	if err != nil {
 		return err
 	}
-
-	rescode, err := c.req(req, 11, res)
+	res := rpbc.RpbPutResp{}
+	rescode, err := c.req(&req, 11, &res)
+	ctput(req.Content)
 	if err != nil {
 		if rke, ok := err.(RiakError); ok {
 			if bytes.Contains(rke.res.Errmsg, []byte("modified")) {
@@ -219,10 +234,10 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 			om.Info().vclock = nom.Info().vclock
 			return c.Store(om, nil)
 		} else {
-			return handleMultiple(res.Content)
+			return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
 		}
 	}
-	o.Info().vclock = res.Vclock
-	readHeader(o, res.Content[0])
+	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	readHeader(o, res.GetContent()[0])
 	return nil
 }
