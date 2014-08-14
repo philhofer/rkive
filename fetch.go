@@ -112,9 +112,9 @@ func (c *Client) Fetch(o Object, bucket string, key string, opts *ReadOpts) erro
 		// on write to prevent sibling
 		// explosion
 		if om, ok := o.(ObjectM); ok {
-			om.Info().key = req.Key
-			om.Info().bucket = req.Bucket
-			om.Info().vclock = res.Vclock
+			om.Info().key = append(om.Info().key[0:0], req.Key...)
+			om.Info().bucket = append(om.Info().bucket[0:0], req.Bucket...)
+			om.Info().vclock = append(om.Info().vclock[0:0], res.Vclock...)
 			return handleMerge(om, res.Content)
 		} else {
 			return handleMultiple(len(res.Content), key, bucket)

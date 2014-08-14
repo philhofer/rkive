@@ -16,11 +16,14 @@ var (
 	ErrModified = errors.New("object has been modified since last read")
 	ErrExists   = errors.New("object already exists")
 	ctntPool    *sync.Pool
+	hdrPool     *sync.Pool
 )
 
 func init() {
 	ctntPool = new(sync.Pool)
 	ctntPool.New = func() interface{} { return &rpbc.RpbContent{} }
+	hdrPool = new(sync.Pool)
+	hdrPool.New = func() interface{} { return &rpbc.RpbPutResp{} }
 }
 
 // push content
@@ -32,6 +35,19 @@ func ctput(c *rpbc.RpbContent) {
 func ctpop(o Object) (*rpbc.RpbContent, error) {
 	ctnt := ctntPool.Get().(*rpbc.RpbContent)
 	return ctnt, writeContent(o, ctnt)
+}
+
+// pop putresp
+func hdrpop() *rpbc.RpbPutResp {
+	return hdrPool.Get().(*rpbc.RpbPutResp)
+}
+
+// put putresp; zeros fields
+func hdrput(r *rpbc.RpbPutResp) {
+	r.Content = r.Content[0:0]
+	r.Key = r.Key[0:0]
+	r.Vclock = r.Vclock[0:0]
+	hdrPool.Put(r)
 }
 
 // WriteOpts are options available
@@ -75,7 +91,7 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	if key != nil {
 		req.Key = ustr(*key)
 		req.IfNoneMatch = &rth
-		o.Info().key = req.Key
+		o.Info().key = append(o.Info().key[0:0], req.Key...)
 	}
 	var err error
 	req.Content, err = ctpop(o)
@@ -84,10 +100,11 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	}
 	// parse options
 	parseOpts(opts, &req)
-	res := rpbc.RpbPutResp{}
-	rescode, err := c.req(&req, 11, &res)
+	res := hdrpop()
+	rescode, err := c.req(&req, 11, res)
 	ctput(req.Content)
 	if err != nil {
+		hdrput(res)
 		// riak returns "match_found" on failure
 		if rke, ok := err.(RiakError); ok {
 			if bytes.Contains(rke.res.GetErrmsg(), []byte("match_found")) {
@@ -112,6 +129,7 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	if len(res.Key) > 0 {
 		o.Info().key = append(o.Info().key[0:0], res.Key...)
 	}
+	hdrput(res)
 	return err
 }
 
@@ -145,8 +163,8 @@ dostore:
 	if err != nil {
 		return err
 	}
-	res := rpbc.RpbPutResp{}
-	rescode, err := c.req(&req, 11, &res)
+	res := hdrpop()
+	rescode, err := c.req(&req, 11, res)
 	ctput(req.Content)
 	if err != nil {
 		return err
@@ -160,6 +178,7 @@ dostore:
 		}
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
+			hdrput(res)
 			// load the old value(s) into nom
 			nom := om.NewEmpty()
 			err = c.Fetch(nom, om.Info().Bucket(), om.Info().Key(), nil)
@@ -178,6 +197,7 @@ dostore:
 	}
 	readHeader(o, res.GetContent()[0])
 	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	hdrput(res)
 	return nil
 }
 
@@ -207,10 +227,11 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	if err != nil {
 		return err
 	}
-	res := rpbc.RpbPutResp{}
-	rescode, err := c.req(&req, 11, &res)
+	res := hdrpop()
+	rescode, err := c.req(&req, 11, res)
 	ctput(req.Content)
 	if err != nil {
+		hdrput(res)
 		if rke, ok := err.(RiakError); ok {
 			if bytes.Contains(rke.res.Errmsg, []byte("modified")) {
 				return ErrModified
@@ -219,12 +240,15 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 		return err
 	}
 	if rescode != 12 {
+		hdrput(res)
 		return ErrUnexpectedResponse
 	}
 	if res.Vclock == nil || len(res.Content) == 0 {
+		hdrput(res)
 		return ErrNotFound
 	}
 	if len(res.Content) > 1 {
+		hdrput(res)
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
 			nom := om.NewEmpty()
@@ -241,5 +265,6 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	}
 	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
 	readHeader(o, res.GetContent()[0])
+	hdrput(res)
 	return nil
 }
