@@ -72,7 +72,7 @@ func TestIndexRange(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	res, err := cl.IndexRange("testbucket", "testNum", 30, 40, nil)
+	res, err := cl.Bucket("testbucket").IndexRange("testNum", 30, 40)
 	if err != nil {
 		t.Fatal(err)
 	}

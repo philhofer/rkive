@@ -8,10 +8,8 @@ import (
 )
 
 func TestRiakPing(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 	t.Log("Performing 3 x 50 pings...")
 
 	wg := new(sync.WaitGroup)
@@ -28,5 +26,4 @@ func TestRiakPing(t *testing.T) {
 		}(t)
 	}
 	wg.Wait()
-	cl.Close()
 }

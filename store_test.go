@@ -10,6 +10,10 @@ import (
 )
 
 func TestConnOpenClose(t *testing.T) {
+        if testing.Short() {
+                t.Skip("Short test; skipping")
+        }
+        t.Parallel()
         cl, err := Dial([]Node{
                 {"localhost:8087", 3},
                 {"localhost:8087", 1},

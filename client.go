@@ -77,7 +77,9 @@ type Node struct {
 
 // Dial creates a client connected to one
 // or many Riak nodes. It will try to reconnect to
-// downed nodes in the background.
+// downed nodes in the background. Dial verifies
+// that it is able to connect to at least one node
+// before it returns; otherwise, it will return an error.
 func Dial(nodes []Node, clientID string) (*Client, error) {
 
 	// count total connections
@@ -120,7 +122,18 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 	cl.wg.Add(1)
 	go cl.pingLoop()
 	cl.dunlock()
-
+	
+	// make sure we're able to dial
+	// at least one of the nodes after
+	// 5 seconds
+	select {
+	case n := <- cl.dones:
+	        cl.dones <- n
+	case <-time.After(5 * time.Second):
+	        cl.Close()
+	        return nil, errors.New("unable to dial any nodes")
+	}
+	
 	return cl, nil
 }
 
@@ -173,19 +186,24 @@ type Client struct {
 	wg    *sync.WaitGroup
 }
 
+// redialLoop is responsible
+// for attempting to dial nodes
+// NOTE: the client's waitgroup
+// must be incremented before starting
+// an async redialLoop
 func (c *Client) redialLoop(n *node) {
 	var nd int
 	if c.closed() {
 		n.Drop()
 		goto exit
 	}
-	log.Printf("Dialing TCP %s...", n.addr.String())
+	log.Printf("dialing TCP: %s", n.addr.String())
 	for err := n.Dial(); err != nil; nd++ {
 		if c.closed() {
 			n.Drop()
 			goto exit
 		}
-		log.Printf("Dial error #%d: %s", nd, err)
+		log.Printf("dial error #%d for %s: %s", nd, n.addr.String(), err)
 		time.Sleep(3 * time.Second)
 	}
 	c.done(n)
@@ -194,6 +212,15 @@ exit:
 }
 
 // ping nodes
+//
+// NOTE: the client's waitgroup/
+// must be incremented before starting
+// an async pingLoop
+//
+// pingLoop spends most of its time
+// sleeping if all the nodes are reachable,
+// so it shouldn't cause serious issues
+// with contention over c.dones
 func (c *Client) pingLoop() {
 	var node *node
 	var err error

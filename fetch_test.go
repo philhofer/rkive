@@ -13,7 +13,7 @@ var testClient *Client
 
 func init() {
         var err error
-        testClient, err = DialOne("localhost:8087", "testClient")
+        testClient, err = Dial([]Node{{"localhost:8087", 5}}, "testClient")
         if err != nil {
                 fmt.Printf("Couldn't connect to Riak: %s\n", err)
                 os.Exit(1)    
@@ -47,6 +47,7 @@ func (t *TestObject) Merge(o ObjectM) {
 }
 
 func TestMultipleVclocks(t *testing.T) {
+        t.Parallel()
 	oba := &TestObject{
 		Data: []byte("Body 1"),
 		info: &Info{},
@@ -89,6 +90,7 @@ func TestMultipleVclocks(t *testing.T) {
 }
 
 func TestFetchNotFound(t *testing.T) {
+        t.Parallel()
 	cl := testClient
 	ob := &TestObject{}
 
@@ -102,6 +104,7 @@ func TestFetchNotFound(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+        t.Parallel()
 	cl := testClient
 
 	test := cl.Bucket("testbucket")
