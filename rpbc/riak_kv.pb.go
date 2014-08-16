@@ -37,19 +37,18 @@
 package rpbc
 
 import proto "code.google.com/p/gogoprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
 // discarding unused import gogoproto "gogo.pb"
 
 import io1 "io"
+import fmt1 "fmt"
 import code_google_com_p_gogoprotobuf_proto1 "code.google.com/p/gogoprotobuf/proto"
 
 import bytes1 "bytes"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type RpbIndexReq_IndexQueryType int32
@@ -1343,7 +1342,7 @@ func (m *RpbGetClientIdResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ClientId", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1407,7 +1406,7 @@ func (m *RpbSetClientIdReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ClientId", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1471,7 +1470,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1493,7 +1492,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1515,7 +1514,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field R", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1532,7 +1531,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.R = &v
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pr", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1549,7 +1548,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.Pr = &v
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field BasicQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1567,7 +1566,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.BasicQuorum = &b
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NotfoundOk", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1585,7 +1584,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.NotfoundOk = &b
 		case 7:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field IfModified", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1607,7 +1606,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Head", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1625,7 +1624,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.Head = &b
 		case 9:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Deletedvclock", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1643,7 +1642,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.Deletedvclock = &b
 		case 10:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1660,7 +1659,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SloppyQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1678,7 +1677,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 12:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NVal", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1695,7 +1694,7 @@ func (m *RpbGetReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 13:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1759,7 +1758,7 @@ func (m *RpbGetResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Content", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1782,7 +1781,7 @@ func (m *RpbGetResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Vclock", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1804,7 +1803,7 @@ func (m *RpbGetResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Unchanged", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1864,7 +1863,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1886,7 +1885,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1908,7 +1907,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Vclock", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1930,7 +1929,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Content", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1957,7 +1956,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field W", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1974,7 +1973,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.W = &v
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Dw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1991,7 +1990,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.Dw = &v
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ReturnBody", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2009,7 +2008,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.ReturnBody = &b
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2026,7 +2025,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.Pw = &v
 		case 9:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field IfNotModified", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2044,7 +2043,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.IfNotModified = &b
 		case 10:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field IfNoneMatch", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2062,7 +2061,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.IfNoneMatch = &b
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ReturnHead", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2080,7 +2079,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.ReturnHead = &b
 		case 12:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2097,7 +2096,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 13:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Asis", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2115,7 +2114,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.Asis = &b
 		case 14:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SloppyQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2133,7 +2132,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 15:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NVal", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2150,7 +2149,7 @@ func (m *RpbPutReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 16:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2214,7 +2213,7 @@ func (m *RpbPutResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Content", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2237,7 +2236,7 @@ func (m *RpbPutResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Vclock", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2259,7 +2258,7 @@ func (m *RpbPutResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2323,7 +2322,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2345,7 +2344,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2367,7 +2366,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Rw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2384,7 +2383,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.Rw = &v
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Vclock", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2406,7 +2405,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field R", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2423,7 +2422,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.R = &v
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field W", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2440,7 +2439,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.W = &v
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pr", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2457,7 +2456,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.Pr = &v
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2474,7 +2473,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.Pw = &v
 		case 9:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Dw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2491,7 +2490,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.Dw = &v
 		case 10:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2508,7 +2507,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SloppyQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2526,7 +2525,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 12:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NVal", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2543,7 +2542,7 @@ func (m *RpbDelReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 13:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2607,7 +2606,7 @@ func (m *RpbListBucketsReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2624,7 +2623,7 @@ func (m *RpbListBucketsReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Stream", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2642,7 +2641,7 @@ func (m *RpbListBucketsReq) Unmarshal(data []byte) error {
 			m.Stream = &b
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2706,7 +2705,7 @@ func (m *RpbListBucketsResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Buckets", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2729,7 +2728,7 @@ func (m *RpbListBucketsResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Done", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2789,7 +2788,7 @@ func (m *RpbListKeysReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2811,7 +2810,7 @@ func (m *RpbListKeysReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2828,7 +2827,7 @@ func (m *RpbListKeysReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2892,7 +2891,7 @@ func (m *RpbListKeysResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Keys", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2915,7 +2914,7 @@ func (m *RpbListKeysResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Done", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2975,7 +2974,7 @@ func (m *RpbMapRedReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Request", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2997,7 +2996,7 @@ func (m *RpbMapRedReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ContentType", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3061,7 +3060,7 @@ func (m *RpbMapRedResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Phase", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -3078,7 +3077,7 @@ func (m *RpbMapRedResp) Unmarshal(data []byte) error {
 			m.Phase = &v
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Response", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3100,7 +3099,7 @@ func (m *RpbMapRedResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Done", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3160,7 +3159,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3182,7 +3181,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Index", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3204,7 +3203,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Qtype", wireType)
 			}
 			var v RpbIndexReq_IndexQueryType
 			for shift := uint(0); ; shift += 7 {
@@ -3221,7 +3220,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			m.Qtype = &v
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3243,7 +3242,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field RangeMin", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3265,7 +3264,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field RangeMax", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3287,7 +3286,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ReturnTerms", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3305,7 +3304,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			m.ReturnTerms = &b
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Stream", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3323,7 +3322,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			m.Stream = &b
 		case 9:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MaxResults", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -3340,7 +3339,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			m.MaxResults = &v
 		case 10:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Continuation", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3362,7 +3361,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -3379,7 +3378,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 12:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3401,7 +3400,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 13:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field TermRegex", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3423,7 +3422,7 @@ func (m *RpbIndexReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 14:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field PaginationSort", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3483,7 +3482,7 @@ func (m *RpbIndexResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Keys", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3506,7 +3505,7 @@ func (m *RpbIndexResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Results", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3529,7 +3528,7 @@ func (m *RpbIndexResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Continuation", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3551,7 +3550,7 @@ func (m *RpbIndexResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Done", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3611,7 +3610,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3633,7 +3632,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field StartKey", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3655,7 +3654,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field EndKey", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3677,7 +3676,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field StartIncl", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3695,7 +3694,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			m.StartIncl = &b
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field EndIncl", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3713,7 +3712,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			m.EndIncl = &b
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Continuation", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3735,7 +3734,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MaxResults", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -3752,7 +3751,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			m.MaxResults = &v
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -3769,7 +3768,7 @@ func (m *RpbCSBucketReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 9:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3833,7 +3832,7 @@ func (m *RpbCSBucketResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Objects", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3856,7 +3855,7 @@ func (m *RpbCSBucketResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Continuation", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3878,7 +3877,7 @@ func (m *RpbCSBucketResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Done", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3938,7 +3937,7 @@ func (m *RpbIndexObject) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3960,7 +3959,7 @@ func (m *RpbIndexObject) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Object", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4029,7 +4028,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Value", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4051,7 +4050,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ContentType", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4073,7 +4072,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Charset", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4095,7 +4094,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ContentEncoding", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4117,7 +4116,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Vtag", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4139,7 +4138,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Links", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4162,7 +4161,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field LastMod", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4179,7 +4178,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			m.LastMod = &v
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field LastModUsecs", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4196,7 +4195,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			m.LastModUsecs = &v
 		case 9:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Usermeta", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4219,7 +4218,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 10:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Indexes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4242,7 +4241,7 @@ func (m *RpbContent) Unmarshal(data []byte) error {
 			index = postIndex
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Deleted", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -4302,7 +4301,7 @@ func (m *RpbLink) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4324,7 +4323,7 @@ func (m *RpbLink) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4346,7 +4345,7 @@ func (m *RpbLink) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Tag", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4410,7 +4409,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4432,7 +4431,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4454,7 +4453,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4473,7 +4472,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 			m.Amount = &v2
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field W", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4490,7 +4489,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 			m.W = &v
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Dw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4507,7 +4506,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 			m.Dw = &v
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4524,7 +4523,7 @@ func (m *RpbCounterUpdateReq) Unmarshal(data []byte) error {
 			m.Pw = &v
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Returnvalue", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -4584,7 +4583,7 @@ func (m *RpbCounterUpdateResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Value", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4645,7 +4644,7 @@ func (m *RpbCounterGetReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4667,7 +4666,7 @@ func (m *RpbCounterGetReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -4689,7 +4688,7 @@ func (m *RpbCounterGetReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field R", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4706,7 +4705,7 @@ func (m *RpbCounterGetReq) Unmarshal(data []byte) error {
 			m.R = &v
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pr", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -4723,7 +4722,7 @@ func (m *RpbCounterGetReq) Unmarshal(data []byte) error {
 			m.Pr = &v
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field BasicQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -4741,7 +4740,7 @@ func (m *RpbCounterGetReq) Unmarshal(data []byte) error {
 			m.BasicQuorum = &b
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NotfoundOk", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -4801,7 +4800,7 @@ func (m *RpbCounterGetResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Value", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4840,1404 +4839,6 @@ func (m *RpbCounterGetResp) Unmarshal(data []byte) error {
 		}
 	}
 	return nil
-}
-func (m *RpbGetClientIdResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbGetClientIdResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.ClientId != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.ClientId)))
-		i += copy(data[i:], m.ClientId)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbSetClientIdReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbSetClientIdReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.ClientId != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.ClientId)))
-		i += copy(data[i:], m.ClientId)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbGetReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbGetReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.R != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.R))
-	}
-	if m.Pr != nil {
-		data[i] = 0x20
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Pr))
-	}
-	if m.BasicQuorum != nil {
-		data[i] = 0x28
-		i++
-		if *m.BasicQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NotfoundOk != nil {
-		data[i] = 0x30
-		i++
-		if *m.NotfoundOk {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.IfModified != nil {
-		data[i] = 0x3a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.IfModified)))
-		i += copy(data[i:], m.IfModified)
-	}
-	if m.Head != nil {
-		data[i] = 0x40
-		i++
-		if *m.Head {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Deletedvclock != nil {
-		data[i] = 0x48
-		i++
-		if *m.Deletedvclock {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Timeout != nil {
-		data[i] = 0x50
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.SloppyQuorum != nil {
-		data[i] = 0x58
-		i++
-		if *m.SloppyQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NVal != nil {
-		data[i] = 0x60
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.NVal))
-	}
-	if m.Type != nil {
-		data[i] = 0x6a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbGetResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbGetResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Content) > 0 {
-		for _, msg := range m.Content {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.Vclock != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
-		i += copy(data[i:], m.Vclock)
-	}
-	if m.Unchanged != nil {
-		data[i] = 0x18
-		i++
-		if *m.Unchanged {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbPutReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbPutReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Vclock != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
-		i += copy(data[i:], m.Vclock)
-	}
-	if m.Content != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(m.Content.Size()))
-		n1, err := m.Content.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
-	}
-	if m.W != nil {
-		data[i] = 0x28
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.W))
-	}
-	if m.Dw != nil {
-		data[i] = 0x30
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Dw))
-	}
-	if m.ReturnBody != nil {
-		data[i] = 0x38
-		i++
-		if *m.ReturnBody {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Pw != nil {
-		data[i] = 0x40
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Pw))
-	}
-	if m.IfNotModified != nil {
-		data[i] = 0x48
-		i++
-		if *m.IfNotModified {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.IfNoneMatch != nil {
-		data[i] = 0x50
-		i++
-		if *m.IfNoneMatch {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.ReturnHead != nil {
-		data[i] = 0x58
-		i++
-		if *m.ReturnHead {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Timeout != nil {
-		data[i] = 0x60
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.Asis != nil {
-		data[i] = 0x68
-		i++
-		if *m.Asis {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.SloppyQuorum != nil {
-		data[i] = 0x70
-		i++
-		if *m.SloppyQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NVal != nil {
-		data[i] = 0x78
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.NVal))
-	}
-	if m.Type != nil {
-		data[i] = 0x82
-		i++
-		data[i] = 0x1
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbPutResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbPutResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Content) > 0 {
-		for _, msg := range m.Content {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.Vclock != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
-		i += copy(data[i:], m.Vclock)
-	}
-	if m.Key != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbDelReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbDelReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Rw != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Rw))
-	}
-	if m.Vclock != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
-		i += copy(data[i:], m.Vclock)
-	}
-	if m.R != nil {
-		data[i] = 0x28
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.R))
-	}
-	if m.W != nil {
-		data[i] = 0x30
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.W))
-	}
-	if m.Pr != nil {
-		data[i] = 0x38
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Pr))
-	}
-	if m.Pw != nil {
-		data[i] = 0x40
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Pw))
-	}
-	if m.Dw != nil {
-		data[i] = 0x48
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Dw))
-	}
-	if m.Timeout != nil {
-		data[i] = 0x50
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.SloppyQuorum != nil {
-		data[i] = 0x58
-		i++
-		if *m.SloppyQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NVal != nil {
-		data[i] = 0x60
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.NVal))
-	}
-	if m.Type != nil {
-		data[i] = 0x6a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbListBucketsReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbListBucketsReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Timeout != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.Stream != nil {
-		data[i] = 0x10
-		i++
-		if *m.Stream {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Type != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbListBucketsResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbListBucketsResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Buckets) > 0 {
-		for _, b := range m.Buckets {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if m.Done != nil {
-		data[i] = 0x10
-		i++
-		if *m.Done {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbListKeysReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbListKeysReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Timeout != nil {
-		data[i] = 0x10
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.Type != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbListKeysResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbListKeysResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Keys) > 0 {
-		for _, b := range m.Keys {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if m.Done != nil {
-		data[i] = 0x10
-		i++
-		if *m.Done {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbMapRedReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbMapRedReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Request != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Request)))
-		i += copy(data[i:], m.Request)
-	}
-	if m.ContentType != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.ContentType)))
-		i += copy(data[i:], m.ContentType)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbMapRedResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbMapRedResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Phase != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Phase))
-	}
-	if m.Response != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Response)))
-		i += copy(data[i:], m.Response)
-	}
-	if m.Done != nil {
-		data[i] = 0x18
-		i++
-		if *m.Done {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbIndexReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbIndexReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Index != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Index)))
-		i += copy(data[i:], m.Index)
-	}
-	if m.Qtype != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Qtype))
-	}
-	if m.Key != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.RangeMin != nil {
-		data[i] = 0x2a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.RangeMin)))
-		i += copy(data[i:], m.RangeMin)
-	}
-	if m.RangeMax != nil {
-		data[i] = 0x32
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.RangeMax)))
-		i += copy(data[i:], m.RangeMax)
-	}
-	if m.ReturnTerms != nil {
-		data[i] = 0x38
-		i++
-		if *m.ReturnTerms {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Stream != nil {
-		data[i] = 0x40
-		i++
-		if *m.Stream {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.MaxResults != nil {
-		data[i] = 0x48
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.MaxResults))
-	}
-	if m.Continuation != nil {
-		data[i] = 0x52
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
-		i += copy(data[i:], m.Continuation)
-	}
-	if m.Timeout != nil {
-		data[i] = 0x58
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.Type != nil {
-		data[i] = 0x62
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.TermRegex != nil {
-		data[i] = 0x6a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.TermRegex)))
-		i += copy(data[i:], m.TermRegex)
-	}
-	if m.PaginationSort != nil {
-		data[i] = 0x70
-		i++
-		if *m.PaginationSort {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbIndexResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbIndexResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Keys) > 0 {
-		for _, b := range m.Keys {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if len(m.Results) > 0 {
-		for _, msg := range m.Results {
-			data[i] = 0x12
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.Continuation != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
-		i += copy(data[i:], m.Continuation)
-	}
-	if m.Done != nil {
-		data[i] = 0x20
-		i++
-		if *m.Done {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbCSBucketReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbCSBucketReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.StartKey != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.StartKey)))
-		i += copy(data[i:], m.StartKey)
-	}
-	if m.EndKey != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.EndKey)))
-		i += copy(data[i:], m.EndKey)
-	}
-	if m.StartIncl != nil {
-		data[i] = 0x20
-		i++
-		if *m.StartIncl {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.EndIncl != nil {
-		data[i] = 0x28
-		i++
-		if *m.EndIncl {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Continuation != nil {
-		data[i] = 0x32
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
-		i += copy(data[i:], m.Continuation)
-	}
-	if m.MaxResults != nil {
-		data[i] = 0x38
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.MaxResults))
-	}
-	if m.Timeout != nil {
-		data[i] = 0x40
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
-	}
-	if m.Type != nil {
-		data[i] = 0x4a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbCSBucketResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbCSBucketResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Objects) > 0 {
-		for _, msg := range m.Objects {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.Continuation != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
-		i += copy(data[i:], m.Continuation)
-	}
-	if m.Done != nil {
-		data[i] = 0x18
-		i++
-		if *m.Done {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbIndexObject) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbIndexObject) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Key != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Object != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(m.Object.Size()))
-		n2, err := m.Object.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n2
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbContent) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbContent) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Value != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Value)))
-		i += copy(data[i:], m.Value)
-	}
-	if m.ContentType != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.ContentType)))
-		i += copy(data[i:], m.ContentType)
-	}
-	if m.Charset != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Charset)))
-		i += copy(data[i:], m.Charset)
-	}
-	if m.ContentEncoding != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.ContentEncoding)))
-		i += copy(data[i:], m.ContentEncoding)
-	}
-	if m.Vtag != nil {
-		data[i] = 0x2a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Vtag)))
-		i += copy(data[i:], m.Vtag)
-	}
-	if len(m.Links) > 0 {
-		for _, msg := range m.Links {
-			data[i] = 0x32
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.LastMod != nil {
-		data[i] = 0x38
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.LastMod))
-	}
-	if m.LastModUsecs != nil {
-		data[i] = 0x40
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.LastModUsecs))
-	}
-	if len(m.Usermeta) > 0 {
-		for _, msg := range m.Usermeta {
-			data[i] = 0x4a
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if len(m.Indexes) > 0 {
-		for _, msg := range m.Indexes {
-			data[i] = 0x52
-			i++
-			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.Deleted != nil {
-		data[i] = 0x58
-		i++
-		if *m.Deleted {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbLink) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbLink) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Tag != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Tag)))
-		i += copy(data[i:], m.Tag)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbCounterUpdateReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbCounterUpdateReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Amount != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakKv(data, i, uint64((uint64(*m.Amount)<<1)^uint64((*m.Amount>>63))))
-	}
-	if m.W != nil {
-		data[i] = 0x20
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.W))
-	}
-	if m.Dw != nil {
-		data[i] = 0x28
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Dw))
-	}
-	if m.Pw != nil {
-		data[i] = 0x30
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Pw))
-	}
-	if m.Returnvalue != nil {
-		data[i] = 0x38
-		i++
-		if *m.Returnvalue {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbCounterUpdateResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbCounterUpdateResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Value != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRiakKv(data, i, uint64((uint64(*m.Value)<<1)^uint64((*m.Value>>63))))
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbCounterGetReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbCounterGetReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.R != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.R))
-	}
-	if m.Pr != nil {
-		data[i] = 0x20
-		i++
-		i = encodeVarintRiakKv(data, i, uint64(*m.Pr))
-	}
-	if m.BasicQuorum != nil {
-		data[i] = 0x28
-		i++
-		if *m.BasicQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NotfoundOk != nil {
-		data[i] = 0x30
-		i++
-		if *m.NotfoundOk {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbCounterGetResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbCounterGetResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Value != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRiakKv(data, i, uint64((uint64(*m.Value)<<1)^uint64((*m.Value>>63))))
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func encodeFixed64RiakKv(data []byte, offset int, v uint64) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	data[offset+4] = uint8(v >> 32)
-	data[offset+5] = uint8(v >> 40)
-	data[offset+6] = uint8(v >> 48)
-	data[offset+7] = uint8(v >> 56)
-	return offset + 8
-}
-func encodeFixed32RiakKv(data []byte, offset int, v uint32) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	return offset + 4
-}
-func encodeVarintRiakKv(data []byte, offset int, v uint64) int {
-	for v >= 1<<7 {
-		data[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	data[offset] = uint8(v)
-	return offset + 1
 }
 func (m *RpbGetClientIdResp) Size() (n int) {
 	var l int
@@ -7825,6 +6426,1404 @@ func encodeVarintPopulateRiakKv(data []byte, v uint64) []byte {
 	}
 	data = append(data, uint8(v))
 	return data
+}
+func (m *RpbGetClientIdResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetClientIdResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.ClientId != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.ClientId)))
+		i += copy(data[i:], m.ClientId)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbSetClientIdReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbSetClientIdReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.ClientId != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.ClientId)))
+		i += copy(data[i:], m.ClientId)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbGetReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.R != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.R))
+	}
+	if m.Pr != nil {
+		data[i] = 0x20
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Pr))
+	}
+	if m.BasicQuorum != nil {
+		data[i] = 0x28
+		i++
+		if *m.BasicQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NotfoundOk != nil {
+		data[i] = 0x30
+		i++
+		if *m.NotfoundOk {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.IfModified != nil {
+		data[i] = 0x3a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.IfModified)))
+		i += copy(data[i:], m.IfModified)
+	}
+	if m.Head != nil {
+		data[i] = 0x40
+		i++
+		if *m.Head {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Deletedvclock != nil {
+		data[i] = 0x48
+		i++
+		if *m.Deletedvclock {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Timeout != nil {
+		data[i] = 0x50
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.SloppyQuorum != nil {
+		data[i] = 0x58
+		i++
+		if *m.SloppyQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NVal != nil {
+		data[i] = 0x60
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.NVal))
+	}
+	if m.Type != nil {
+		data[i] = 0x6a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbGetResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbGetResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Content) > 0 {
+		for _, msg := range m.Content {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.Vclock != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
+		i += copy(data[i:], m.Vclock)
+	}
+	if m.Unchanged != nil {
+		data[i] = 0x18
+		i++
+		if *m.Unchanged {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbPutReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbPutReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Vclock != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
+		i += copy(data[i:], m.Vclock)
+	}
+	if m.Content != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(m.Content.Size()))
+		n1, err := m.Content.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.W != nil {
+		data[i] = 0x28
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.W))
+	}
+	if m.Dw != nil {
+		data[i] = 0x30
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Dw))
+	}
+	if m.ReturnBody != nil {
+		data[i] = 0x38
+		i++
+		if *m.ReturnBody {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Pw != nil {
+		data[i] = 0x40
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Pw))
+	}
+	if m.IfNotModified != nil {
+		data[i] = 0x48
+		i++
+		if *m.IfNotModified {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.IfNoneMatch != nil {
+		data[i] = 0x50
+		i++
+		if *m.IfNoneMatch {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.ReturnHead != nil {
+		data[i] = 0x58
+		i++
+		if *m.ReturnHead {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Timeout != nil {
+		data[i] = 0x60
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.Asis != nil {
+		data[i] = 0x68
+		i++
+		if *m.Asis {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.SloppyQuorum != nil {
+		data[i] = 0x70
+		i++
+		if *m.SloppyQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NVal != nil {
+		data[i] = 0x78
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.NVal))
+	}
+	if m.Type != nil {
+		data[i] = 0x82
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbPutResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbPutResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Content) > 0 {
+		for _, msg := range m.Content {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.Vclock != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
+		i += copy(data[i:], m.Vclock)
+	}
+	if m.Key != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbDelReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbDelReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Rw != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Rw))
+	}
+	if m.Vclock != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Vclock)))
+		i += copy(data[i:], m.Vclock)
+	}
+	if m.R != nil {
+		data[i] = 0x28
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.R))
+	}
+	if m.W != nil {
+		data[i] = 0x30
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.W))
+	}
+	if m.Pr != nil {
+		data[i] = 0x38
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Pr))
+	}
+	if m.Pw != nil {
+		data[i] = 0x40
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Pw))
+	}
+	if m.Dw != nil {
+		data[i] = 0x48
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Dw))
+	}
+	if m.Timeout != nil {
+		data[i] = 0x50
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.SloppyQuorum != nil {
+		data[i] = 0x58
+		i++
+		if *m.SloppyQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NVal != nil {
+		data[i] = 0x60
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.NVal))
+	}
+	if m.Type != nil {
+		data[i] = 0x6a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbListBucketsReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbListBucketsReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Timeout != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.Stream != nil {
+		data[i] = 0x10
+		i++
+		if *m.Stream {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Type != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbListBucketsResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbListBucketsResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Buckets) > 0 {
+		for _, b := range m.Buckets {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if m.Done != nil {
+		data[i] = 0x10
+		i++
+		if *m.Done {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbListKeysReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbListKeysReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Timeout != nil {
+		data[i] = 0x10
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.Type != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbListKeysResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbListKeysResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Keys) > 0 {
+		for _, b := range m.Keys {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if m.Done != nil {
+		data[i] = 0x10
+		i++
+		if *m.Done {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbMapRedReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbMapRedReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Request != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Request)))
+		i += copy(data[i:], m.Request)
+	}
+	if m.ContentType != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.ContentType)))
+		i += copy(data[i:], m.ContentType)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbMapRedResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbMapRedResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Phase != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Phase))
+	}
+	if m.Response != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Response)))
+		i += copy(data[i:], m.Response)
+	}
+	if m.Done != nil {
+		data[i] = 0x18
+		i++
+		if *m.Done {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbIndexReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbIndexReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Index != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Index)))
+		i += copy(data[i:], m.Index)
+	}
+	if m.Qtype != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Qtype))
+	}
+	if m.Key != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.RangeMin != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.RangeMin)))
+		i += copy(data[i:], m.RangeMin)
+	}
+	if m.RangeMax != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.RangeMax)))
+		i += copy(data[i:], m.RangeMax)
+	}
+	if m.ReturnTerms != nil {
+		data[i] = 0x38
+		i++
+		if *m.ReturnTerms {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Stream != nil {
+		data[i] = 0x40
+		i++
+		if *m.Stream {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.MaxResults != nil {
+		data[i] = 0x48
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.MaxResults))
+	}
+	if m.Continuation != nil {
+		data[i] = 0x52
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
+		i += copy(data[i:], m.Continuation)
+	}
+	if m.Timeout != nil {
+		data[i] = 0x58
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.Type != nil {
+		data[i] = 0x62
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.TermRegex != nil {
+		data[i] = 0x6a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.TermRegex)))
+		i += copy(data[i:], m.TermRegex)
+	}
+	if m.PaginationSort != nil {
+		data[i] = 0x70
+		i++
+		if *m.PaginationSort {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbIndexResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbIndexResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Keys) > 0 {
+		for _, b := range m.Keys {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if len(m.Results) > 0 {
+		for _, msg := range m.Results {
+			data[i] = 0x12
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.Continuation != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
+		i += copy(data[i:], m.Continuation)
+	}
+	if m.Done != nil {
+		data[i] = 0x20
+		i++
+		if *m.Done {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCSBucketReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCSBucketReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.StartKey != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.StartKey)))
+		i += copy(data[i:], m.StartKey)
+	}
+	if m.EndKey != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.EndKey)))
+		i += copy(data[i:], m.EndKey)
+	}
+	if m.StartIncl != nil {
+		data[i] = 0x20
+		i++
+		if *m.StartIncl {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.EndIncl != nil {
+		data[i] = 0x28
+		i++
+		if *m.EndIncl {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Continuation != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
+		i += copy(data[i:], m.Continuation)
+	}
+	if m.MaxResults != nil {
+		data[i] = 0x38
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.MaxResults))
+	}
+	if m.Timeout != nil {
+		data[i] = 0x40
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Timeout))
+	}
+	if m.Type != nil {
+		data[i] = 0x4a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCSBucketResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCSBucketResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Objects) > 0 {
+		for _, msg := range m.Objects {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.Continuation != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Continuation)))
+		i += copy(data[i:], m.Continuation)
+	}
+	if m.Done != nil {
+		data[i] = 0x18
+		i++
+		if *m.Done {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbIndexObject) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbIndexObject) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Key != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Object != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(m.Object.Size()))
+		n2, err := m.Object.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbContent) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbContent) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Value != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Value)))
+		i += copy(data[i:], m.Value)
+	}
+	if m.ContentType != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.ContentType)))
+		i += copy(data[i:], m.ContentType)
+	}
+	if m.Charset != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Charset)))
+		i += copy(data[i:], m.Charset)
+	}
+	if m.ContentEncoding != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.ContentEncoding)))
+		i += copy(data[i:], m.ContentEncoding)
+	}
+	if m.Vtag != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Vtag)))
+		i += copy(data[i:], m.Vtag)
+	}
+	if len(m.Links) > 0 {
+		for _, msg := range m.Links {
+			data[i] = 0x32
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.LastMod != nil {
+		data[i] = 0x38
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.LastMod))
+	}
+	if m.LastModUsecs != nil {
+		data[i] = 0x40
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.LastModUsecs))
+	}
+	if len(m.Usermeta) > 0 {
+		for _, msg := range m.Usermeta {
+			data[i] = 0x4a
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if len(m.Indexes) > 0 {
+		for _, msg := range m.Indexes {
+			data[i] = 0x52
+			i++
+			i = encodeVarintRiakKv(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.Deleted != nil {
+		data[i] = 0x58
+		i++
+		if *m.Deleted {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbLink) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbLink) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Tag != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Tag)))
+		i += copy(data[i:], m.Tag)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCounterUpdateReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCounterUpdateReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Amount != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakKv(data, i, uint64((uint64(*m.Amount)<<1)^uint64((*m.Amount>>63))))
+	}
+	if m.W != nil {
+		data[i] = 0x20
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.W))
+	}
+	if m.Dw != nil {
+		data[i] = 0x28
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Dw))
+	}
+	if m.Pw != nil {
+		data[i] = 0x30
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Pw))
+	}
+	if m.Returnvalue != nil {
+		data[i] = 0x38
+		i++
+		if *m.Returnvalue {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCounterUpdateResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCounterUpdateResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Value != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiakKv(data, i, uint64((uint64(*m.Value)<<1)^uint64((*m.Value>>63))))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCounterGetReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCounterGetReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.R != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.R))
+	}
+	if m.Pr != nil {
+		data[i] = 0x20
+		i++
+		i = encodeVarintRiakKv(data, i, uint64(*m.Pr))
+	}
+	if m.BasicQuorum != nil {
+		data[i] = 0x28
+		i++
+		if *m.BasicQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NotfoundOk != nil {
+		data[i] = 0x30
+		i++
+		if *m.NotfoundOk {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbCounterGetResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbCounterGetResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Value != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiakKv(data, i, uint64((uint64(*m.Value)<<1)^uint64((*m.Value>>63))))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func encodeFixed64RiakKv(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32RiakKv(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintRiakKv(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
 }
 func (this *RpbGetClientIdResp) Equal(that interface{}) bool {
 	if that == nil {

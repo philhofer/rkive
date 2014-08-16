@@ -36,11 +36,13 @@ type RiakError struct {
 // of error returned when multiple
 // siblings are retrieved for an object.
 type ErrMultipleResponses struct {
-	Responses []*Blob
+	Bucket      string
+	Key         string
+	NumSiblings int
 }
 
 func (m *ErrMultipleResponses) Error() string {
-	return fmt.Sprintf("%d siblings found", len(m.Responses))
+	return fmt.Sprintf("%d siblings found", m.NumSiblings)
 }
 
 // Blob is a generic riak key/value container
@@ -50,16 +52,12 @@ type Blob struct {
 }
 
 // generate *ErrMultipleResponses from multiple contents
-func handleMultiple(vs []*rpbc.RpbContent) *ErrMultipleResponses {
-	nc := len(vs)
-	em := &ErrMultipleResponses{
-		Responses: make([]*Blob, nc),
+func handleMultiple(n int, key, bucket string) *ErrMultipleResponses {
+	return &ErrMultipleResponses{
+		Bucket:      bucket,
+		Key:         key,
+		NumSiblings: n,
 	}
-	for i, ctnt := range vs {
-		em.Responses[i] = &Blob{RiakInfo: &Info{}, Content: nil}
-		_ = readContent(em.Responses[i], ctnt)
-	}
-	return em
 }
 
 // Blob satisfies the Object interface.
@@ -317,7 +315,7 @@ func (c *Client) err(n *node) {
 // writes the message to the node with
 // the appropriate leading message size
 // and the given message code
-func writeMsg(c *Client, n *node, msg []byte, code byte) error {
+func writeMsg(n *node, msg []byte, code byte) error {
 	// bigendian length + code byte
 	var lead [5]byte
 	msglen := uint32(len(msg) + 1)
@@ -341,7 +339,7 @@ func writeMsg(c *Client, n *node, msg []byte, code byte) error {
 }
 
 // readLead reads the size of the inbound message
-func readLead(c *Client, n *node) (int, byte, error) {
+func readLead(n *node) (int, byte, error) {
 	var lead [5]byte
 	_, err := n.Read(lead[:])
 	if err != nil {
@@ -355,7 +353,7 @@ func readLead(c *Client, n *node) (int, byte, error) {
 
 // readBody reads from the node into 'body'
 // body should be sized by the result from readLead
-func readBody(c *Client, n *node, body []byte) error {
+func readBody(n *node, body []byte) error {
 	_, err := n.Read(body)
 	if err != nil {
 		n.Err()
@@ -372,7 +370,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 	var err error
 
-	err = writeMsg(c, node, msg, code)
+	err = writeMsg(node, msg, code)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -380,7 +378,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	// read lead
 	var msglen int
 	// read length and code
-	msglen, code, err = readLead(c, node)
+	msglen, code, err = readLead(node)
 	if err != nil {
 		return nil, code, err
 	}
@@ -397,7 +395,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 
 	// read body
-	err = readBody(c, node, msg)
+	err = readBody(node, msg)
 	if err != nil {
 		return msg, code, err
 	}
@@ -467,7 +465,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 	var code byte
 	var err error
 
-	msglen, code, err = readLead(s.c, s.node)
+	msglen, code, err = readLead(s.node)
 	if err != nil {
 		return true, code, err
 	}
@@ -476,7 +474,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 	buf.setSz(msglen)
 
 	// read into s.bts
-	err = readBody(s.c, s.node, buf.Body)
+	err = readBody(s.node, buf.Body)
 	if err != nil {
 		putBuf(buf)
 		return true, code, err
@@ -526,7 +524,7 @@ func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 		return nil, ErrAck
 	}
 
-	err = writeMsg(c, node, buf.Body, code)
+	err = writeMsg(node, buf.Body, code)
 	putBuf(buf)
 	if err != nil {
 		return nil, err

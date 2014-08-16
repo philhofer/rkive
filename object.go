@@ -74,7 +74,7 @@ func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
 		// read into new empty
 		nom := om.NewEmpty()
 		err = readContent(nom, ctt)
-		nom.Info().vclock = ctt.Vtag
+		nom.Info().vclock = append(nom.Info().vclock[0:0], ctt.Vtag...)
 		if err != nil {
 			return err
 		}
@@ -82,7 +82,7 @@ func handleMerge(om ObjectM, ct []*rpbc.RpbContent) error {
 
 		// transfer vclocks if we didn't have one before
 		if len(om.Info().vclock) == 0 && len(nom.Info().vclock) > 0 {
-			om.Info().vclock = nom.Info().vclock
+			om.Info().vclock = append(om.Info().vclock, nom.Info().vclock...)
 		}
 	}
 	return nil
@@ -108,46 +108,31 @@ type Info struct {
 }
 
 func readHeader(o Object, ctnt *rpbc.RpbContent) {
-	if o.Info() == nil {
-		panic("nil Info")
-	}
-	o.Info().ctype = ctnt.GetContentType()
-	o.Info().links = ctnt.GetLinks()
-	o.Info().idxs = ctnt.GetIndexes()
-	o.Info().meta = ctnt.GetUsermeta()
+	// ctnt is not a leaky parameter if we use append
+	// confirmed that 6g does not escape ctnt
+	o.Info().ctype = append(o.Info().ctype[0:0], ctnt.ContentType...)
+	o.Info().links = append(o.Info().links[0:0], ctnt.Links...)
+	o.Info().idxs = append(o.Info().idxs[0:0], ctnt.Indexes...)
+	o.Info().meta = append(o.Info().meta[0:0], ctnt.Usermeta...)
 }
 
 // read into 'o' from content
 func readContent(o Object, ctnt *rpbc.RpbContent) error {
-	// just in case
-	if o.Info() == nil {
-		panic("nil Info")
-	}
-
-	o.Info().ctype = ctnt.ContentType
-	o.Info().links = ctnt.Links
-	o.Info().idxs = ctnt.Indexes
-	o.Info().meta = ctnt.Usermeta
-
-	// read content
+	readHeader(o, ctnt)
 	return o.Unmarshal(ctnt.Value)
 }
 
 // write into content from 'o'
 func writeContent(o Object, ctnt *rpbc.RpbContent) error {
-	if o.Info() == nil {
-		panic("nil Info")
-	}
-
 	var err error
 	ctnt.Value, err = o.Marshal()
 	if err != nil {
 		return err
 	}
-	ctnt.ContentType = o.Info().ctype
-	ctnt.Links = o.Info().links
-	ctnt.Usermeta = o.Info().meta
-	ctnt.Indexes = o.Info().idxs
+	ctnt.ContentType = append(ctnt.ContentType[0:0], o.Info().ctype...)
+	ctnt.Links = append(ctnt.Links[0:0], o.Info().links...)
+	ctnt.Usermeta = append(ctnt.Usermeta[0:0], o.Info().meta...)
+	ctnt.Indexes = append(ctnt.Indexes[0:0], o.Info().idxs...)
 	return nil
 }
 

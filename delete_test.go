@@ -7,17 +7,15 @@ import (
 )
 
 func TestDelete(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 
 	ob := &TestObject{
 		info: &Info{},
 		Data: []byte("Blah."),
 	}
 
-	err = cl.New(ob, "testbucket", nil, nil)
+	err := cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,5 +29,4 @@ func TestDelete(t *testing.T) {
 	if err != ErrNotFound {
 		t.Fatalf("Expected ErrNotFound; got %s", err)
 	}
-	cl.Close()
 }

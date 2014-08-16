@@ -7,10 +7,8 @@ import (
 )
 
 func TestIndexLookup(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 
 	ob := &TestObject{
 		info: &Info{},
@@ -21,7 +19,7 @@ func TestIndexLookup(t *testing.T) {
 
 	bucket := cl.Bucket("testbucket")
 
-	err = bucket.New(ob, nil)
+	err := bucket.New(ob, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,10 +57,8 @@ func TestIndexLookup(t *testing.T) {
 }
 
 func TestIndexRange(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 
 	ob := &TestObject{
 		info: &Info{},
@@ -71,7 +67,7 @@ func TestIndexRange(t *testing.T) {
 
 	ob.Info().AddIndexInt("testNum", 35)
 
-	err = cl.New(ob, "testbucket", nil, nil)
+	err := cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
