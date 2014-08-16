@@ -16,23 +16,21 @@
 package rpbc
 
 import proto "code.google.com/p/gogoprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
 // discarding unused import gogoproto "gogo.pb"
-//import rpbc1 "riak.pb"
 
 import io1 "io"
 import unsafe "unsafe"
+import fmt1 "fmt"
 import code_google_com_p_gogoprotobuf_proto1 "code.google.com/p/gogoprotobuf/proto"
 
 import unsafe1 "unsafe"
 
 import bytes1 "bytes"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type RpbSearchDoc struct {
@@ -194,7 +192,7 @@ func (m *RpbSearchDoc) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Fields", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -259,7 +257,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Q", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -281,7 +279,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Index", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -303,7 +301,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Rows", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -320,7 +318,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			m.Rows = &v
 		case 4:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Start", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -337,7 +335,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			m.Start = &v
 		case 5:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Sort", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -359,7 +357,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Filter", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -381,7 +379,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Df", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -403,7 +401,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 8:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Op", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -425,7 +423,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 9:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Fl", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -448,7 +446,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 10:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Presort", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -512,7 +510,7 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Docs", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -535,7 +533,7 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 5 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MaxScore", wireType)
 			}
 			var v float32
 			if index+4 > l {
@@ -546,7 +544,7 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 			m.MaxScore = &v
 		case 3:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NumFound", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -583,188 +581,6 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 		}
 	}
 	return nil
-}
-func (m *RpbSearchDoc) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbSearchDoc) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Fields) > 0 {
-		for _, msg := range m.Fields {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakSearch(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbSearchQueryReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbSearchQueryReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Q != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Q)))
-		i += copy(data[i:], m.Q)
-	}
-	if m.Index != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Index)))
-		i += copy(data[i:], m.Index)
-	}
-	if m.Rows != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(*m.Rows))
-	}
-	if m.Start != nil {
-		data[i] = 0x20
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(*m.Start))
-	}
-	if m.Sort != nil {
-		data[i] = 0x2a
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Sort)))
-		i += copy(data[i:], m.Sort)
-	}
-	if m.Filter != nil {
-		data[i] = 0x32
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Filter)))
-		i += copy(data[i:], m.Filter)
-	}
-	if m.Df != nil {
-		data[i] = 0x3a
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Df)))
-		i += copy(data[i:], m.Df)
-	}
-	if m.Op != nil {
-		data[i] = 0x42
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Op)))
-		i += copy(data[i:], m.Op)
-	}
-	if len(m.Fl) > 0 {
-		for _, b := range m.Fl {
-			data[i] = 0x4a
-			i++
-			i = encodeVarintRiakSearch(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if m.Presort != nil {
-		data[i] = 0x52
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(len(m.Presort)))
-		i += copy(data[i:], m.Presort)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbSearchQueryResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbSearchQueryResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Docs) > 0 {
-		for _, msg := range m.Docs {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakSearch(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.MaxScore != nil {
-		data[i] = 0x15
-		i++
-		*(*float32)(unsafe1.Pointer(&data[i])) = *m.MaxScore
-		i += 4
-	}
-	if m.NumFound != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakSearch(data, i, uint64(*m.NumFound))
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func encodeFixed64RiakSearch(data []byte, offset int, v uint64) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	data[offset+4] = uint8(v >> 32)
-	data[offset+5] = uint8(v >> 40)
-	data[offset+6] = uint8(v >> 48)
-	data[offset+7] = uint8(v >> 56)
-	return offset + 8
-}
-func encodeFixed32RiakSearch(data []byte, offset int, v uint32) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	return offset + 4
-}
-func encodeVarintRiakSearch(data []byte, offset int, v uint64) int {
-	for v >= 1<<7 {
-		data[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	data[offset] = uint8(v)
-	return offset + 1
 }
 func (m *RpbSearchDoc) Size() (n int) {
 	var l int
@@ -1044,6 +860,188 @@ func encodeVarintPopulateRiakSearch(data []byte, v uint64) []byte {
 	}
 	data = append(data, uint8(v))
 	return data
+}
+func (m *RpbSearchDoc) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbSearchDoc) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Fields) > 0 {
+		for _, msg := range m.Fields {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakSearch(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbSearchQueryReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbSearchQueryReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Q != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Q)))
+		i += copy(data[i:], m.Q)
+	}
+	if m.Index != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Index)))
+		i += copy(data[i:], m.Index)
+	}
+	if m.Rows != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(*m.Rows))
+	}
+	if m.Start != nil {
+		data[i] = 0x20
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(*m.Start))
+	}
+	if m.Sort != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Sort)))
+		i += copy(data[i:], m.Sort)
+	}
+	if m.Filter != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Filter)))
+		i += copy(data[i:], m.Filter)
+	}
+	if m.Df != nil {
+		data[i] = 0x3a
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Df)))
+		i += copy(data[i:], m.Df)
+	}
+	if m.Op != nil {
+		data[i] = 0x42
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Op)))
+		i += copy(data[i:], m.Op)
+	}
+	if len(m.Fl) > 0 {
+		for _, b := range m.Fl {
+			data[i] = 0x4a
+			i++
+			i = encodeVarintRiakSearch(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if m.Presort != nil {
+		data[i] = 0x52
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(len(m.Presort)))
+		i += copy(data[i:], m.Presort)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbSearchQueryResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbSearchQueryResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Docs) > 0 {
+		for _, msg := range m.Docs {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakSearch(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.MaxScore != nil {
+		data[i] = 0x15
+		i++
+		*(*float32)(unsafe1.Pointer(&data[i])) = *m.MaxScore
+		i += 4
+	}
+	if m.NumFound != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakSearch(data, i, uint64(*m.NumFound))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func encodeFixed64RiakSearch(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32RiakSearch(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintRiakSearch(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
 }
 func (this *RpbSearchDoc) Equal(that interface{}) bool {
 	if that == nil {

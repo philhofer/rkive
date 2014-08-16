@@ -25,20 +25,19 @@
 package rpbc
 
 import proto "code.google.com/p/gogoprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
 // discarding unused import gogoproto "gogo.pb"
 // discarding unused import rpbc1 "riak.pb"
 
 import io1 "io"
+import fmt1 "fmt"
 import code_google_com_p_gogoprotobuf_proto1 "code.google.com/p/gogoprotobuf/proto"
 
 import bytes1 "bytes"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 //
@@ -807,7 +806,7 @@ func (m *MapField) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -829,7 +828,7 @@ func (m *MapField) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var v MapField_MapFieldType
 			for shift := uint(0); ; shift += 7 {
@@ -888,7 +887,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Field", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -915,7 +914,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field CounterValue", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -934,7 +933,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			m.CounterValue = &v2
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SetValue", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -957,7 +956,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field RegisterValue", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -979,7 +978,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field FlagValue", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -997,7 +996,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			m.FlagValue = &b
 		case 6:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MapValue", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1062,7 +1061,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1084,7 +1083,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1106,7 +1105,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1128,7 +1127,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field R", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1145,7 +1144,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.R = &v
 		case 5:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pr", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1162,7 +1161,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.Pr = &v
 		case 6:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field BasicQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1180,7 +1179,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.BasicQuorum = &b
 		case 7:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NotfoundOk", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1198,7 +1197,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.NotfoundOk = &b
 		case 8:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1215,7 +1214,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 9:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SloppyQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1233,7 +1232,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 10:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NVal", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1250,7 +1249,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 11:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field IncludeContext", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1310,7 +1309,7 @@ func (m *DtValue) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field CounterValue", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1329,7 +1328,7 @@ func (m *DtValue) Unmarshal(data []byte) error {
 			m.CounterValue = &v2
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SetValue", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1352,7 +1351,7 @@ func (m *DtValue) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MapValue", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1417,7 +1416,7 @@ func (m *DtFetchResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Context", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1439,7 +1438,7 @@ func (m *DtFetchResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var v DtFetchResp_DataType
 			for shift := uint(0); ; shift += 7 {
@@ -1456,7 +1455,7 @@ func (m *DtFetchResp) Unmarshal(data []byte) error {
 			m.Type = &v
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Value", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1525,7 +1524,7 @@ func (m *CounterOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Increment", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1586,7 +1585,7 @@ func (m *SetOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Adds", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1609,7 +1608,7 @@ func (m *SetOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Removes", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1674,7 +1673,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Field", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1701,7 +1700,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field CounterOp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1728,7 +1727,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SetOp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1755,7 +1754,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field RegisterOp", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1777,7 +1776,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field FlagOp", wireType)
 			}
 			var v MapUpdate_FlagOp
 			for shift := uint(0); ; shift += 7 {
@@ -1794,7 +1793,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			m.FlagOp = &v
 		case 6:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MapOp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1863,7 +1862,7 @@ func (m *MapOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Removes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1886,7 +1885,7 @@ func (m *MapOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Updates", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1951,7 +1950,7 @@ func (m *DtOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field CounterOp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1978,7 +1977,7 @@ func (m *DtOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SetOp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2005,7 +2004,7 @@ func (m *DtOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MapOp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2074,7 +2073,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Bucket", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2096,7 +2095,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2118,7 +2117,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2140,7 +2139,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Context", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2162,7 +2161,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Op", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2189,7 +2188,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field W", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2206,7 +2205,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.W = &v
 		case 7:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Dw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2223,7 +2222,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.Dw = &v
 		case 8:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Pw", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2240,7 +2239,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.Pw = &v
 		case 9:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field ReturnBody", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2258,7 +2257,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.ReturnBody = &b
 		case 10:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2275,7 +2274,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 11:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SloppyQuorum", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2293,7 +2292,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 12:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NVal", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2310,7 +2309,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 13:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field IncludeContext", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2370,7 +2369,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2392,7 +2391,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Context", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2414,7 +2413,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field CounterValue", wireType)
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2433,7 +2432,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			m.CounterValue = &v2
 		case 4:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field SetValue", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2456,7 +2455,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field MapValue", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2499,711 +2498,6 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 		}
 	}
 	return nil
-}
-func (m *MapField) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *MapField) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Name != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.Type != nil {
-		data[i] = 0x10
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Type))
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *MapEntry) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *MapEntry) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Field != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.Field.Size()))
-		n1, err := m.Field.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
-	}
-	if m.CounterValue != nil {
-		data[i] = 0x10
-		i++
-		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.CounterValue)<<1)^uint64((*m.CounterValue>>63))))
-	}
-	if len(m.SetValue) > 0 {
-		for _, b := range m.SetValue {
-			data[i] = 0x1a
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if m.RegisterValue != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.RegisterValue)))
-		i += copy(data[i:], m.RegisterValue)
-	}
-	if m.FlagValue != nil {
-		data[i] = 0x28
-		i++
-		if *m.FlagValue {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if len(m.MapValue) > 0 {
-		for _, msg := range m.MapValue {
-			data[i] = 0x32
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *DtFetchReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *DtFetchReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Type != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.R != nil {
-		data[i] = 0x20
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.R))
-	}
-	if m.Pr != nil {
-		data[i] = 0x28
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Pr))
-	}
-	if m.BasicQuorum != nil {
-		data[i] = 0x30
-		i++
-		if *m.BasicQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NotfoundOk != nil {
-		data[i] = 0x38
-		i++
-		if *m.NotfoundOk {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Timeout != nil {
-		data[i] = 0x40
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Timeout))
-	}
-	if m.SloppyQuorum != nil {
-		data[i] = 0x48
-		i++
-		if *m.SloppyQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NVal != nil {
-		data[i] = 0x50
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.NVal))
-	}
-	if m.IncludeContext != nil {
-		data[i] = 0x58
-		i++
-		if *m.IncludeContext {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *DtValue) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *DtValue) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.CounterValue != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.CounterValue)<<1)^uint64((*m.CounterValue>>63))))
-	}
-	if len(m.SetValue) > 0 {
-		for _, b := range m.SetValue {
-			data[i] = 0x12
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if len(m.MapValue) > 0 {
-		for _, msg := range m.MapValue {
-			data[i] = 0x1a
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *DtFetchResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *DtFetchResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Context != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Context)))
-		i += copy(data[i:], m.Context)
-	}
-	if m.Type != nil {
-		data[i] = 0x10
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Type))
-	}
-	if m.Value != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.Value.Size()))
-		n2, err := m.Value.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n2
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *CounterOp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *CounterOp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Increment != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.Increment)<<1)^uint64((*m.Increment>>63))))
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *SetOp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *SetOp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Adds) > 0 {
-		for _, b := range m.Adds {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if len(m.Removes) > 0 {
-		for _, b := range m.Removes {
-			data[i] = 0x12
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *MapUpdate) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *MapUpdate) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Field != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.Field.Size()))
-		n3, err := m.Field.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n3
-	}
-	if m.CounterOp != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.CounterOp.Size()))
-		n4, err := m.CounterOp.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n4
-	}
-	if m.SetOp != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.SetOp.Size()))
-		n5, err := m.SetOp.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n5
-	}
-	if m.RegisterOp != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.RegisterOp)))
-		i += copy(data[i:], m.RegisterOp)
-	}
-	if m.FlagOp != nil {
-		data[i] = 0x28
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.FlagOp))
-	}
-	if m.MapOp != nil {
-		data[i] = 0x32
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.MapOp.Size()))
-		n6, err := m.MapOp.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n6
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *MapOp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *MapOp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Removes) > 0 {
-		for _, msg := range m.Removes {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if len(m.Updates) > 0 {
-		for _, msg := range m.Updates {
-			data[i] = 0x12
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *DtOp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *DtOp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.CounterOp != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.CounterOp.Size()))
-		n7, err := m.CounterOp.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n7
-	}
-	if m.SetOp != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.SetOp.Size()))
-		n8, err := m.SetOp.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n8
-	}
-	if m.MapOp != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.MapOp.Size()))
-		n9, err := m.MapOp.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n9
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *DtUpdateReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *DtUpdateReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Bucket != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Bucket)))
-		i += copy(data[i:], m.Bucket)
-	}
-	if m.Key != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Type != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Type)))
-		i += copy(data[i:], m.Type)
-	}
-	if m.Context != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Context)))
-		i += copy(data[i:], m.Context)
-	}
-	if m.Op != nil {
-		data[i] = 0x2a
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(m.Op.Size()))
-		n10, err := m.Op.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n10
-	}
-	if m.W != nil {
-		data[i] = 0x30
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.W))
-	}
-	if m.Dw != nil {
-		data[i] = 0x38
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Dw))
-	}
-	if m.Pw != nil {
-		data[i] = 0x40
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Pw))
-	}
-	if m.ReturnBody != nil {
-		data[i] = 0x48
-		i++
-		if *m.ReturnBody {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.Timeout != nil {
-		data[i] = 0x50
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.Timeout))
-	}
-	if m.SloppyQuorum != nil {
-		data[i] = 0x58
-		i++
-		if *m.SloppyQuorum {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.NVal != nil {
-		data[i] = 0x60
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(*m.NVal))
-	}
-	if m.IncludeContext != nil {
-		data[i] = 0x68
-		i++
-		if *m.IncludeContext {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *DtUpdateResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *DtUpdateResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Key != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Key)))
-		i += copy(data[i:], m.Key)
-	}
-	if m.Context != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakDt(data, i, uint64(len(m.Context)))
-		i += copy(data[i:], m.Context)
-	}
-	if m.CounterValue != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.CounterValue)<<1)^uint64((*m.CounterValue>>63))))
-	}
-	if len(m.SetValue) > 0 {
-		for _, b := range m.SetValue {
-			data[i] = 0x22
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(len(b)))
-			i += copy(data[i:], b)
-		}
-	}
-	if len(m.MapValue) > 0 {
-		for _, msg := range m.MapValue {
-			data[i] = 0x2a
-			i++
-			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func encodeFixed64RiakDt(data []byte, offset int, v uint64) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	data[offset+4] = uint8(v >> 32)
-	data[offset+5] = uint8(v >> 40)
-	data[offset+6] = uint8(v >> 48)
-	data[offset+7] = uint8(v >> 56)
-	return offset + 8
-}
-func encodeFixed32RiakDt(data []byte, offset int, v uint32) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	return offset + 4
-}
-func encodeVarintRiakDt(data []byte, offset int, v uint64) int {
-	for v >= 1<<7 {
-		data[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	data[offset] = uint8(v)
-	return offset + 1
 }
 func (m *MapField) Size() (n int) {
 	var l int
@@ -4001,6 +3295,711 @@ func encodeVarintPopulateRiakDt(data []byte, v uint64) []byte {
 	}
 	data = append(data, uint8(v))
 	return data
+}
+func (m *MapField) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *MapField) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Name != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Type != nil {
+		data[i] = 0x10
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Type))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *MapEntry) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *MapEntry) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Field != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.Field.Size()))
+		n1, err := m.Field.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.CounterValue != nil {
+		data[i] = 0x10
+		i++
+		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.CounterValue)<<1)^uint64((*m.CounterValue>>63))))
+	}
+	if len(m.SetValue) > 0 {
+		for _, b := range m.SetValue {
+			data[i] = 0x1a
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if m.RegisterValue != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.RegisterValue)))
+		i += copy(data[i:], m.RegisterValue)
+	}
+	if m.FlagValue != nil {
+		data[i] = 0x28
+		i++
+		if *m.FlagValue {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if len(m.MapValue) > 0 {
+		for _, msg := range m.MapValue {
+			data[i] = 0x32
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *DtFetchReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DtFetchReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Type != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.R != nil {
+		data[i] = 0x20
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.R))
+	}
+	if m.Pr != nil {
+		data[i] = 0x28
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Pr))
+	}
+	if m.BasicQuorum != nil {
+		data[i] = 0x30
+		i++
+		if *m.BasicQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NotfoundOk != nil {
+		data[i] = 0x38
+		i++
+		if *m.NotfoundOk {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Timeout != nil {
+		data[i] = 0x40
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Timeout))
+	}
+	if m.SloppyQuorum != nil {
+		data[i] = 0x48
+		i++
+		if *m.SloppyQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NVal != nil {
+		data[i] = 0x50
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.NVal))
+	}
+	if m.IncludeContext != nil {
+		data[i] = 0x58
+		i++
+		if *m.IncludeContext {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *DtValue) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DtValue) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.CounterValue != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.CounterValue)<<1)^uint64((*m.CounterValue>>63))))
+	}
+	if len(m.SetValue) > 0 {
+		for _, b := range m.SetValue {
+			data[i] = 0x12
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if len(m.MapValue) > 0 {
+		for _, msg := range m.MapValue {
+			data[i] = 0x1a
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *DtFetchResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DtFetchResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Context != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Context)))
+		i += copy(data[i:], m.Context)
+	}
+	if m.Type != nil {
+		data[i] = 0x10
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Type))
+	}
+	if m.Value != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.Value.Size()))
+		n2, err := m.Value.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *CounterOp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *CounterOp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Increment != nil {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.Increment)<<1)^uint64((*m.Increment>>63))))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *SetOp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *SetOp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Adds) > 0 {
+		for _, b := range m.Adds {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if len(m.Removes) > 0 {
+		for _, b := range m.Removes {
+			data[i] = 0x12
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *MapUpdate) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *MapUpdate) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Field != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.Field.Size()))
+		n3, err := m.Field.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
+	}
+	if m.CounterOp != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.CounterOp.Size()))
+		n4, err := m.CounterOp.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n4
+	}
+	if m.SetOp != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.SetOp.Size()))
+		n5, err := m.SetOp.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n5
+	}
+	if m.RegisterOp != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.RegisterOp)))
+		i += copy(data[i:], m.RegisterOp)
+	}
+	if m.FlagOp != nil {
+		data[i] = 0x28
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.FlagOp))
+	}
+	if m.MapOp != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.MapOp.Size()))
+		n6, err := m.MapOp.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *MapOp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *MapOp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Removes) > 0 {
+		for _, msg := range m.Removes {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if len(m.Updates) > 0 {
+		for _, msg := range m.Updates {
+			data[i] = 0x12
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *DtOp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DtOp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.CounterOp != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.CounterOp.Size()))
+		n7, err := m.CounterOp.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n7
+	}
+	if m.SetOp != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.SetOp.Size()))
+		n8, err := m.SetOp.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n8
+	}
+	if m.MapOp != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.MapOp.Size()))
+		n9, err := m.MapOp.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n9
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *DtUpdateReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DtUpdateReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Bucket != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Bucket)))
+		i += copy(data[i:], m.Bucket)
+	}
+	if m.Key != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Type != nil {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Type)))
+		i += copy(data[i:], m.Type)
+	}
+	if m.Context != nil {
+		data[i] = 0x22
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Context)))
+		i += copy(data[i:], m.Context)
+	}
+	if m.Op != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(m.Op.Size()))
+		n10, err := m.Op.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n10
+	}
+	if m.W != nil {
+		data[i] = 0x30
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.W))
+	}
+	if m.Dw != nil {
+		data[i] = 0x38
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Dw))
+	}
+	if m.Pw != nil {
+		data[i] = 0x40
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Pw))
+	}
+	if m.ReturnBody != nil {
+		data[i] = 0x48
+		i++
+		if *m.ReturnBody {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Timeout != nil {
+		data[i] = 0x50
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.Timeout))
+	}
+	if m.SloppyQuorum != nil {
+		data[i] = 0x58
+		i++
+		if *m.SloppyQuorum {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.NVal != nil {
+		data[i] = 0x60
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(*m.NVal))
+	}
+	if m.IncludeContext != nil {
+		data[i] = 0x68
+		i++
+		if *m.IncludeContext {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *DtUpdateResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DtUpdateResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Key != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Key)))
+		i += copy(data[i:], m.Key)
+	}
+	if m.Context != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakDt(data, i, uint64(len(m.Context)))
+		i += copy(data[i:], m.Context)
+	}
+	if m.CounterValue != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakDt(data, i, uint64((uint64(*m.CounterValue)<<1)^uint64((*m.CounterValue>>63))))
+	}
+	if len(m.SetValue) > 0 {
+		for _, b := range m.SetValue {
+			data[i] = 0x22
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(len(b)))
+			i += copy(data[i:], b)
+		}
+	}
+	if len(m.MapValue) > 0 {
+		for _, msg := range m.MapValue {
+			data[i] = 0x2a
+			i++
+			i = encodeVarintRiakDt(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func encodeFixed64RiakDt(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32RiakDt(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintRiakDt(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
 }
 func (this *MapField) Equal(that interface{}) bool {
 	if that == nil {

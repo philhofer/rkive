@@ -22,20 +22,19 @@
 package rpbc
 
 import proto "code.google.com/p/gogoprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
 // discarding unused import gogoproto "gogo.pb"
 // discarding unused import rpbc1 "riak.pb"
 
 import io1 "io"
+import fmt1 "fmt"
 import code_google_com_p_gogoprotobuf_proto1 "code.google.com/p/gogoprotobuf/proto"
 
 import bytes1 "bytes"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type RpbYokozunaIndex struct {
@@ -234,7 +233,7 @@ func (m *RpbYokozunaIndex) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -256,7 +255,7 @@ func (m *RpbYokozunaIndex) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Schema", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -278,7 +277,7 @@ func (m *RpbYokozunaIndex) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field NVal", wireType)
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -337,7 +336,7 @@ func (m *RpbYokozunaIndexGetReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -401,7 +400,7 @@ func (m *RpbYokozunaIndexGetResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Index", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -466,7 +465,7 @@ func (m *RpbYokozunaIndexPutReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Index", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -535,7 +534,7 @@ func (m *RpbYokozunaIndexDeleteReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -599,7 +598,7 @@ func (m *RpbYokozunaSchema) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -621,7 +620,7 @@ func (m *RpbYokozunaSchema) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Content", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -685,7 +684,7 @@ func (m *RpbYokozunaSchemaPutReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Schema", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -754,7 +753,7 @@ func (m *RpbYokozunaSchemaGetReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -818,7 +817,7 @@ func (m *RpbYokozunaSchemaGetResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return ErrWrongType
+				return fmt1.Errorf("proto: wrong wireType = %d for field Schema", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -865,302 +864,6 @@ func (m *RpbYokozunaSchemaGetResp) Unmarshal(data []byte) error {
 		}
 	}
 	return nil
-}
-func (m *RpbYokozunaIndex) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaIndex) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Name != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.Schema != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Schema)))
-		i += copy(data[i:], m.Schema)
-	}
-	if m.NVal != nil {
-		data[i] = 0x18
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(*m.NVal))
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaIndexGetReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaIndexGetReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Name != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaIndexGetResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaIndexGetResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Index) > 0 {
-		for _, msg := range m.Index {
-			data[i] = 0xa
-			i++
-			i = encodeVarintRiakYokozuna(data, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(data[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaIndexPutReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaIndexPutReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Index != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(m.Index.Size()))
-		n1, err := m.Index.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaIndexDeleteReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaIndexDeleteReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Name != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaSchema) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaSchema) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Name != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.Content != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Content)))
-		i += copy(data[i:], m.Content)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaSchemaPutReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaSchemaPutReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Schema != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(m.Schema.Size()))
-		n2, err := m.Schema.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n2
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaSchemaGetReq) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaSchemaGetReq) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Name != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
-		i += copy(data[i:], m.Name)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *RpbYokozunaSchemaGetResp) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *RpbYokozunaSchemaGetResp) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.Schema != nil {
-		data[i] = 0xa
-		i++
-		i = encodeVarintRiakYokozuna(data, i, uint64(m.Schema.Size()))
-		n3, err := m.Schema.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n3
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func encodeFixed64RiakYokozuna(data []byte, offset int, v uint64) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	data[offset+4] = uint8(v >> 32)
-	data[offset+5] = uint8(v >> 40)
-	data[offset+6] = uint8(v >> 48)
-	data[offset+7] = uint8(v >> 56)
-	return offset + 8
-}
-func encodeFixed32RiakYokozuna(data []byte, offset int, v uint32) int {
-	data[offset] = uint8(v)
-	data[offset+1] = uint8(v >> 8)
-	data[offset+2] = uint8(v >> 16)
-	data[offset+3] = uint8(v >> 24)
-	return offset + 4
-}
-func encodeVarintRiakYokozuna(data []byte, offset int, v uint64) int {
-	for v >= 1<<7 {
-		data[offset] = uint8(v&0x7f | 0x80)
-		v >>= 7
-		offset++
-	}
-	data[offset] = uint8(v)
-	return offset + 1
 }
 func (m *RpbYokozunaIndex) Size() (n int) {
 	var l int
@@ -1493,6 +1196,302 @@ func encodeVarintPopulateRiakYokozuna(data []byte, v uint64) []byte {
 	}
 	data = append(data, uint8(v))
 	return data
+}
+func (m *RpbYokozunaIndex) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaIndex) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Name != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Schema != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Schema)))
+		i += copy(data[i:], m.Schema)
+	}
+	if m.NVal != nil {
+		data[i] = 0x18
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(*m.NVal))
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaIndexGetReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaIndexGetReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Name != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaIndexGetResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaIndexGetResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Index) > 0 {
+		for _, msg := range m.Index {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRiakYokozuna(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaIndexPutReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaIndexPutReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Index != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(m.Index.Size()))
+		n1, err := m.Index.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaIndexDeleteReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaIndexDeleteReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Name != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaSchema) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaSchema) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Name != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Content != nil {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Content)))
+		i += copy(data[i:], m.Content)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaSchemaPutReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaSchemaPutReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Schema != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(m.Schema.Size()))
+		n2, err := m.Schema.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaSchemaGetReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaSchemaGetReq) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Name != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func (m *RpbYokozunaSchemaGetResp) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *RpbYokozunaSchemaGetResp) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Schema != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRiakYokozuna(data, i, uint64(m.Schema.Size()))
+		n3, err := m.Schema.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+func encodeFixed64RiakYokozuna(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32RiakYokozuna(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintRiakYokozuna(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
 }
 func (this *RpbYokozunaIndex) Equal(that interface{}) bool {
 	if that == nil {
