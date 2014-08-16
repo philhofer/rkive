@@ -35,6 +35,7 @@ import io "io"
 import code_google_com_p_gogoprotobuf_proto "code.google.com/p/gogoprotobuf/proto"
 
 import bytes "bytes"
+import "errors"
 
 // Reference proto, json, and math imports to suppress error if they are not otherwise used.
 var _ = proto.Marshal
@@ -43,6 +44,8 @@ var _ = math.Inf
 
 // Used by riak_repl bucket fixup
 type RpbBucketProps_RpbReplMode int32
+
+var ErrWrongType = errors.New("wrong protobuf type")
 
 const (
 	RpbBucketProps_FALSE    RpbBucketProps_RpbReplMode = 0
@@ -634,7 +637,7 @@ func (m *RpbErrorResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -656,7 +659,7 @@ func (m *RpbErrorResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -715,7 +718,7 @@ func (m *RpbGetServerInfoResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -737,7 +740,7 @@ func (m *RpbGetServerInfoResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -801,7 +804,7 @@ func (m *RpbPair) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -823,7 +826,7 @@ func (m *RpbPair) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -887,7 +890,7 @@ func (m *RpbGetBucketReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -909,7 +912,7 @@ func (m *RpbGetBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -973,7 +976,7 @@ func (m *RpbGetBucketResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1042,7 +1045,7 @@ func (m *RpbSetBucketReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1064,7 +1067,7 @@ func (m *RpbSetBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1091,7 +1094,7 @@ func (m *RpbSetBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1155,7 +1158,7 @@ func (m *RpbResetBucketReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1177,7 +1180,7 @@ func (m *RpbResetBucketReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1241,7 +1244,7 @@ func (m *RpbGetBucketTypeReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1305,7 +1308,7 @@ func (m *RpbSetBucketTypeReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1327,7 +1330,7 @@ func (m *RpbSetBucketTypeReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1396,7 +1399,7 @@ func (m *RpbModFun) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1418,7 +1421,7 @@ func (m *RpbModFun) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1482,7 +1485,7 @@ func (m *RpbCommitHook) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1509,7 +1512,7 @@ func (m *RpbCommitHook) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1573,7 +1576,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1590,7 +1593,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1608,7 +1611,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.AllowMult = &b
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1626,7 +1629,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.LastWriteWins = &b
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1649,7 +1652,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1667,7 +1670,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.HasPrecommit = &b
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1690,7 +1693,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1708,7 +1711,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.HasPostcommit = &b
 		case 8:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1735,7 +1738,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 9:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1762,7 +1765,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 10:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1779,7 +1782,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.OldVclock = &v
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1796,7 +1799,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.YoungVclock = &v
 		case 12:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1813,7 +1816,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.BigVclock = &v
 		case 13:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1830,7 +1833,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.SmallVclock = &v
 		case 14:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1847,7 +1850,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.Pr = &v
 		case 15:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1864,7 +1867,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.R = &v
 		case 16:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1881,7 +1884,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.W = &v
 		case 17:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1898,7 +1901,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.Pw = &v
 		case 18:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1915,7 +1918,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.Dw = &v
 		case 19:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1932,7 +1935,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.Rw = &v
 		case 20:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1950,7 +1953,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.BasicQuorum = &b
 		case 21:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1968,7 +1971,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.NotfoundOk = &b
 		case 22:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1990,7 +1993,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 23:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2008,7 +2011,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.Search = &b
 		case 24:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v RpbBucketProps_RpbReplMode
 			for shift := uint(0); ; shift += 7 {
@@ -2025,7 +2028,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			m.Repl = &v
 		case 25:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2047,7 +2050,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 26:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2069,7 +2072,7 @@ func (m *RpbBucketProps) Unmarshal(data []byte) error {
 			index = postIndex
 		case 27:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2129,7 +2132,7 @@ func (m *RpbAuthReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2151,7 +2154,7 @@ func (m *RpbAuthReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {

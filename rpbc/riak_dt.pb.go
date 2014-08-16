@@ -807,7 +807,7 @@ func (m *MapField) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -829,7 +829,7 @@ func (m *MapField) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v MapField_MapFieldType
 			for shift := uint(0); ; shift += 7 {
@@ -888,7 +888,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -915,7 +915,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -934,7 +934,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			m.CounterValue = &v2
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -957,7 +957,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -979,7 +979,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -997,7 +997,7 @@ func (m *MapEntry) Unmarshal(data []byte) error {
 			m.FlagValue = &b
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1062,7 +1062,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1084,7 +1084,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1106,7 +1106,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1128,7 +1128,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1145,7 +1145,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.R = &v
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1162,7 +1162,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.Pr = &v
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1180,7 +1180,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.BasicQuorum = &b
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1198,7 +1198,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.NotfoundOk = &b
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1215,7 +1215,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 9:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1233,7 +1233,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 10:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -1250,7 +1250,7 @@ func (m *DtFetchReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -1310,7 +1310,7 @@ func (m *DtValue) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1329,7 +1329,7 @@ func (m *DtValue) Unmarshal(data []byte) error {
 			m.CounterValue = &v2
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1352,7 +1352,7 @@ func (m *DtValue) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1417,7 +1417,7 @@ func (m *DtFetchResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1439,7 +1439,7 @@ func (m *DtFetchResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v DtFetchResp_DataType
 			for shift := uint(0); ; shift += 7 {
@@ -1456,7 +1456,7 @@ func (m *DtFetchResp) Unmarshal(data []byte) error {
 			m.Type = &v
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1525,7 +1525,7 @@ func (m *CounterOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1586,7 +1586,7 @@ func (m *SetOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1609,7 +1609,7 @@ func (m *SetOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1674,7 +1674,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1701,7 +1701,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1728,7 +1728,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1755,7 +1755,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1777,7 +1777,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v MapUpdate_FlagOp
 			for shift := uint(0); ; shift += 7 {
@@ -1794,7 +1794,7 @@ func (m *MapUpdate) Unmarshal(data []byte) error {
 			m.FlagOp = &v
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1863,7 +1863,7 @@ func (m *MapOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1886,7 +1886,7 @@ func (m *MapOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1951,7 +1951,7 @@ func (m *DtOp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1978,7 +1978,7 @@ func (m *DtOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2005,7 +2005,7 @@ func (m *DtOp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2074,7 +2074,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2096,7 +2096,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2118,7 +2118,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2140,7 +2140,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2162,7 +2162,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2189,7 +2189,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2206,7 +2206,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.W = &v
 		case 7:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2223,7 +2223,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.Dw = &v
 		case 8:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2240,7 +2240,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.Pw = &v
 		case 9:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2258,7 +2258,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.ReturnBody = &b
 		case 10:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2275,7 +2275,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.Timeout = &v
 		case 11:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2293,7 +2293,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.SloppyQuorum = &b
 		case 12:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -2310,7 +2310,7 @@ func (m *DtUpdateReq) Unmarshal(data []byte) error {
 			m.NVal = &v
 		case 13:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -2370,7 +2370,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2392,7 +2392,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2414,7 +2414,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2433,7 +2433,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			m.CounterValue = &v2
 		case 4:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2456,7 +2456,7 @@ func (m *DtUpdateResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {

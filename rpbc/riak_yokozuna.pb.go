@@ -234,7 +234,7 @@ func (m *RpbYokozunaIndex) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -256,7 +256,7 @@ func (m *RpbYokozunaIndex) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -278,7 +278,7 @@ func (m *RpbYokozunaIndex) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -337,7 +337,7 @@ func (m *RpbYokozunaIndexGetReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -401,7 +401,7 @@ func (m *RpbYokozunaIndexGetResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -466,7 +466,7 @@ func (m *RpbYokozunaIndexPutReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -535,7 +535,7 @@ func (m *RpbYokozunaIndexDeleteReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -599,7 +599,7 @@ func (m *RpbYokozunaSchema) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -621,7 +621,7 @@ func (m *RpbYokozunaSchema) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -685,7 +685,7 @@ func (m *RpbYokozunaSchemaPutReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -754,7 +754,7 @@ func (m *RpbYokozunaSchemaGetReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -818,7 +818,7 @@ func (m *RpbYokozunaSchemaGetResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {

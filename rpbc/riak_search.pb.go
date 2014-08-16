@@ -20,6 +20,7 @@ import json "encoding/json"
 import math "math"
 
 // discarding unused import gogoproto "gogo.pb"
+//import rpbc1 "riak.pb"
 
 import io1 "io"
 import unsafe "unsafe"
@@ -193,7 +194,7 @@ func (m *RpbSearchDoc) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -258,7 +259,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -280,7 +281,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -302,7 +303,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -319,7 +320,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			m.Rows = &v
 		case 4:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
@@ -336,7 +337,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			m.Start = &v
 		case 5:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -358,7 +359,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -380,7 +381,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -402,7 +403,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 8:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -424,7 +425,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 9:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -447,7 +448,7 @@ func (m *RpbSearchQueryReq) Unmarshal(data []byte) error {
 			index = postIndex
 		case 10:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -511,7 +512,7 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -534,7 +535,7 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 			index = postIndex
 		case 2:
 			if wireType != 5 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v float32
 			if index+4 > l {
@@ -545,7 +546,7 @@ func (m *RpbSearchQueryResp) Unmarshal(data []byte) error {
 			m.MaxScore = &v
 		case 3:
 			if wireType != 0 {
-				return proto.ErrWrongType
+				return ErrWrongType
 			}
 			var v uint32
 			for shift := uint(0); ; shift += 7 {
