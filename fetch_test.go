@@ -162,3 +162,37 @@ func TestUpdate(t *testing.T) {
 		t.Error("Object was spuriously updated...?")
 	}
 }
+
+func TestHead(t *testing.T) {
+        t.Parallel()
+        cl := testClient
+        
+        tests := cl.Bucket("testbucket")
+        
+        ob := &TestObject{
+                info: &Info{},
+                Data: []byte("exists."),
+        }
+        
+        err := tests.New(ob, nil)
+        if err != nil {
+                t.Fatal(err)
+        }
+        
+        // fetch head exists
+        var info *Info
+        info, err = cl.FetchHead("testbucket", ob.Info().Key())
+        if err != nil {
+                t.Fatal(err)
+        }
+        
+        if !bytes.Equal(info.vclock, ob.info.vclock) {
+                t.Errorf("vclocks not equal: %q and %q", info.vclock, ob.info.vclock)       
+        }
+        
+        // fetch dne
+        _, err = cl.FetchHead("testbucket", "dne")
+        if err != ErrNotFound {
+                t.Errorf("expected ErrNotFound, got: %q", err)       
+        }
+}
