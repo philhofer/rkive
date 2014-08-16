@@ -4,8 +4,8 @@ services:
 build:
     steps:
         - script:
-            name: install
-            code: go get code.google.com/p/gogoprotobuf/proto && go get -u github.com/philhofer/rkive/rpbc
+            name: install-dep
+            code: go get -d ./...
         - script:
             name: test
             code: go test -v -tags 'riak'
