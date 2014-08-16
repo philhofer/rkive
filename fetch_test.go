@@ -7,13 +7,23 @@ import (
 	"testing"
 	"os"
 	"fmt"
+	"log"
 )
 
 var testClient *Client
 
 func init() {
         var err error
-        testClient, err = Dial([]Node{{"localhost:8087", 5}}, "testClient")
+        
+        var addr string
+        werk := os.Getenv("MJDSYS_RIAK_PBCONNECT")
+        if werk != "" {
+                log.Println("Using address from environment.")
+                addr = werk
+        } else {
+                addr = "localhost:8087"
+        }
+        testClient, err = Dial([]Node{{addr, 5}}, "testClient")
         if err != nil {
                 fmt.Printf("Couldn't connect to Riak: %s\n", err)
                 os.Exit(1)    
