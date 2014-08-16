@@ -15,8 +15,8 @@ var (
 	ErrNoPath   = errors.New("bucket and/or key not defined")
 	ErrModified = errors.New("object has been modified since last read")
 	ErrExists   = errors.New("object already exists")
-	ctntPool    *sync.Pool
-	hdrPool     *sync.Pool
+	ctntPool    *sync.Pool // pool for RpbContent
+	hdrPool     *sync.Pool // pool for RpbPutResp
 )
 
 func init() {
@@ -221,7 +221,9 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	req.ReturnHead = &rth
 	req.IfNotModified = &rth
 	parseOpts(opts, &req)
+	ntry := 0
 
+dopush:
 	var err error
 	req.Content, err = ctpop(o)
 	if err != nil {
@@ -251,14 +253,19 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 		hdrput(res)
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
+		        if ntry > maxMerges {
+		                return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
+		        }
 			nom := om.NewEmpty()
+			// fetch carries out the local merge on read
 			err = c.Fetch(nom, om.Info().Bucket(), om.Info().Key(), nil)
 			if err != nil {
 				return err
 			}
 			om.Merge(nom)
 			om.Info().vclock = append(om.Info().vclock[0:0], nom.Info().vclock...)
-			return c.Store(om, nil)
+			ntry++
+			goto dopush
 		} else {
 			return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
 		}

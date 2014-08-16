@@ -6,13 +6,25 @@ import (
 	"bytes"
 	"sync"
 	"testing"
+	"time"
 )
 
+func TestConnOpenClose(t *testing.T) {
+        cl, err := Dial([]Node{
+                {"localhost:8087", 3},
+                {"localhost:8087", 1},
+                }, "testClient")
+        if err != nil {
+                t.Fatal(err)
+        }
+        time.Sleep(100*time.Millisecond)
+        cl.Close()
+}
+
+
 func TestNewObject(t *testing.T) {
-	cl, err := Dial([]Node{{"localhost:8087", 3}}, "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 
 	ob := &TestObject{
 		Data: []byte("Hello World"),
@@ -20,7 +32,7 @@ func TestNewObject(t *testing.T) {
 	}
 
 	// random key assignment
-	err = cl.New(ob, "testbucket", nil, nil)
+	err := cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,21 +59,18 @@ func TestNewObject(t *testing.T) {
 	if ob.Info().Key() == "" {
 		t.Errorf("object didn't get assigned a key")
 	}
-	cl.Close()
 }
 
 func TestPushObject(t *testing.T) {
-	cl, err := Dial([]Node{{"localhost:8087", 2}}, "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 		info: &Info{},
 	}
 	// make new
-	err = cl.New(ob, "testbucket", nil, nil)
+	err := cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -91,15 +100,11 @@ func TestPushObject(t *testing.T) {
 	if err != ErrModified {
 		t.Fatalf("Expected ErrModified; got %q", err)
 	}
-
-	cl.Close()
 }
 
 func TestStoreObject(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+        t.Parallel()
+	cl := testClient
 
 	ob := &TestObject{
 		Data: []byte("Hello World"),
@@ -107,7 +112,7 @@ func TestStoreObject(t *testing.T) {
 	}
 
 	// random key assignment
-	err = cl.New(ob, "testbucket", nil, nil)
+	err := cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,7 +142,6 @@ func TestStoreObject(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cl.Close()
 }
 
 func BenchmarkStore(b *testing.B) {

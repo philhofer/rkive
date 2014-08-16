@@ -5,7 +5,20 @@ package rkive
 import (
 	"bytes"
 	"testing"
+	"os"
+	"fmt"
 )
+
+var testClient *Client
+
+func init() {
+        var err error
+        testClient, err = DialOne("localhost:8087", "testClient")
+        if err != nil {
+                fmt.Printf("Couldn't connect to Riak: %s\n", err)
+                os.Exit(1)    
+        }
+}
 
 type TestObject struct {
 	Data []byte
@@ -48,16 +61,13 @@ func TestMultipleVclocks(t *testing.T) {
 	oba.Info().bucket, oba.Info().key = []byte("testbucket"), []byte("conflict")
 	obb.Info().bucket, obb.Info().key = []byte("testbucket"), []byte("conflict")
 
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+	cl := testClient
 
 	// The store operations should not error,
 	// because we are doing a fetch and merge
 	// when we detect multiple responses on
 	// Store()
-	err = cl.Store(obb, nil)
+	err := cl.Store(obb, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,27 +89,20 @@ func TestMultipleVclocks(t *testing.T) {
 }
 
 func TestFetchNotFound(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+	cl := testClient
 	ob := &TestObject{}
 
-	err = cl.Fetch(ob, "anybucket", "dne", nil)
+	err := cl.Fetch(ob, "anybucket", "dne", nil)
 	if err == nil {
 		t.Error("'err' should not be nil")
 	}
 	if err != ErrNotFound {
 		t.Errorf("err is not ErrNotFound: %q", err)
 	}
-	cl.Close()
 }
 
 func TestUpdate(t *testing.T) {
-	cl, err := DialOne("localhost:8087", "testClient")
-	if err != nil {
-		t.Fatal(err)
-	}
+	cl := testClient
 
 	test := cl.Bucket("testbucket")
 
@@ -108,7 +111,7 @@ func TestUpdate(t *testing.T) {
 		info: &Info{},
 	}
 
-	err = test.New(lb, nil)
+	err := test.New(lb, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -158,5 +161,4 @@ func TestUpdate(t *testing.T) {
 	if upd {
 		t.Error("Object was spuriously updated...?")
 	}
-	cl.Close()
 }
