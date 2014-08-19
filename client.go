@@ -180,6 +180,8 @@ func (c *Client) closed() bool {
 	return atomic.LoadInt64(&c.tag) == 1
 }
 
+// Client represents a pool of connections
+// to a Riak cluster.
 type Client struct {
 	tag   int64
 	id    []byte

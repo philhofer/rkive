@@ -8,6 +8,9 @@ import (
 )
 
 const (
+	// maximum number of times we attempt
+	// to handle contended stores, either
+	// via conflicting vclocks or modifications
 	maxMerges = 10
 )
 

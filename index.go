@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+// IndexQueryRes is the response to an index
+// query.
 type IndexQueryRes struct {
 	c      *Client
 	ftchd  int
