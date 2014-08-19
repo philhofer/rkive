@@ -2,6 +2,7 @@ package rkive
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
@@ -18,23 +19,27 @@ func (c *Client) PushChangset(o Object, chng func(Object) error, opts *WriteOpts
 	if err != nil {
 		return err
 	}
-
 	nmerge := 0
-	for err = c.Push(o, opts); err != nil; nmerge++ {
+push:
+	err = c.Push(o, opts)
+	if err == ErrModified {
+		var upd bool
+		nmerge++
 		if nmerge > maxMerges {
+			return fmt.Errorf("exceeded max merges: %s", err)
+		}
+		upd, err = c.Update(o, nil)
+		if err != nil {
 			return err
 		}
-		if err == ErrModified {
-			err = chng(o)
-			if err != nil {
-				if err == ErrDone {
-					return nil
-				}
-				return err
-			}
-			continue
+		if !upd {
+			return errors.New("failure updating...")
 		}
-		return err
+		err = chng(o)
+		if err == ErrDone {
+			return nil
+		}
+		goto push
 	}
-	return nil
+	return err
 }

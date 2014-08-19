@@ -19,7 +19,7 @@ var (
 	// no objects are returned for
 	// a read operation
 	ErrNotFound = errors.New("not found")
-	
+
 	// ErrDeleted is returned
 	// when the object has been marked
 	// as deleted, but has not yet been reaped
@@ -28,7 +28,7 @@ var (
 	// default timeout on a request is 500ms
 	dfltreq uint32 = DefaultReqTimeout
 
-        // RpbGetResponse pool
+	// RpbGetResponse pool
 	gresPool *sync.Pool
 )
 
@@ -160,7 +160,7 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 	if rescode != 10 {
 		return false, ErrUnexpectedResponse
 	}
-	if res.GetUnchanged() {
+	if res.Unchanged != nil && *res.Unchanged {
 		return false, nil
 	}
 	if len(res.GetContent()) == 0 {
@@ -187,78 +187,80 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 // stored in Riak. This is the least expensive way
 // to check for the existence of an object.
 func (c *Client) FetchHead(bucket string, key string) (*Info, error) {
-        rth := true
-        req := &rpbc.RpbGetReq{
-                Key: []byte(key),
-                Bucket: []byte(bucket),
-                Timeout: &dfltreq,
-                Head: &rth,
-        }
-        res := gresPop()
-        rescode, err := c.req(req, 9, res)
-        if err != nil {
-                gresPush(res)
-                return nil, err
-        }
-        if rescode != 10 {
-                gresPush(res)
-                return nil, ErrUnexpectedResponse
-        }
-        // NotFound is supposed to be handled by
-        // c.req, but just in case:
-        if len(res.Content) == 0 {
-                gresPush(res)
-                return nil, ErrNotFound       
-        }
-        if len(res.Content) > 1 {
-                gresPush(res)
-                return nil, handleMultiple(len(res.Content), key, bucket)       
-        }
-        bl := &Blob{RiakInfo: &Info{}}
-        readHeader(bl, res.Content[0])
-        bl.Info().vclock = append(bl.Info().vclock[0:0], res.Vclock...)
-        bl.Info().key = append(bl.Info().key[0:0], req.Key...)
-        bl.Info().bucket = append(bl.Info().bucket[0:0], req.Bucket...)
-        gresPush(res)
-        return bl.Info(), err
+	rth := true
+	req := &rpbc.RpbGetReq{
+		Key:     []byte(key),
+		Bucket:  []byte(bucket),
+		Timeout: &dfltreq,
+		Head:    &rth,
+	}
+	res := gresPop()
+	rescode, err := c.req(req, 9, res)
+	if err != nil {
+		gresPush(res)
+		return nil, err
+	}
+	if rescode != 10 {
+		gresPush(res)
+		return nil, ErrUnexpectedResponse
+	}
+	// NotFound is supposed to be handled by
+	// c.req, but just in case:
+	if len(res.Content) == 0 {
+		gresPush(res)
+		return nil, ErrNotFound
+	}
+	if len(res.Content) > 1 {
+		gresPush(res)
+		return nil, handleMultiple(len(res.Content), key, bucket)
+	}
+	bl := &Blob{RiakInfo: &Info{}}
+	readHeader(bl, res.Content[0])
+	bl.Info().vclock = append(bl.Info().vclock[0:0], res.Vclock...)
+	bl.Info().key = append(bl.Info().key[0:0], req.Key...)
+	bl.Info().bucket = append(bl.Info().bucket[0:0], req.Bucket...)
+	gresPush(res)
+	return bl.Info(), err
 }
 
 // PullHead pulls the latest object metadata into the object.
 // The Info() pointed to by the object will be changed if the
 // object has been changed in Riak since the last read. If you
-// want to read the entire object, use Update() instead. 
+// want to read the entire object, use Update() instead.
 func (c *Client) PullHead(o Object) error {
-        if len(o.Info().key) == 0 { return ErrNoPath }
-        rth := true
-        req := &rpbc.RpbGetReq{
-                Key: o.Info().key,
-                Bucket: o.Info().bucket,
-                Timeout: &dfltreq,
-                Head: &rth,
-                IfModified: o.Info().vclock,
-        }
-        res := gresPop()
-        code, err := c.req(req, 9, res)
-        if err != nil {
-                gresPush(res)
-                return err
-        }
-        if code != 10 {
-                return ErrUnexpectedResponse       
-        }
-        if res.GetUnchanged() {
-                gresPush(res)
-                return nil
-        }
-        if len(res.Content) == 0 {
-                return ErrNotFound       
-        }
-        if len(res.Content) > 1 {
-                gresPush(res)
-                return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())       
-        }
-        readHeader(o, res.Content[0])
-        o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
-        gresPush(res)
-        return nil
+	if len(o.Info().key) == 0 {
+		return ErrNoPath
+	}
+	rth := true
+	req := &rpbc.RpbGetReq{
+		Key:        o.Info().key,
+		Bucket:     o.Info().bucket,
+		Timeout:    &dfltreq,
+		Head:       &rth,
+		IfModified: o.Info().vclock,
+	}
+	res := gresPop()
+	code, err := c.req(req, 9, res)
+	if err != nil {
+		gresPush(res)
+		return err
+	}
+	if code != 10 {
+		return ErrUnexpectedResponse
+	}
+	if res.GetUnchanged() {
+		gresPush(res)
+		return nil
+	}
+	if len(res.Content) == 0 {
+		return ErrNotFound
+	}
+	if len(res.Content) > 1 {
+		gresPush(res)
+		return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
+	}
+	readHeader(o, res.Content[0])
+	o.Info().vclock = append(o.Info().vclock[0:0], res.Vclock...)
+	gresPush(res)
+	return nil
 }
