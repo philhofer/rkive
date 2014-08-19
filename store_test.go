@@ -161,7 +161,7 @@ func (s *riakSuite) TestPushChangeset(c *check.C) {
 	}
 
 	// ... and then this should pass
-	err = s.cl.PushChangset(ob, chng, nil)
+	err = s.cl.PushChangeset(ob, chng, nil)
 	if err != nil {
 		c.Fatal(err)
 	}

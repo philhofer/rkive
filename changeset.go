@@ -14,7 +14,7 @@ var (
 // local fetch. The 'chng' function should check if the change that it wanted
 // already happened, and return ErrDone in that case. The 'chng' function is allowed
 // to type-assert its argument to the underlying type of 'o'.
-func (c *Client) PushChangset(o Object, chng func(Object) error, opts *WriteOpts) error {
+func (c *Client) PushChangeset(o Object, chng func(Object) error, opts *WriteOpts) error {
 	err := chng(o)
 	if err != nil {
 		return err
