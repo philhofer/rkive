@@ -7,6 +7,7 @@ import (
 	"github.com/philhofer/rkive/rpbc"
 	"log"
 	"net"
+	"os"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -17,6 +18,7 @@ var (
 	// in the connection pool are unavailable for longer
 	// than 250ms, or when the pool is closing
 	ErrAck = errors.New("connection unavailable")
+	logger = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
 )
 
 // read timeout (ms)
@@ -122,18 +124,18 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 	cl.wg.Add(1)
 	go cl.pingLoop()
 	cl.dunlock()
-	
+
 	// make sure we're able to dial
 	// at least one of the nodes after
 	// 5 seconds
 	select {
-	case n := <- cl.dones:
-	        cl.dones <- n
+	case n := <-cl.dones:
+		cl.dones <- n
 	case <-time.After(5 * time.Second):
-	        cl.Close()
-	        return nil, errors.New("unable to dial any nodes")
+		cl.Close()
+		return nil, errors.New("unable to dial any nodes")
 	}
-	
+
 	return cl, nil
 }
 
@@ -152,7 +154,7 @@ func (c *Client) Close() {
 	c.dlock()
 	close(c.dones)
 	for node := range c.dones {
-		log.Printf("Closing TCP tunnel to %s", node.addr.String())
+		logger.Printf("closing TCP tunnel to %s", node.addr.String())
 		node.conn.Close()
 	}
 	c.dunlock()
@@ -197,13 +199,13 @@ func (c *Client) redialLoop(n *node) {
 		n.Drop()
 		goto exit
 	}
-	log.Printf("dialing TCP: %s", n.addr.String())
+	logger.Printf("dialing TCP: %s", n.addr.String())
 	for err := n.Dial(); err != nil; nd++ {
 		if c.closed() {
 			n.Drop()
 			goto exit
 		}
-		log.Printf("dial error #%d for %s: %s", nd, n.addr.String(), err)
+		logger.Printf("dial error #%d for %s: %s", nd, n.addr.String(), err)
 		time.Sleep(3 * time.Second)
 	}
 	c.done(n)
@@ -436,13 +438,13 @@ func (c *Client) req(msg protom, code byte, res unmarshaler) (byte, error) {
 	buf := getBuf() // maybe we've already allocated
 	err := buf.Set(msg)
 	if err != nil {
-		return 0, fmt.Errorf("riakpb: client.Req marshal err: %s", err)
+		return 0, fmt.Errorf("rkive: client.Req marshal err: %s", err)
 	}
 	resbts, rescode, err := c.doBuf(code, buf.Body)
 	buf.Body = resbts // save the largest-cap byte slice
 	if err != nil {
 		putBuf(buf)
-		return 0, fmt.Errorf("riakpb: doBuf err: %s", err)
+		return 0, fmt.Errorf("rkive: doBuf err: %s", err)
 	}
 	if rescode == 0 {
 		riakerr := new(rpbc.RpbErrorResp)
@@ -462,7 +464,7 @@ func (c *Client) req(msg protom, code byte, res unmarshaler) (byte, error) {
 		}
 		err = res.Unmarshal(resbts)
 		if err != nil {
-			err = fmt.Errorf("riakpb: unmarshal err: %s", err)
+			err = fmt.Errorf("rkive: unmarshal err: %s", err)
 		}
 	}
 	putBuf(buf) // save the bytes we allocated

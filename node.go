@@ -1,7 +1,6 @@
 package rkive
 
 import (
-	"log"
 	"net"
 	"time"
 )
@@ -29,14 +28,14 @@ func (n *node) Dial() error {
 	var err error
 	n.conn, err = net.DialTCP("tcp", nil, n.addr)
 	if err != nil {
-		log.Printf("rkive: error dialing %s: %s", n.addr.String(), err)
+		logger.Printf("rkive: error dialing %s: %s", n.addr.String(), err)
 		return err
 	}
 
 	err = n.parent.writeClientID(n.conn)
 	if err != nil {
 		n.conn.Close()
-		log.Printf("rkive: error writing client ID: %s", err)
+		logger.Printf("rkive: error writing client ID: %s", err)
 		return err
 	}
 	n.conn.SetKeepAlive(true)
@@ -69,10 +68,10 @@ func (n *node) Err() {
 
 // drop closes the node connection
 func (n *node) Drop() {
-        if !n.isConnected {
-                return
-        }
-	log.Printf("Closing TCP connection to %s", n.addr.String())
+	if !n.isConnected {
+		return
+	}
+	logger.Printf("closing TCP connection to %s", n.addr.String())
 	n.conn.Close()
 	n.isConnected = false
 }
