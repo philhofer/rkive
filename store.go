@@ -34,7 +34,8 @@ func ctput(c *rpbc.RpbContent) {
 // create RpbContent from object
 func ctpop(o Object) (*rpbc.RpbContent, error) {
 	ctnt := ctntPool.Get().(*rpbc.RpbContent)
-	return ctnt, writeContent(o, ctnt)
+	err := writeContent(o, ctnt)
+	return ctnt, err
 }
 
 // pop putresp
@@ -206,7 +207,7 @@ dostore:
 // writes to the database, as it minimizes the chances
 // of producing sibling objects.
 func (c *Client) Push(o Object, opts *WriteOpts) error {
-	if o.Info().bucket == nil || o.Info().key == nil {
+	if o.Info().bucket == nil || o.Info().key == nil || o.Info().vclock == nil {
 		return ErrNoPath
 	}
 
@@ -250,12 +251,11 @@ dopush:
 		return ErrNotFound
 	}
 	if len(res.Content) > 1 {
-		hdrput(res)
 		// repair if possible
 		if om, ok := o.(ObjectM); ok {
-		        if ntry > maxMerges {
-		                return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
-		        }
+			if ntry > maxMerges {
+				return handleMultiple(len(res.Content), o.Info().Key(), o.Info().Bucket())
+			}
 			nom := om.NewEmpty()
 			// fetch carries out the local merge on read
 			err = c.Fetch(nom, om.Info().Bucket(), om.Info().Key(), nil)

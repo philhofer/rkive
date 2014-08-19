@@ -122,6 +122,75 @@ func (s *riakSuite) TestStoreObject(c *check.C) {
 	}
 }
 
+func (s *riakSuite) TestPushChangeset(c *check.C) {
+	ob := &TestObject{
+		Data: []byte("Here's a body."),
+		info: &Info{},
+	}
+	nob := &TestObject{info: &Info{}}
+
+	err := s.cl.New(ob, "testbucket", nil, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	err = s.cl.Fetch(nob, "testbucket", ob.Info().Key(), nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	nob.Data = []byte("Intermediate")
+	err = s.cl.Push(nob, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	// this should fail
+	err = s.cl.Push(ob, nil)
+	if err != ErrModified {
+		c.Fatalf("Expected \"modified\", got %q", err)
+	}
+
+	chng := func(o Object) error {
+		v := o.(*TestObject)
+		if bytes.Equal(v.Data, []byte("New Body")) {
+			return ErrDone
+		}
+		v.Data = []byte("New Body")
+		return nil
+	}
+
+	// ... and then this should pass
+	err = s.cl.PushChangset(ob, chng, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	// the other object should reflect the changes
+	chngd, err := s.cl.Update(nob, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+	if !chngd {
+		c.Error("Expected change; didn't get it")
+	}
+	if !bytes.Equal(nob.Data, []byte("New Body")) {
+		c.Errorf("Wanted data \"New Body\"; got %q", nob.Data)
+	}
+
+	if !bytes.Equal(ob.Data, []byte("New Body")) {
+		c.Error("ob.Data didn't retain the appropriate value")
+	}
+
+	err = s.cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+	if !bytes.Equal(ob.Data, []byte("New Body")) {
+		c.Errorf(`Expected "New Body"; got %q`, ob.Data)
+	}
+}
+
 func BenchmarkStore(b *testing.B) {
 	b.N /= 100
 
