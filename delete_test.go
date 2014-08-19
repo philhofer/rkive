@@ -3,30 +3,27 @@
 package rkive
 
 import (
-	"testing"
+	check "gopkg.in/check.v1"
 )
 
-func TestDelete(t *testing.T) {
-        t.Parallel()
-	cl := testClient
-
+func (s *riakSuite) TestDelete(c *check.C) {
 	ob := &TestObject{
 		info: &Info{},
 		Data: []byte("Blah."),
 	}
 
-	err := cl.New(ob, "testbucket", nil, nil)
+	err := s.cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
-	err = cl.Delete(ob, nil)
+	err = s.cl.Delete(ob, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
-	err = cl.Fetch(ob, ob.Info().Bucket(), ob.Info().Key(), nil)
+	err = s.cl.Fetch(ob, ob.Info().Bucket(), ob.Info().Key(), nil)
 	if err != ErrNotFound {
-		t.Fatalf("Expected ErrNotFound; got %s", err)
+		c.Fatalf("Expected ErrNotFound; got %s", err)
 	}
 }

@@ -4,30 +4,41 @@ package rkive
 
 import (
 	"bytes"
-	"testing"
-	"os"
 	"fmt"
+	check "gopkg.in/check.v1"
 	"log"
+	"os"
+	"testing"
 )
 
-var testClient *Client
+type riakSuite struct {
+	cl *Client
+}
 
-func init() {
-        var err error
-        
-        var addr string
-        werk := os.Getenv("MJDSYS_RIAK_PBCONNECT")
-        if werk != "" {
-                log.Println("Using address from environment.")
-                addr = werk
-        } else {
-                addr = "localhost:8087"
-        }
-        testClient, err = Dial([]Node{{addr, 5}}, "testClient")
-        if err != nil {
-                fmt.Printf("Couldn't connect to Riak: %s\n", err)
-                os.Exit(1)    
-        }
+func TestRiakSuite(t *testing.T) {
+	check.Suite(&riakSuite{})
+	check.TestingT(t)
+}
+
+func (s *riakSuite) SetUpSuite(c *check.C) {
+	var err error
+	var addr string
+	werk := os.Getenv("MJDSYS_RIAK_PBCONNECT")
+	if werk != "" {
+		log.Println("Using address from environment.")
+		addr = werk
+	} else {
+		addr = "localhost:8087"
+	}
+	s.cl, err = Dial([]Node{{addr, 5}}, "testClient")
+	if err != nil {
+		fmt.Printf("Couldn't connect to Riak: %s\n", err)
+		os.Exit(1)
+	}
+}
+
+func (s *riakSuite) TearDownSuite(c *check.C) {
+	s.cl.Close()
 }
 
 type TestObject struct {
@@ -56,8 +67,8 @@ func (t *TestObject) Merge(o ObjectM) {
 	}
 }
 
-func TestMultipleVclocks(t *testing.T) {
-        t.Parallel()
+//func TestMultipleVclocks(t *testing.T) {
+func (s *riakSuite) TestMultipleVclocks(c *check.C) {
 	oba := &TestObject{
 		Data: []byte("Body 1"),
 		info: &Info{},
@@ -72,52 +83,45 @@ func TestMultipleVclocks(t *testing.T) {
 	oba.Info().bucket, oba.Info().key = []byte("testbucket"), []byte("conflict")
 	obb.Info().bucket, obb.Info().key = []byte("testbucket"), []byte("conflict")
 
-	cl := testClient
-
 	// The store operations should not error,
 	// because we are doing a fetch and merge
 	// when we detect multiple responses on
 	// Store()
-	err := cl.Store(obb, nil)
+	err := s.cl.Store(obb, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
-	err = cl.Store(oba, nil)
+	err = s.cl.Store(oba, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	// Since our Merge() function takes the longer of the
 	// two Data fields, the body should always be "Body 2..."
-	err = cl.Fetch(oba, "testbucket", "conflict", nil)
+	err = s.cl.Fetch(oba, "testbucket", "conflict", nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	if !bytes.Equal(oba.Data, []byte("Body 2...")) {
-		t.Errorf("Data should be %q; got %q", "Body 2...", oba.Data)
+		c.Errorf("Data should be %q; got %q", "Body 2...", oba.Data)
 	}
 }
 
-func TestFetchNotFound(t *testing.T) {
-        t.Parallel()
-	cl := testClient
+func (s *riakSuite) TestFetchNotFound(c *check.C) {
 	ob := &TestObject{}
 
-	err := cl.Fetch(ob, "anybucket", "dne", nil)
+	err := s.cl.Fetch(ob, "anybucket", "dne", nil)
 	if err == nil {
-		t.Error("'err' should not be nil")
+		c.Error("'err' should not be nil")
 	}
 	if err != ErrNotFound {
-		t.Errorf("err is not ErrNotFound: %q", err)
+		c.Errorf("err is not ErrNotFound: %q", err)
 	}
 }
 
-func TestUpdate(t *testing.T) {
-        t.Parallel()
-	cl := testClient
-
-	test := cl.Bucket("testbucket")
+func (s *riakSuite) TestUpdate(c *check.C) {
+	test := s.cl.Bucket("testbucket")
 
 	lb := &TestObject{
 		Data: []byte("flibbertyibbitygibbit"),
@@ -126,7 +130,7 @@ func TestUpdate(t *testing.T) {
 
 	err := test.New(lb, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	newlb := &TestObject{
@@ -135,77 +139,75 @@ func TestUpdate(t *testing.T) {
 
 	err = test.Fetch(newlb, lb.Info().Key())
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	if !bytes.Equal(newlb.Data, lb.Data) {
-		t.Logf("Object 1 data: %q", lb.Data)
-		t.Logf("Object 2 data: %q", newlb.Data)
-		t.Errorf("Objects don't have the same body")
+		c.Logf("Object 1 data: %q", lb.Data)
+		c.Logf("Object 2 data: %q", newlb.Data)
+		c.Errorf("Objects don't have the same body")
 	}
 
 	// make a modification
 	newlb.Data = []byte("new data.")
 	err = test.Push(newlb)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	// this should return true
 	upd, err := test.Update(lb)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	if !upd {
-		t.Error("Object was not updated.")
+		c.Error("Object was not updated.")
 	}
 
 	if !bytes.Equal(lb.Data, newlb.Data) {
-		t.Error("Objects are not equal after update.")
+		c.Error("Objects are not equal after update.")
 	}
 
 	// this should return false
 	upd, err = test.Update(newlb)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	if upd {
-		t.Error("Object was spuriously updated...?")
+		c.Error("Object was spuriously updated...?")
 	}
 }
 
-func TestHead(t *testing.T) {
-        t.Parallel()
-        cl := testClient
-        
-        tests := cl.Bucket("testbucket")
-        
-        ob := &TestObject{
-                info: &Info{},
-                Data: []byte("exists."),
-        }
-        
-        err := tests.New(ob, nil)
-        if err != nil {
-                t.Fatal(err)
-        }
-        
-        // fetch head exists
-        var info *Info
-        info, err = cl.FetchHead("testbucket", ob.Info().Key())
-        if err != nil {
-                t.Fatal(err)
-        }
-        
-        if !bytes.Equal(info.vclock, ob.info.vclock) {
-                t.Errorf("vclocks not equal: %q and %q", info.vclock, ob.info.vclock)       
-        }
-        
-        // fetch dne
-        _, err = cl.FetchHead("testbucket", "dne")
-        if err != ErrNotFound {
-                t.Errorf("expected ErrNotFound, got: %q", err)       
-        }
+func (s *riakSuite) TestHead(c *check.C) {
+
+	tests := s.cl.Bucket("testbucket")
+
+	ob := &TestObject{
+		info: &Info{},
+		Data: []byte("exists."),
+	}
+
+	err := tests.New(ob, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	// fetch head exists
+	var info *Info
+	info, err = s.cl.FetchHead("testbucket", ob.Info().Key())
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	if !bytes.Equal(info.vclock, ob.info.vclock) {
+		c.Errorf("vclocks not equal: %q and %q", info.vclock, ob.info.vclock)
+	}
+
+	// fetch dne
+	_, err = s.cl.FetchHead("testbucket", "dne")
+	if err != ErrNotFound {
+		c.Errorf("expected ErrNotFound, got: %q", err)
+	}
 }

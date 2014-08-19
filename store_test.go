@@ -4,79 +4,56 @@ package rkive
 
 import (
 	"bytes"
+	check "gopkg.in/check.v1"
 	"sync"
 	"testing"
-	"time"
 )
 
-func TestConnOpenClose(t *testing.T) {
-        if testing.Short() {
-                t.Skip("Short test; skipping")
-        }
-        t.Parallel()
-        cl, err := Dial([]Node{
-                {"localhost:8087", 3},
-                {"localhost:8087", 1},
-                }, "testClient")
-        if err != nil {
-                t.Fatal(err)
-        }
-        time.Sleep(100*time.Millisecond)
-        cl.Close()
-}
-
-
-func TestNewObject(t *testing.T) {
-        t.Parallel()
-	cl := testClient
-
+func (s *riakSuite) TestNewObject(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 		info: &Info{},
 	}
 
 	// random key assignment
-	err := cl.New(ob, "testbucket", nil, nil)
+	err := s.cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 	if string(ob.Data) != "Hello World" {
-		t.Error("Object lost its data")
+		c.Error("Object lost its data")
 	}
 	if ob.Info().Vclock() == "" {
-		t.Error("object didn't get assigned a vclock")
+		c.Error("object didn't get assigned a vclock")
 	}
 
 	nob := &TestObject{Data: []byte("Blah."), info: &Info{}}
 	key := "testkey"
-	err = cl.New(nob, "testbucket", &key, nil)
+	err = s.cl.New(nob, "testbucket", &key, nil)
 	if err != nil {
 		// we'll allow ErrExists
 		// b/c of prior test runs
 		if err != ErrExists {
-			t.Fatal(err)
+			c.Fatal(err)
 		}
 	}
 	if ob.Info().Vclock() == "" {
-		t.Error("Object didn't get assigned a vclock")
+		c.Error("Object didn't get assigned a vclock")
 	}
 	if ob.Info().Key() == "" {
-		t.Errorf("object didn't get assigned a key")
+		c.Errorf("object didn't get assigned a key")
 	}
 }
 
-func TestPushObject(t *testing.T) {
-        t.Parallel()
-	cl := testClient
-
+func (s *riakSuite) TestPushObject(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 		info: &Info{},
 	}
 	// make new
-	err := cl.New(ob, "testbucket", nil, nil)
+	err := s.cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	// fetch 'n store
@@ -85,66 +62,63 @@ func TestPushObject(t *testing.T) {
 		info: &Info{},
 	}
 	// fetch the same
-	err = cl.Fetch(newob, "testbucket", ob.Info().Key(), nil)
+	err = s.cl.Fetch(newob, "testbucket", ob.Info().Key(), nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 	// modify the data
 	newob.Data = []byte("new conflicting data!")
 	// this should work
-	err = cl.Push(newob, nil)
+	err = s.cl.Push(newob, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	// modify the old
 	ob.Data = []byte("blah blah blah")
 
-	err = cl.Push(ob, nil)
+	err = s.cl.Push(ob, nil)
 	if err != ErrModified {
-		t.Fatalf("Expected ErrModified; got %q", err)
+		c.Fatalf("Expected ErrModified; got %q", err)
 	}
 }
 
-func TestStoreObject(t *testing.T) {
-        t.Parallel()
-	cl := testClient
-
+func (s *riakSuite) TestStoreObject(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 		info: &Info{},
 	}
 
 	// random key assignment
-	err := cl.New(ob, "testbucket", nil, nil)
+	err := s.cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 	if ob.Info().Vclock() == "" {
-		t.Error("object didn't get assigned a vclock")
+		c.Error("object didn't get assigned a vclock")
 	}
 	if string(ob.Data) != "Hello World" {
-		t.Fatal("Object lost its data!")
+		c.Fatal("Object lost its data!")
 	}
 
 	// fetch the same object
 	nob := &TestObject{info: &Info{}}
-	err = cl.Fetch(nob, "testbucket", ob.Info().Key(), nil)
+	err = s.cl.Fetch(nob, "testbucket", ob.Info().Key(), nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 
 	if !bytes.Equal(ob.Data, nob.Data) {
-		t.Logf("Sent: %q", ob.Data)
-		t.Logf("Returned : %q", nob.Data)
-		t.Fatal("Objects' 'data' field differs")
+		c.Logf("Sent: %q", ob.Data)
+		c.Logf("Returned : %q", nob.Data)
+		c.Fatal("Objects' 'data' field differs")
 	}
 
 	// make a change
 	nob.Data = []byte("new information!")
-	err = cl.Store(nob, nil)
+	err = s.cl.Store(nob, nil)
 	if err != nil {
-		t.Fatal(err)
+		c.Fatal(err)
 	}
 }
 

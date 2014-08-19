@@ -3,27 +3,25 @@
 package rkive
 
 import (
+	check "gopkg.in/check.v1"
 	"sync"
-	"testing"
 )
 
-func TestRiakPing(t *testing.T) {
-        t.Parallel()
-	cl := testClient
-	t.Log("Performing 3 x 50 pings...")
+func (s *riakSuite) TestRiakPing(c *check.C) {
+	c.Log("Performing 3 x 50 pings...")
 
 	wg := new(sync.WaitGroup)
 	wg.Add(3)
 	for g := 0; g < 3; g++ {
-		go func(t *testing.T) {
+		go func(c *check.C) {
 			for i := 0; i < 50; i++ {
-				err := cl.Ping()
+				err := s.cl.Ping()
 				if err != nil {
-					t.Fatal(err)
+					c.Fatal(err)
 				}
 			}
 			wg.Done()
-		}(t)
+		}(c)
 	}
 	wg.Wait()
 }

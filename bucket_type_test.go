@@ -3,9 +3,9 @@
 package rkive
 
 import (
-	"testing"
+	check "gopkg.in/check.v1"
 )
 
-func TestGetBucketTypeProperties(t *testing.T) {
-	t.Skip("not implemented")
+func (s *riakSuite) TestGetBucketTypeProperties(c *check.C) {
+	c.Skip("not implemented")
 }
