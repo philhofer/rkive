@@ -122,6 +122,41 @@ func (s *riakSuite) TestStoreObject(c *check.C) {
 	}
 }
 
+func (s *riakSuite) TestPushChangeset(c *check.C) {
+	ob := &TestObject{
+		Data: []byte("Here's a body."),
+		info: &Info{},
+	}
+
+	err := s.cl.New(ob, "testbucket", nil, nil)
+
+	chng := func(o Object) error {
+		ob := o.(*TestObject)
+		if bytes.Equal(ob.Data, []byte("New Body")) {
+			return ErrDone
+		}
+		ob.Data = []byte("New Body")
+		return nil
+	}
+
+	err = s.cl.PushChangset(ob, chng, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	nob := &TestObject{
+		info: &Info{},
+	}
+	err = s.cl.Fetch(nob, "testbucket", ob.Info().Key(), nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	if !bytes.Equal(nob.Data, []byte("New Body")) {
+		c.Errorf("Wanted data \"New Body\"; got %q", nob.Data)
+	}
+}
+
 func BenchmarkStore(b *testing.B) {
 	b.N /= 100
 
