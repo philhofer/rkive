@@ -113,11 +113,11 @@ To run benchmarks, start up Riak locally and run:
 (You must be running the eLevelDB or memory backend with secondary
 indexes enabled.)
 
-Remember that TCP is a synchronous protocol, so using multiple
-TCP connections per node dramatically improves overall transaction
-throughput. In production, you would want to run *about* five live
-connections per node (see: `rkive.Dial(...)`). On my computer, I get 1300 writes and 2340 reads per second with one connection and 4000 writes and 7000 reads per second with 5 connections. Those numbers suggest that my computer would asymptotically approach 9000 writes and 14000 reads per second with an arbitrarily large number of connections. As always, you should benchmark on your production hardware with your specific use case. Remember, too, that Riak is specifically *not* optimized for the single-node case.
-
+The `Client` object maintains a pool of ephemeral TCP connections that
+are re-used under high load. The size of the pool grows and shrinks at runtime. In practice, it is
+unusual to see more than five or six connections open simultaneously. (There is a cap set at 20 live connections
+at a time for safety's sake.) Empirically, maintaining ephemeral connections in a `sync.Pool` is *at least* as fast
+as using long-lived connections in a buffered channel, and in many cases much faster and less resource-hungry.
 
 ## Design & TODOs
 
@@ -127,8 +127,6 @@ Internally, Return-Head is always set to `true`, so every Push() or Store() oper
 
 The core "verbs" of this library (New, Fetch, Store, Push, Update, Delete) are meant to have intuitive and sane default behavior. For instance, New always asks Riak to abort the transaction if an object already exists at the given key, and Update doesn't return the whole
 body of the object back from the database if it hasn't been modified.
-
-The Client object is designed to maintain many long-lived TCP connections to many different Riak nodes. It re-dials closed connections in the background. More TCP connections per client mean less contention for connections, at the cost of more system resources on both ends of the connection. Care should be taken to tune this parameter appropriately for your use case. In the future we may allow for emphemeral connections. (We will need to find a way to do this without slowing down the existing `Client.ack()`.)
 
 Since garbage collection time bottlenecks many Go applications, a lot of effort was put into reducing memory allocations on database reads and writes. Much of the remaining improvement will have to come from carefully re-writing the `Marshal()` and `Unmarshal()` methods of the most frequently used protocol buffers messages. At the very least we may be able to reduce the total number of allocations by taking (better) advantage of `sync.Pool`. Right now we generate 636B (8 allocs) of garbage per read and 754B (5 allocs) of garbage per write. (For comparison, the zero value of an `http.Request` object is well over 1KB.)
 

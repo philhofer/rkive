@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	// ErrAck is returned when the
+	// ErrClosed is returned when the
 	// an attempt is made to make a request
 	// with a closed clinet
-	ErrAck = errors.New("client closed")
-	logger = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
+	ErrClosed = errors.New("client closed")
+	logger    = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
 )
 
 // read timeout (ms)
@@ -29,6 +29,12 @@ const readTimeout = 1000
 // write timeout (ms)
 const writeTimeout = 1000
 
+// this ends up being a rather
+// soft limit, as we are only directly
+// able to limit the number of connections
+// that the client has "reserved" at a given
+// moment in time, and not necessarily the number
+// of total live connections.
 const maxConns = 20
 
 // RiakError is an error
@@ -101,8 +107,8 @@ func Dial(addrs []string, clientID string) (*Client, error) {
 	return cl, nil
 }
 
-// DialOne returns a client with one TCP connection
-// to a single Riak node.
+// DialOne returns a client that
+// always dials the same node
 func DialOne(addr string, clientID string) (*Client, error) {
 	return Dial([]string{addr}, clientID)
 }
@@ -184,14 +190,14 @@ try:
 
 // pop connection
 func (c *Client) popConn() (*net.TCPConn, error) {
-	if c.closed() {
-		return nil, ErrAck
-	}
 	// spinlock (sort of)
 	// on acquiring a connection
 	for {
+		if c.closed() {
+			return nil, ErrClosed
+		}
 		conn, ok := c.pool.Get().(*net.TCPConn)
-		if ok || conn != nil {
+		if ok && conn != nil {
 			return conn, nil
 		}
 		if c.try() {

@@ -8,6 +8,7 @@ import (
 	check "gopkg.in/check.v1"
 	"log"
 	"os"
+	"sync"
 	"testing"
 )
 
@@ -214,4 +215,38 @@ func (s *riakSuite) TestHead(c *check.C) {
 	if err != ErrNotFound {
 		c.Errorf("expected ErrNotFound, got: %q", err)
 	}
+}
+
+func (s *riakSuite) TestGoFlood(c *check.C) {
+	c.Skip("Don't run this unless you mean it.")
+
+	// flood with goroutines
+	// to test the stability
+	// of the connection cap
+
+	ob := &TestObject{
+		info: &Info{},
+		Data: []byte("Here's a body."),
+	}
+	tests := s.cl.Bucket("testbucket")
+	err := tests.New(ob, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	key := ob.Info().Key()
+	NGO := 200
+	wg := new(sync.WaitGroup)
+	for i := 0; i < NGO; i++ {
+		wg.Add(1)
+		go func(key string, wg *sync.WaitGroup) {
+			nob := &TestObject{info: &Info{}}
+			err := tests.Fetch(nob, key)
+			if err != nil {
+				c.Error(err)
+			}
+			wg.Done()
+		}(key, wg)
+	}
+	wg.Wait()
 }
