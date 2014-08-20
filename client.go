@@ -113,7 +113,10 @@ func (c *Client) Close() {
 	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
 		return
 	}
-	time.Sleep(250 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
+	// this (hopefully) clears
+	// the pool
+	runtime.GC()
 }
 
 func (c *Client) closed() bool {
@@ -130,6 +133,8 @@ type Client struct {
 	addrs []*net.TCPAddr
 }
 
+// can we add another connection?
+// if so, increment
 func (c *Client) try() bool {
 	new := atomic.AddInt64(&c.conns, 1)
 	if new > maxConns {
@@ -143,25 +148,37 @@ func (c *Client) dec() {
 	atomic.AddInt64(&c.conns, -1)
 }
 
+// newconn tries to return a valid
+// tcp connection to a node
 func (c *Client) newconn() (*net.TCPConn, error) {
+	ntry := 0
+try:
 	addr := c.addrs[rand.Intn(len(c.addrs))]
 	logger.Printf("dialing TCP %s", addr.String())
 	conn, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {
+		ntry++
 		c.dec()
 		logger.Printf("error dialing TCP %s: %s", addr.String(), err)
+		if ntry < len(c.addrs) {
+			goto try
+		}
 		return nil, err
 	}
-	runtime.SetFinalizer(conn, cclose)
 	conn.SetKeepAlive(true)
 	conn.SetNoDelay(true)
 	err = c.writeClientID(conn)
 	if err != nil {
+		ntry++
 		c.dec()
 		conn.Close()
 		logger.Printf("error writing client ID: %s", err)
+		if ntry < len(c.addrs) {
+			goto try
+		}
 		return nil, err
 	}
+	runtime.SetFinalizer(conn, cclose)
 	return conn, nil
 }
 
