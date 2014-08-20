@@ -44,6 +44,10 @@ type RiakError struct {
 	res *rpbc.RpbErrorResp
 }
 
+func (r RiakError) Error() string {
+	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
+}
+
 // ErrMultipleResponses is the type
 // of error returned when multiple
 // siblings are retrieved for an object.
@@ -57,7 +61,8 @@ func (m *ErrMultipleResponses) Error() string {
 	return fmt.Sprintf("%d siblings found", m.NumSiblings)
 }
 
-// Blob is a generic riak key/value container
+// Blob is a generic riak key/value container that
+// implements the Object interface.
 type Blob struct {
 	RiakInfo *Info
 	Content  []byte
@@ -72,20 +77,19 @@ func handleMultiple(n int, key, bucket string) *ErrMultipleResponses {
 	}
 }
 
-// Blob satisfies the Object interface.
-func (r *Blob) Info() *Info              { return r.RiakInfo }
+// Info implements part of the Object interface.
+func (r *Blob) Info() *Info { return r.RiakInfo }
+
+// Unmarshal implements part of the Object interface
 func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }
+
+// Marshal implements part of the Object interface
 func (r *Blob) Marshal() ([]byte, error) { return r.Content, nil }
 
-func (r RiakError) Error() string {
-	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
-}
-
 // Dial creates a client connected to one
-// or many Riak nodes. It will try to reconnect to
-// downed nodes in the background. Dial verifies
-// that it is able to connect to at least one node
-// before it returns; otherwise, it will return an error.
+// or many Riak nodes. The client will attempt
+// to avoid using downed nodes. Dial returns an error
+// if it is unable to reach a good node.
 func Dial(addrs []string, clientID string) (*Client, error) {
 	naddrs := make([]*net.TCPAddr, len(addrs))
 
@@ -104,24 +108,31 @@ func Dial(addrs []string, clientID string) (*Client, error) {
 		addrs: naddrs,
 	}
 
+	conn, err := cl.popConn()
+	if err != nil {
+		cl.Close()
+		return nil, fmt.Errorf("client unable to dial any nodes: %s", err)
+	}
+	cl.done(conn)
+
 	return cl, nil
 }
 
 // DialOne returns a client that
-// always dials the same node
+// always dials the same node. (See: Dial)
 func DialOne(addr string, clientID string) (*Client, error) {
 	return Dial([]string{addr}, clientID)
 }
 
-// Close() closes the client. This cannot
-// be reversed.
+// Close() closes the client.
 func (c *Client) Close() {
 	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
 		return
 	}
+	c.pool = nil
 	time.Sleep(10 * time.Millisecond)
 	// this (hopefully) clears
-	// the pool
+	// most of the pool and its contents
 	runtime.GC()
 }
 
@@ -150,12 +161,14 @@ func (c *Client) try() bool {
 	return true
 }
 
+// decrement conn counter
 func (c *Client) dec() {
 	atomic.AddInt64(&c.conns, -1)
 }
 
 // newconn tries to return a valid
-// tcp connection to a node
+// tcp connection to a node, dropping
+// failed connections
 func (c *Client) newconn() (*net.TCPConn, error) {
 	ntry := 0
 try:
@@ -207,88 +220,6 @@ func (c *Client) popConn() (*net.TCPConn, error) {
 	}
 }
 
-/*
-// redialLoop is responsible
-// for attempting to dial nodes
-// NOTE: the client's waitgroup
-// must be incremented before starting
-// an async redialLoop
-func (c *Client) redialLoop(n *node) {
-	var nd int
-	if c.closed() {
-		n.Drop()
-		goto exit
-	}
-	logger.Printf("dialing TCP: %s", n.addr.String())
-	for err := n.Dial(); err != nil; nd++ {
-		if c.closed() {
-			n.Drop()
-			goto exit
-		}
-		logger.Printf("dial error #%d for %s: %s", nd, n.addr.String(), err)
-		time.Sleep(3 * time.Second)
-	}
-	c.done(n)
-exit:
-	c.wg.Done()
-}*/
-
-/*
-// ping nodes
-//
-// NOTE: the client's waitgroup/
-// must be incremented before starting
-// an async pingLoop
-//
-// pingLoop spends most of its time
-// sleeping if all the nodes are reachable,
-// so it shouldn't cause serious issues
-// with contention over c.dones
-func (c *Client) pingLoop() {
-	var node *node
-	var err error
-	var ok bool
-inspect:
-	for {
-	check:
-		if c.closed() {
-			goto exit
-		}
-		select {
-		case node, ok = <-c.dones:
-			if !ok {
-				goto exit
-			}
-			err = node.Ping()
-
-			// we don't sleep
-			// if an error is returned;
-			// instead, we start a redial
-			// on the node. otherwise, we
-			// sleep.
-			if err != nil {
-				if c.closed() {
-					node.Drop()
-					goto exit
-				}
-				c.wg.Add(1)
-				go c.redialLoop(node)
-			} else {
-				c.done(node)
-				time.Sleep(2 * time.Second)
-			}
-			continue inspect
-
-			// don't block forever;
-			// we could be closing
-		case <-time.After(1 * time.Second):
-			goto check
-		}
-	}
-exit:
-	c.wg.Done()
-}*/
-
 func (c *Client) writeClientID(conn *net.TCPConn) error {
 	if c.id == nil {
 		return nil
@@ -334,7 +265,6 @@ func (c *Client) done(n *net.TCPConn) {
 
 // finish node with err
 func (c *Client) err(n *net.TCPConn) {
-	c.dec()
 	if c.closed() {
 		n.Close()
 		return
