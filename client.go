@@ -161,6 +161,8 @@ func (c *Client) try() bool {
 }
 
 // decrement conn counter
+// MUST BE CALLED WHENEVER A CONNECTION
+// IS CLOSED, OR WE WILL HAVE PROBLEMS.
 func (c *Client) dec() {
 	atomic.AddInt64(&c.conns, -1)
 }
