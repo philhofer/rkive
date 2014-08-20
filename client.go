@@ -299,28 +299,6 @@ func (c *Client) writeClientID(cn *conn) error {
 	return nil
 }
 
-// finish node (success)
-func (c *Client) done(n *conn) {
-	if c.closed() {
-		n.Close()
-		return
-	}
-	c.pool.Put(n)
-}
-
-// finish node (err)
-func (c *Client) err(n *conn) {
-	if c.closed() {
-		n.Close()
-		return
-	}
-	err := ping(n)
-	if err != nil {
-		n.Close()
-	}
-	c.pool.Put(n)
-}
-
 // writes the message to the node with
 // the appropriate leading message size
 // and the given message code
