@@ -151,19 +151,29 @@ func DialOne(addr string, clientID string) (*Client, error) {
 	return Dial([]string{addr}, clientID)
 }
 
-// Close() closes the client.
+// Close() idempotently closes the client.
 func (c *Client) Close() {
 	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
 		return
 	}
-	c.pool = nil
 	time.Sleep(10 * time.Millisecond)
-	// this (hopefully) clears
-	// most of the pool and its contents
-	runtime.GC()
 
-	for atomic.LoadInt64(&c.conns) > 0 {
-		runtime.Gosched()
+	// we'll hang if we don't make
+	// the connection pool immediately
+	// GC-able
+	c.pool = nil
+
+	runtime.GC()
+	nspin := 0
+	maxspin := 50
+	// give up after 100ms just in case GC
+	// fails to work as desired.
+	for ; atomic.LoadInt64(&c.conns) > 0 && nspin < maxspin; nspin++ {
+		time.Sleep(2 * time.Millisecond)
+	}
+	nc := atomic.LoadInt64(&c.conns)
+	if nc > 0 {
+		logger.Printf("unable to close %d conns after 100ms", nc)
 	}
 }
 
