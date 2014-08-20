@@ -81,6 +81,38 @@ func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }
 // Marshal implements part of the Object interface
 func (r *Blob) Marshal() ([]byte, error) { return r.Content, nil }
 
+// conn is a connection
+type conn struct {
+	*net.TCPConn
+	parent   *Client
+	isClosed bool
+}
+
+// write wraps the TCP write
+func (c *conn) Write(b []byte) (int, error) {
+	c.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
+	return c.TCPConn.Write(b)
+}
+
+// read wraps the TCP read
+func (c *conn) Read(b []byte) (int, error) {
+	c.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
+	return c.TCPConn.Read(b)
+}
+
+// Close idempotently closes
+// the connection and decrements
+// the parent conn counter
+func (c *conn) Close() {
+	if c.isClosed {
+		return
+	}
+	c.isClosed = true
+	logger.Printf("closing TCP connection to %s", c.RemoteAddr().String())
+	c.Close()
+	c.parent.dec()
+}
+
 // Dial creates a client connected to one
 // or many Riak nodes. The client will attempt
 // to avoid using downed nodes. Dial returns an error
@@ -171,56 +203,53 @@ func (c *Client) dec() {
 // tcp connection to a node, dropping
 // failed connections. it should only
 // be called by popConnection.
-func (c *Client) newconn() (*net.TCPConn, error) {
+func (c *Client) newconn() (*conn, error) {
 	ntry := 0
 try:
 	addr := c.addrs[rand.Intn(len(c.addrs))]
 	logger.Printf("dialing TCP %s", addr.String())
-	conn, err := net.DialTCP("tcp", nil, addr)
+	tcpconn, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {
 		ntry++
-		c.dec()
 		logger.Printf("error dialing TCP %s: %s", addr.String(), err)
 		if ntry < len(c.addrs) {
 			goto try
 		}
+		c.dec()
 		return nil, err
 	}
-	conn.SetKeepAlive(true)
-	conn.SetNoDelay(true)
-	err = c.writeClientID(conn)
+	tcpconn.SetKeepAlive(true)
+	tcpconn.SetNoDelay(true)
+	out := &conn{
+		TCPConn:  tcpconn,
+		parent:   c,
+		isClosed: false,
+	}
+	err = c.writeClientID(out)
 	if err != nil {
 		ntry++
-		conn.Close()
-		c.dec()
+		out.Close()
 		logger.Printf("error writing client ID: %s", err)
 		if ntry < len(c.addrs) {
 			goto try
 		}
 		return nil, err
 	}
-	runtime.SetFinalizer(conn, func(nc *net.TCPConn) {
-		if nc == nil {
-			return
-		}
-		logger.Printf("closing TCP connection %s", nc.RemoteAddr().String())
-		nc.Close()
-		c.dec()
-	})
-	return conn, nil
+	runtime.SetFinalizer(out, (*conn).Close)
+	return out, nil
 }
 
 // pop connection
-func (c *Client) popConn() (*net.TCPConn, error) {
+func (c *Client) popConn() (*conn, error) {
 	// spinlock (sort of)
 	// on acquiring a connection
 	for {
 		if c.closed() {
 			return nil, ErrClosed
 		}
-		conn, ok := c.pool.Get().(*net.TCPConn)
-		if ok && conn != nil {
-			return conn, nil
+		cn, ok := c.pool.Get().(*conn)
+		if ok && cn != nil {
+			return cn, nil
 		}
 		if c.try() {
 			return c.newconn()
@@ -229,7 +258,7 @@ func (c *Client) popConn() (*net.TCPConn, error) {
 	}
 }
 
-func (c *Client) writeClientID(conn *net.TCPConn) error {
+func (c *Client) writeClientID(cn *conn) error {
 	if c.id == nil {
 		return nil
 	}
@@ -245,13 +274,11 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	binary.BigEndian.PutUint32(msg, uint32(msglen))
 	msg[4] = 5 // code for RpbSetClientIdReq
 	copy(msg[5:], bts)
-	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
-	_, err = conn.Write(msg)
+	_, err = cn.Write(msg)
 	if err != nil {
 		return err
 	}
-	conn.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err = conn.Read(msg[:5])
+	_, err = cn.Read(msg[:5])
 	if err != nil {
 		return err
 	}
@@ -263,35 +290,31 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 }
 
 // finish node (success)
-func (c *Client) done(n *net.TCPConn) {
+func (c *Client) done(n *conn) {
 	if c.closed() {
 		n.Close()
 		return
 	}
-	// this ordering ensures
-	// that the cache is more likely
-	// to be the first choice
 	c.pool.Put(n)
 }
 
-// finish node with err
-func (c *Client) err(n *net.TCPConn) {
+// finish node (err)
+func (c *Client) err(n *conn) {
 	if c.closed() {
 		n.Close()
 		return
 	}
 	err := ping(n)
 	if err != nil {
-		c.dec()
 		n.Close()
 	}
-	c.done(n)
+	c.pool.Put(n)
 }
 
 // writes the message to the node with
 // the appropriate leading message size
 // and the given message code
-func writeMsg(n *net.TCPConn, msg []byte, code byte) error {
+func writeMsg(n *conn, msg []byte, code byte) error {
 	// bigendian length + code byte
 	var lead [5]byte
 	msglen := uint32(len(msg) + 1)
@@ -306,7 +329,6 @@ func writeMsg(n *net.TCPConn, msg []byte, code byte) error {
 	copy(mbd[5:], msg)
 
 	// send the message
-	n.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
 	_, err := n.Write(mbd)
 	if err != nil {
 		return err
@@ -315,9 +337,8 @@ func writeMsg(n *net.TCPConn, msg []byte, code byte) error {
 }
 
 // readLead reads the size of the inbound message
-func readLead(n *net.TCPConn) (int, byte, error) {
+func readLead(n *conn) (int, byte, error) {
 	var lead [5]byte
-	n.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
 	_, err := n.Read(lead[:])
 	if err != nil {
 		return 0, lead[4], err
@@ -329,8 +350,7 @@ func readLead(n *net.TCPConn) (int, byte, error) {
 
 // readBody reads from the node into 'body'
 // body should be sized by the result from readLead
-func readBody(n *net.TCPConn, body []byte) error {
-	n.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
+func readBody(n *conn, body []byte) error {
 	_, err := n.Read(body)
 	return err
 }
@@ -432,7 +452,7 @@ type unmarshaler interface {
 // returns a primed connection
 type streamRes struct {
 	c    *Client
-	node *net.TCPConn
+	node *conn
 }
 
 // unmarshals; returns done / code / error
@@ -525,22 +545,12 @@ func (c *Client) Ping() error {
 	return nil
 }
 
-func ping(conn *net.TCPConn) error {
-	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
-	_, err := conn.Write([]byte{0, 0, 0, 1, 1})
+func ping(cn *conn) error {
+	_, err := cn.Write([]byte{0, 0, 0, 1, 1})
 	if err != nil {
 		return err
 	}
 	var res [5]byte
-	conn.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
-	_, err = conn.Read(res[:])
+	_, err = cn.Read(res[:])
 	return err
-}
-
-func cclose(conn *net.TCPConn) {
-	if conn == nil {
-		return
-	}
-	logger.Printf("closing TCP connection to %s", conn.RemoteAddr().String())
-	conn.Close()
 }
