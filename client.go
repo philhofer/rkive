@@ -29,13 +29,8 @@ const readTimeout = 1000
 // write timeout (ms)
 const writeTimeout = 1000
 
-// this ends up being a rather
-// soft limit, as we are only directly
-// able to limit the number of connections
-// that the client has "reserved" at a given
-// moment in time, and not necessarily the number
-// of total live connections.
-const maxConns = 20
+// max connection limit
+const maxConns = 30
 
 // RiakError is an error
 // returned from the Riak server
@@ -134,6 +129,10 @@ func (c *Client) Close() {
 	// this (hopefully) clears
 	// most of the pool and its contents
 	runtime.GC()
+
+	for atomic.LoadInt64(&c.conns) > 0 {
+		runtime.Gosched()
+	}
 }
 
 func (c *Client) closed() bool {
@@ -168,7 +167,8 @@ func (c *Client) dec() {
 
 // newconn tries to return a valid
 // tcp connection to a node, dropping
-// failed connections
+// failed connections. it should only
+// be called by popConnection.
 func (c *Client) newconn() (*net.TCPConn, error) {
 	ntry := 0
 try:
@@ -189,15 +189,22 @@ try:
 	err = c.writeClientID(conn)
 	if err != nil {
 		ntry++
-		c.dec()
 		conn.Close()
+		c.dec()
 		logger.Printf("error writing client ID: %s", err)
 		if ntry < len(c.addrs) {
 			goto try
 		}
 		return nil, err
 	}
-	runtime.SetFinalizer(conn, cclose)
+	runtime.SetFinalizer(conn, func(nc *net.TCPConn) {
+		if nc == nil {
+			return
+		}
+		logger.Printf("closing TCP connection %s", nc.RemoteAddr().String())
+		nc.Close()
+		c.dec()
+	})
 	return conn, nil
 }
 
@@ -255,11 +262,13 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 
 // finish node (success)
 func (c *Client) done(n *net.TCPConn) {
-	c.dec()
 	if c.closed() {
 		n.Close()
 		return
 	}
+	// this ordering ensures
+	// that the cache is more likely
+	// to be the first choice
 	c.pool.Put(n)
 }
 
@@ -271,6 +280,7 @@ func (c *Client) err(n *net.TCPConn) {
 	}
 	err := ping(n)
 	if err != nil {
+		c.dec()
 		n.Close()
 	}
 	c.done(n)

@@ -115,7 +115,7 @@ indexes enabled.)
 
 The `Client` object maintains a pool of ephemeral TCP connections that
 are re-used under high load. The size of the pool grows and shrinks at runtime. In practice, it is
-unusual to see more than five or six connections open simultaneously. (There is a cap set at 20 live connections
+unusual to see more than five or six connections open simultaneously. (There is a cap set at 30 live connections
 at a time for safety's sake.) Empirically, maintaining ephemeral connections in a `sync.Pool` is *at least* as fast
 as using long-lived connections in a buffered channel, and in many cases much faster and less resource-hungry.
 

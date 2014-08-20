@@ -218,7 +218,7 @@ func (s *riakSuite) TestHead(c *check.C) {
 }
 
 func (s *riakSuite) TestGoFlood(c *check.C) {
-	c.Skip("Don't run this unless you mean it.")
+	//c.Skip("Don't run this unless you mean it.")
 
 	// flood with goroutines
 	// to test the stability
