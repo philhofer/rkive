@@ -224,7 +224,7 @@ func BenchmarkStore(b *testing.B) {
 func BenchmarkMultiStore(b *testing.B) {
 	NCONN := 5           // nubmer of connections
 	nSEND := b.N / NCONN // number of stores/goroutine
-	cl, err := Dial([]Node{{"localhost:8087", 5}}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -295,7 +295,7 @@ func BenchmarkMultiFetch(b *testing.B) {
 	NCONNS := 5
 	nSEND := b.N / NCONNS
 
-	cl, err := Dial([]Node{{"localhost:8087", uint(NCONNS)}}, "testClient")
+	cl, err := DialOne("localhost:8087", "testClient")
 	if err != nil {
 		b.Fatal(err)
 	}
