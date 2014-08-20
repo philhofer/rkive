@@ -6,18 +6,20 @@ import (
 	"fmt"
 	"github.com/philhofer/rkive/rpbc"
 	"log"
+	"math/rand"
 	"net"
 	"os"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
 var (
-	// ErrAck is returned when all of the connections
-	// in the connection pool are unavailable for longer
-	// than 250ms, or when the pool is closing
-	ErrAck = errors.New("connection unavailable")
+	// ErrAck is returned when the
+	// an attempt is made to make a request
+	// with a closed clinet
+	ErrAck = errors.New("client closed")
 	logger = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
 )
 
@@ -26,6 +28,8 @@ const readTimeout = 1000
 
 // write timeout (ms)
 const writeTimeout = 1000
+
+const maxConns = 20
 
 // RiakError is an error
 // returned from the Riak server
@@ -71,30 +75,17 @@ func (r RiakError) Error() string {
 	return fmt.Sprintf("riak error (0): %s", r.res.GetErrmsg())
 }
 
-// A Node is a Riak physical node.
-type Node struct {
-	Addr   string // address (e.g. 127.0.0.1:8078)
-	NConns uint   // Number of simultaneous TCP connections
-}
-
 // Dial creates a client connected to one
 // or many Riak nodes. It will try to reconnect to
 // downed nodes in the background. Dial verifies
 // that it is able to connect to at least one node
 // before it returns; otherwise, it will return an error.
-func Dial(nodes []Node, clientID string) (*Client, error) {
-
-	// count total connections
-	nconns := 0
-	for _, node := range nodes {
-		nconns += int(node.NConns)
-	}
-
-	naddrs := make([]*net.TCPAddr, len(nodes))
+func Dial(addrs []string, clientID string) (*Client, error) {
+	naddrs := make([]*net.TCPAddr, len(addrs))
 
 	var err error
-	for i, node := range nodes {
-		naddrs[i], err = net.ResolveTCPAddr("tcp", node.Addr)
+	for i, node := range addrs {
+		naddrs[i], err = net.ResolveTCPAddr("tcp", node)
 		if err != nil {
 			return nil, err
 		}
@@ -103,37 +94,8 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 	cl := &Client{
 		tag:   0,
 		id:    []byte(clientID),
-		dones: make(chan *node, nconns),
-		lock:  make(chan struct{}, 3),
-		wg:    new(sync.WaitGroup),
-	}
-
-	// dial up all the nodes
-	for i, naddr := range naddrs {
-		for j := 0; j < int(nodes[i].NConns); j++ {
-			tnode := &node{
-				addr:        naddr,
-				parent:      cl,
-				isConnected: false,
-				conn:        nil,
-			}
-			cl.wg.Add(1)
-			go cl.redialLoop(tnode)
-		}
-	}
-	cl.wg.Add(1)
-	go cl.pingLoop()
-	cl.dunlock()
-
-	// make sure we're able to dial
-	// at least one of the nodes after
-	// 5 seconds
-	select {
-	case n := <-cl.dones:
-		cl.dones <- n
-	case <-time.After(5 * time.Second):
-		cl.Close()
-		return nil, errors.New("unable to dial any nodes")
+		pool:  new(sync.Pool),
+		addrs: naddrs,
 	}
 
 	return cl, nil
@@ -142,7 +104,7 @@ func Dial(nodes []Node, clientID string) (*Client, error) {
 // DialOne returns a client with one TCP connection
 // to a single Riak node.
 func DialOne(addr string, clientID string) (*Client, error) {
-	return Dial([]Node{{Addr: addr, NConns: 1}}, clientID)
+	return Dial([]string{addr}, clientID)
 }
 
 // Close() closes the client. This cannot
@@ -151,29 +113,7 @@ func (c *Client) Close() {
 	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
 		return
 	}
-	c.dlock()
-	close(c.dones)
-	for node := range c.dones {
-		logger.Printf("closing TCP tunnel to %s", node.addr.String())
-		node.conn.Close()
-	}
-	c.dunlock()
-	c.wg.Wait()
-	return
-}
-
-// lock completely (for closing)
-func (c *Client) dlock() {
-	<-c.lock
-	<-c.lock
-	<-c.lock
-}
-
-// unlock completely
-func (c *Client) dunlock() {
-	c.lock <- struct{}{}
-	c.lock <- struct{}{}
-	c.lock <- struct{}{}
+	time.Sleep(250 * time.Millisecond)
 }
 
 func (c *Client) closed() bool {
@@ -183,13 +123,68 @@ func (c *Client) closed() bool {
 // Client represents a pool of connections
 // to a Riak cluster.
 type Client struct {
+	conns int64
 	tag   int64
 	id    []byte
-	dones chan *node    // holds good nodes
-	lock  chan struct{} // used as RWmutex
-	wg    *sync.WaitGroup
+	pool  *sync.Pool
+	addrs []*net.TCPAddr
 }
 
+func (c *Client) try() bool {
+	new := atomic.AddInt64(&c.conns, 1)
+	if new > maxConns {
+		atomic.AddInt64(&c.conns, -1)
+		return false
+	}
+	return true
+}
+
+func (c *Client) dec() {
+	atomic.AddInt64(&c.conns, -1)
+}
+
+func (c *Client) newconn() (*net.TCPConn, error) {
+	addr := c.addrs[rand.Intn(len(c.addrs))]
+	logger.Printf("dialing TCP %s", addr.String())
+	conn, err := net.DialTCP("tcp", nil, addr)
+	if err != nil {
+		c.dec()
+		logger.Printf("error dialing TCP %s: %s", addr.String(), err)
+		return nil, err
+	}
+	runtime.SetFinalizer(conn, cclose)
+	conn.SetKeepAlive(true)
+	conn.SetNoDelay(true)
+	err = c.writeClientID(conn)
+	if err != nil {
+		c.dec()
+		conn.Close()
+		logger.Printf("error writing client ID: %s", err)
+		return nil, err
+	}
+	return conn, nil
+}
+
+// pop connection
+func (c *Client) popConn() (*net.TCPConn, error) {
+	if c.closed() {
+		return nil, ErrAck
+	}
+	// spinlock (sort of)
+	// on acquiring a connection
+	for {
+		conn, ok := c.pool.Get().(*net.TCPConn)
+		if ok || conn != nil {
+			return conn, nil
+		}
+		if c.try() {
+			return c.newconn()
+		}
+		runtime.Gosched()
+	}
+}
+
+/*
 // redialLoop is responsible
 // for attempting to dial nodes
 // NOTE: the client's waitgroup
@@ -213,8 +208,9 @@ func (c *Client) redialLoop(n *node) {
 	c.done(n)
 exit:
 	c.wg.Done()
-}
+}*/
 
+/*
 // ping nodes
 //
 // NOTE: the client's waitgroup/
@@ -268,7 +264,7 @@ inspect:
 	}
 exit:
 	c.wg.Done()
-}
+}*/
 
 func (c *Client) writeClientID(conn *net.TCPConn) error {
 	if c.id == nil {
@@ -303,50 +299,34 @@ func (c *Client) writeClientID(conn *net.TCPConn) error {
 	return nil
 }
 
-// acquire node
-func (c *Client) ack() (*node, bool) {
-	node, ok := <-c.dones
-	return node, ok
-}
-
 // finish node (success)
-func (c *Client) done(n *node) {
-	// we need to lock
-	// in order ensure that the
-	// channel cannot be closed
-	// while sending
-	<-c.lock
+func (c *Client) done(n *net.TCPConn) {
+	c.dec()
 	if c.closed() {
-		c.lock <- struct{}{}
-		n.Drop()
+		n.Close()
 		return
 	}
-	c.dones <- n
-	c.lock <- struct{}{}
+	c.pool.Put(n)
 }
 
 // finish node with err
-func (c *Client) err(n *node) {
+func (c *Client) err(n *net.TCPConn) {
+	c.dec()
 	if c.closed() {
-		n.Drop()
+		n.Close()
 		return
 	}
-	// do a quick test
-	err := n.Ping()
+	err := ping(n)
 	if err != nil {
-		c.wg.Add(1)
-		go c.redialLoop(n)
-		return
+		n.Close()
 	}
-	<-c.lock
-	c.dones <- n
-	c.lock <- struct{}{}
+	c.done(n)
 }
 
 // writes the message to the node with
 // the appropriate leading message size
 // and the given message code
-func writeMsg(n *node, msg []byte, code byte) error {
+func writeMsg(n *net.TCPConn, msg []byte, code byte) error {
 	// bigendian length + code byte
 	var lead [5]byte
 	msglen := uint32(len(msg) + 1)
@@ -361,20 +341,20 @@ func writeMsg(n *node, msg []byte, code byte) error {
 	copy(mbd[5:], msg)
 
 	// send the message
+	n.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
 	_, err := n.Write(mbd)
 	if err != nil {
-		n.Err()
 		return err
 	}
 	return nil
 }
 
 // readLead reads the size of the inbound message
-func readLead(n *node) (int, byte, error) {
+func readLead(n *net.TCPConn) (int, byte, error) {
 	var lead [5]byte
+	n.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
 	_, err := n.Read(lead[:])
 	if err != nil {
-		n.Err()
 		return 0, lead[4], err
 	}
 	msglen := binary.BigEndian.Uint32(lead[:4]) - 1
@@ -384,25 +364,23 @@ func readLead(n *node) (int, byte, error) {
 
 // readBody reads from the node into 'body'
 // body should be sized by the result from readLead
-func readBody(n *node, body []byte) error {
+func readBody(n *net.TCPConn, body []byte) error {
+	n.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
 	_, err := n.Read(body)
-	if err != nil {
-		n.Err()
-	}
 	return err
 }
 
 // send the contents of a buffer and receive a response
 // back in the same buffer
 func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
-	node, ok := c.ack()
-	if !ok {
-		return nil, 0, ErrAck
+	node, err := c.popConn()
+	if err != nil {
+		return nil, 0, err
 	}
-	var err error
 
 	err = writeMsg(node, msg, code)
 	if err != nil {
+		c.err(node)
 		return nil, 0, err
 	}
 
@@ -411,6 +389,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	// read length and code
 	msglen, code, err = readLead(node)
 	if err != nil {
+		c.err(node)
 		return nil, code, err
 	}
 	if msglen == 0 {
@@ -428,11 +407,12 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	// read body
 	err = readBody(node, msg)
 	if err != nil {
+		c.err(node)
 		return msg, code, err
 	}
 
 exit:
-	node.Done()
+	c.done(node)
 	return msg, code, nil
 }
 
@@ -487,7 +467,7 @@ type unmarshaler interface {
 // returns a primed connection
 type streamRes struct {
 	c    *Client
-	node *node
+	node *net.TCPConn
 }
 
 // unmarshals; returns done / code / error
@@ -498,6 +478,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 
 	msglen, code, err = readLead(s.node)
 	if err != nil {
+		s.c.err(s.node)
 		return true, code, err
 	}
 
@@ -507,6 +488,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 	// read into s.bts
 	err = readBody(s.node, buf.Body)
 	if err != nil {
+		s.c.err(s.node)
 		putBuf(buf)
 		return true, code, err
 	}
@@ -538,7 +520,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 }
 
 // return the connection to the client
-func (s *streamRes) close() { s.node.Done() }
+func (s *streamRes) close() { s.c.done(s.node) }
 
 func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 
@@ -549,43 +531,51 @@ func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 		putBuf(buf)
 		return nil, err
 	}
-	node, ok := c.ack()
-	if !ok {
-		putBuf(buf)
-		return nil, ErrAck
+	node, err := c.popConn()
+	if err != nil {
+		return nil, err
 	}
 
 	err = writeMsg(node, buf.Body, code)
 	putBuf(buf)
 	if err != nil {
+		c.err(node)
 		return nil, err
 	}
 	return &streamRes{c: c, node: node}, nil
 }
 
 func (c *Client) Ping() error {
-	node, ok := c.ack()
-	if !ok {
-		return ErrAck
-	}
-	err := node.Ping()
+	conn, err := c.popConn()
 	if err != nil {
-		node.Err()
 		return err
 	}
-	node.Done()
+	err = ping(conn)
+	if err != nil {
+		c.dec()
+		conn.Close()
+		return err
+	}
+	c.done(conn)
 	return nil
 }
 
-func (n *node) Ping() error {
-	_, err := n.Write([]byte{0, 0, 0, 1, 1})
+func ping(conn *net.TCPConn) error {
+	conn.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
+	_, err := conn.Write([]byte{0, 0, 0, 1, 1})
 	if err != nil {
 		return err
 	}
 	var res [5]byte
-	_, err = n.Read(res[:])
-	if err != nil {
-		return err
+	conn.SetReadDeadline(time.Now().Add(readTimeout * time.Millisecond))
+	_, err = conn.Read(res[:])
+	return err
+}
+
+func cclose(conn *net.TCPConn) {
+	if conn == nil {
+		return
 	}
-	return nil
+	logger.Printf("closing TCP connection to %s", conn.RemoteAddr().String())
+	conn.Close()
 }

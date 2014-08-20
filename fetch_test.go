@@ -30,10 +30,14 @@ func (s *riakSuite) SetUpSuite(c *check.C) {
 	} else {
 		addr = "localhost:8087"
 	}
-	s.cl, err = Dial([]Node{{addr, 5}}, "testClient")
+	s.cl, err = DialOne(addr, "testClient")
 	if err != nil {
 		fmt.Printf("Couldn't connect to Riak: %s\n", err)
 		os.Exit(1)
+	}
+	err = s.cl.Ping()
+	if err != nil {
+		c.Fatalf("Error on ping: %s", err)
 	}
 }
 
