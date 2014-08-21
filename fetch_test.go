@@ -21,8 +21,12 @@ func TestRiakSuite(t *testing.T) {
 }
 
 func (s *riakSuite) SetUpSuite(c *check.C) {
+	addr := os.Getenv("RIAK_PBCONNECT")
+	if addr == "" {
+		addr = "localhost:8087"
+	}
 	var err error
-	s.cl, err = DialOne("127.0.0.1:8087", "testClient")
+	s.cl, err = DialOne(addr, "testClient")
 	if err != nil {
 		fmt.Printf("Couldn't connect to Riak: %s\n", err)
 		os.Exit(1)

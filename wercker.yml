@@ -5,7 +5,7 @@ build:
  steps:
   - script:
       name: install-dep
-      code: go get gopkg.in/check.v1 && go get code.google.com/p/gogoprotobuf/proto
+      code: go get gopkg.in/check.v1 && go get code.google.com/p/gogoprotobuf/proto && go get -d ./...
   - script:
       name: test
       code: go test -v -tags 'riak' -check.v
