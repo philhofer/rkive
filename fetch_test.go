@@ -74,6 +74,10 @@ func (t *TestObject) Merge(o ObjectM) {
 
 //func TestMultipleVclocks(t *testing.T) {
 func (s *riakSuite) TestMultipleVclocks(c *check.C) {
+	travis := os.Getenv("TRAVIS")
+	if travis != "" {
+		c.Skip("The Traivs Riak service doesn't have allow_mult set to true")
+	}
 	oba := &TestObject{
 		Data: []byte("Body 1"),
 		info: &Info{},
