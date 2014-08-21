@@ -1,6 +1,6 @@
 box: wercker/golang@1.2.0
 services:
- - packrat386/riak-wercker@0.0.2
+ - packrat386/riak@0.0.2
 build:
  steps:
   - script:
