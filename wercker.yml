@@ -4,8 +4,8 @@ services:
 build:
  steps:
   - script:
-    name: install-dep
-    code: go get gopkg.in/check.v1 && go get code.google.com/p/gogoprotobuf/proto
+      name: install-dep
+      code: go get gopkg.in/check.v1 && go get code.google.com/p/gogoprotobuf/proto
   - script:
-    name: test
-    code: go test -v -tags 'riak' -check.v
+      name: test
+      code: go test -v -tags 'riak' -check.v
