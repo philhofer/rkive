@@ -1,6 +1,9 @@
 install:
 	go install ./...
 
+test:
+	go test -v
+
 test-all:
 	go test -v -tags 'riak' -check.v
 
