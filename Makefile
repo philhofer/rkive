@@ -1,3 +1,4 @@
+
 install:
 	go install ./...
 
