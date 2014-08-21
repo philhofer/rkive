@@ -1,4 +1,3 @@
-
 install:
 	go install ./...
 
