@@ -9,3 +9,9 @@ build:
   - script:
       name: test
       code: go test -v -tags 'riak' -check.v
+ after-steps:
+  - wantedly/pretty-slack-notify:
+      team: $SLACK_TEAM
+      token: $SLACK_API_TOKEN
+      channel: $SLACK_CHANNEL
+      username: werckerbot
