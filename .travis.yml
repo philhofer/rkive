@@ -5,7 +5,7 @@ services:
  - riak
 install:
  - go get gopkg.in/check.v1
- - go get code.google.com/p/gogoprotobuf
+ - go get code.google.com/p/gogoprotobuf/proto
  - go install ./...
 script:
  - go test -v -tags 'riak' -check.v
