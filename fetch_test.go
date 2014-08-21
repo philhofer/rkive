@@ -21,7 +21,7 @@ func TestRiakSuite(t *testing.T) {
 }
 
 func (s *riakSuite) SetUpSuite(c *check.C) {
-	addr := os.Getenv("RIAK_PBCONNECT")
+	addr := os.Getenv("WERCKER_RIAK_PB_URL")
 	if addr == "" {
 		addr = "localhost:8087"
 	}
