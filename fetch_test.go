@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	check "gopkg.in/check.v1"
-	"log"
 	"os"
 	"sync"
 	"testing"
@@ -23,15 +22,7 @@ func TestRiakSuite(t *testing.T) {
 
 func (s *riakSuite) SetUpSuite(c *check.C) {
 	var err error
-	var addr string
-	werk := os.Getenv("MJDSYS_RIAK_PBCONNECT")
-	if werk != "" {
-		log.Println("Using address from environment.")
-		addr = werk
-	} else {
-		addr = "localhost:8087"
-	}
-	s.cl, err = DialOne(addr, "testClient")
+	s.cl, err = DialOne("127.0.0.1:8087", "testClient")
 	if err != nil {
 		fmt.Printf("Couldn't connect to Riak: %s\n", err)
 		os.Exit(1)
