@@ -1,6 +1,6 @@
 box: wercker/golang@1.2.0
 services:
- - kkvlk/riak-leveldb@0.0.9
+ - packrat386/riak@0.0.3
 build:
  steps:
   - script:
