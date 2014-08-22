@@ -9,7 +9,9 @@ test-all:
 	@go test -v -tags 'riak' -check.v
 
 ci-deps:
-	@echo no deps
+	go get gopkg.in/check.v1
+	go get code.google.com/p/gogoprotobuf/proto
+	go get -d ./...
 
 continuous: install test-all
 	
