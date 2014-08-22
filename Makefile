@@ -7,6 +7,7 @@ test:
 test-all:
 	@go get gopkg.in/check.v1
 	@go test -v -tags 'riak' -check.v
+	@false
 
 ci-deps:
 	@echo no deps
