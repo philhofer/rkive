@@ -3,7 +3,7 @@ Riak for Go [![Build Status](https://travis-ci.org/philhofer/rkive.svg?branch=ma
 
 A Riak client designed for performance-critical Go programs.
 
-Complete documentation is at [godoc](http://godoc.org/github.com/philhofer/riakpb).
+Complete documentation is at [godoc](http://godoc.org/github.com/philhofer/rkive).
 
 ## Status
 
