@@ -2,7 +2,37 @@ package rkive
 
 import (
 	"testing"
+	"unsafe"
 )
+
+func TestClientAlignment(t *testing.T) {
+	// we're doing atomic operations
+	// on 'conns', 'inuse', and 'tag', so
+	// let's keep them 8-byte aligned
+
+	cl := Client{}
+
+	t.Logf("Client alignment: %d", unsafe.Alignof(cl))
+	if (unsafe.Alignof(cl) % 8) != 0 {
+		t.Errorf("Wanted 8-byte alignment; addr%8 = %d", unsafe.Alignof(cl)%8)
+	}
+
+	t.Logf("'conns' offset: %d", unsafe.Offsetof(cl.conns))
+	if (unsafe.Offsetof(cl.conns) % 8) != 0 {
+		t.Errorf("Wanted 8-byte alignment; addr%8 = %d", unsafe.Offsetof(cl.conns)%8)
+	}
+
+	t.Logf("'inuse' offset: %d", unsafe.Offsetof(cl.inuse))
+	if (unsafe.Offsetof(cl.inuse) % 8) != 0 {
+		t.Errorf("Wanted 8-byte alignment; addr%8 = %d", unsafe.Offsetof(cl.inuse)%8)
+	}
+
+	t.Logf("'tag' offset: %d", unsafe.Offsetof(cl.tag))
+	if (unsafe.Offsetof(cl.tag) % 8) != 0 {
+		t.Errorf("Wanted 8-byte alignment; addr%8 = %d", unsafe.Offsetof(cl.tag)%8)
+	}
+
+}
 
 func TestAddRemoveLink(t *testing.T) {
 	info := Info{}
