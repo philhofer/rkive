@@ -20,7 +20,13 @@ var (
 	// an attempt is made to make a request
 	// with a closed clinet
 	ErrClosed = errors.New("client closed")
-	logger    = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
+
+	// ErrUnavail is returned when the client
+	// is unable to successfully dial any
+	// Riak node.
+	ErrUnavail = errors.New("no connection to could be established")
+
+	logger = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
 )
 
 // read timeout (ms)
@@ -135,12 +141,12 @@ func Dial(addrs []string, clientID string) (*Client, error) {
 		addrs: naddrs,
 	}
 
-	conn, err := cl.popConn()
+	// fail on no dial-able nodes
+	err = cl.Ping()
 	if err != nil {
 		cl.Close()
-		return nil, fmt.Errorf("client unable to dial any nodes: %s", err)
+		return nil, err
 	}
-	cl.done(conn)
 
 	return cl, nil
 }
@@ -153,10 +159,15 @@ func DialOne(addr string, clientID string) (*Client, error) {
 
 // Close() idempotently closes the client.
 func (c *Client) Close() {
-	if !atomic.CompareAndSwapInt64(&c.tag, 0, 1) {
+	if !atomic.CompareAndSwapInt32(&c.tag, 0, 1) {
 		return
 	}
-	time.Sleep(10 * time.Millisecond)
+
+	// wait for all connetions to end
+	// up in the pool
+	for atomic.LoadInt32(&c.inuse) > 0 {
+		time.Sleep(2 * time.Millisecond)
+	}
 
 	// we'll hang if we don't make
 	// the connection pool immediately
@@ -168,24 +179,28 @@ func (c *Client) Close() {
 	maxspin := 50
 	// give up after 100ms just in case GC
 	// fails to work as desired.
-	for ; atomic.LoadInt64(&c.conns) > 0 && nspin < maxspin; nspin++ {
+	for ; atomic.LoadInt32(&c.conns) > 0 && nspin < maxspin; nspin++ {
 		time.Sleep(2 * time.Millisecond)
 	}
-	nc := atomic.LoadInt64(&c.conns)
+	nc := atomic.LoadInt32(&c.conns)
 	if nc > 0 {
 		logger.Printf("unable to close %d conns after 100ms", nc)
 	}
 }
 
 func (c *Client) closed() bool {
-	return atomic.LoadInt64(&c.tag) == 1
+	return atomic.LoadInt32(&c.tag) == 1
 }
 
 // Client represents a pool of connections
 // to a Riak cluster.
 type Client struct {
-	conns int64
-	tag   int64
+	conns int32 // total live conns
+	pad1  [4]byte
+	inuse int32 // conns in use
+	pad2  [4]byte
+	tag   int32 // 0 = open; 1 = closed
+	pad3  [4]byte
 	id    []byte
 	pool  *sync.Pool
 	addrs []*net.TCPAddr
@@ -194,9 +209,9 @@ type Client struct {
 // can we add another connection?
 // if so, increment
 func (c *Client) try() bool {
-	new := atomic.AddInt64(&c.conns, 1)
+	new := atomic.AddInt32(&c.conns, 1)
 	if new > maxConns {
-		atomic.AddInt64(&c.conns, -1)
+		atomic.AddInt32(&c.conns, -1)
 		return false
 	}
 	return true
@@ -206,47 +221,51 @@ func (c *Client) try() bool {
 // MUST BE CALLED WHENEVER A CONNECTION
 // IS CLOSED, OR WE WILL HAVE PROBLEMS.
 func (c *Client) dec() {
-	atomic.AddInt64(&c.conns, -1)
+	atomic.AddInt32(&c.conns, -1)
 }
 
 // newconn tries to return a valid
 // tcp connection to a node, dropping
 // failed connections. it should only
-// be called by popConnection.
+// be called by popConn().
 func (c *Client) newconn() (*conn, error) {
-	ntry := 0
-try:
-	addr := c.addrs[rand.Intn(len(c.addrs))]
-	logger.Printf("dialing TCP %s", addr.String())
-	tcpconn, err := net.DialTCP("tcp", nil, addr)
-	if err != nil {
-		ntry++
-		logger.Printf("error dialing TCP %s: %s", addr.String(), err)
-		if ntry < len(c.addrs) {
-			goto try
+
+	// randomly shuffle the list
+	// of addresses and then dial
+	// them in (shuffled) order until
+	// success
+	perm := rand.Perm(len(c.addrs))
+
+	for _, v := range perm {
+		addr := c.addrs[v]
+		logger.Printf("dialing TCP %s", addr)
+		tcpconn, err := net.DialTCP("tcp", nil, addr)
+		if err != nil {
+			logger.Printf("error dialing %s: %s", addr, err)
+			continue
 		}
-		c.dec()
-		return nil, err
-	}
-	tcpconn.SetKeepAlive(true)
-	tcpconn.SetNoDelay(true)
-	out := &conn{
-		TCPConn:  tcpconn,
-		parent:   c,
-		isClosed: false,
-	}
-	err = c.writeClientID(out)
-	if err != nil {
-		ntry++
-		out.Close()
-		logger.Printf("error writing client ID: %s", err)
-		if ntry < len(c.addrs) {
-			goto try
+		tcpconn.SetKeepAlive(true)
+		tcpconn.SetNoDelay(true)
+		out := &conn{
+			TCPConn:  tcpconn,
+			parent:   c,
+			isClosed: false,
 		}
-		return nil, err
+		err = c.writeClientID(out)
+		if err != nil {
+			// call the tcp connection's
+			// close method, because otherwise
+			// the client conn counter will
+			// be decremented
+			out.TCPConn.Close()
+			logger.Printf("error writing client ID: %s", err)
+			continue
+		}
+		runtime.SetFinalizer(out, (*conn).Close)
+		return out, nil
 	}
-	runtime.SetFinalizer(out, (*conn).Close)
-	return out, nil
+	c.dec()
+	return nil, ErrUnavail
 }
 
 // pop connection
@@ -259,10 +278,16 @@ func (c *Client) popConn() (*conn, error) {
 		}
 		cn, ok := c.pool.Get().(*conn)
 		if ok && cn != nil {
+			atomic.AddInt32(&c.inuse, 1)
 			return cn, nil
 		}
 		if c.try() {
-			return c.newconn()
+			cn, err := c.newconn()
+			if err != nil {
+				return nil, err
+			}
+			atomic.AddInt32(&c.inuse, 1)
+			return cn, nil
 		}
 		runtime.Gosched()
 	}
@@ -270,7 +295,10 @@ func (c *Client) popConn() (*conn, error) {
 
 func (c *Client) writeClientID(cn *conn) error {
 	if c.id == nil {
-		return nil
+		// writeClientID is used
+		// to test if a node is actually
+		// live, so we need to do *something*
+		return ping(cn)
 	}
 	req := &rpbc.RpbSetClientIdReq{
 		ClientId: c.id,
@@ -518,6 +546,8 @@ func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 	return &streamRes{c: c, node: node}, nil
 }
 
+// Ping pings a random node. It will
+// return an error if no nodes can be dialed.
 func (c *Client) Ping() error {
 	conn, err := c.popConn()
 	if err != nil {
