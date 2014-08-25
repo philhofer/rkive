@@ -209,12 +209,15 @@ func BenchmarkStore(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	lock := new(sync.Mutex)
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		err = cl.Store(ob, nil)
 		if err != nil {
+			lock.Lock()
 			b.Fatal(err)
+			lock.Unlock()
 		}
 	}
 	b.StopTimer()
@@ -241,6 +244,7 @@ func BenchmarkMultiStore(b *testing.B) {
 		}
 	}
 
+	lock := new(sync.Mutex)
 	wg := new(sync.WaitGroup)
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -250,7 +254,9 @@ func BenchmarkMultiStore(b *testing.B) {
 			for i := 0; i < nSEND; i++ {
 				err := cl.Store(ob, nil)
 				if err != nil {
+					lock.Lock()
 					b.Fatal(err)
+					lock.Unlock()
 				}
 			}
 			wg.Done()
@@ -279,12 +285,15 @@ func BenchmarkFetch(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	lock := new(sync.Mutex)
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		err = cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
 		if err != nil {
+			lock.Lock()
 			b.Fatal(err)
+			lock.Unlock()
 		}
 	}
 	b.StopTimer()
@@ -312,6 +321,7 @@ func BenchmarkMultiFetch(b *testing.B) {
 		}
 	}
 
+	lock := new(sync.Mutex)
 	wg := new(sync.WaitGroup)
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -321,7 +331,9 @@ func BenchmarkMultiFetch(b *testing.B) {
 			for i := 0; i < nSEND; i++ {
 				err := cl.Fetch(o, "testbucket", o.Info().Key(), nil)
 				if err != nil {
+					lock.Lock()
 					b.Fatal(err)
+					lock.Unlock()
 				}
 			}
 			wg.Done()

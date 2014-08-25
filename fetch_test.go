@@ -237,13 +237,16 @@ func (s *riakSuite) TestGoFlood(c *check.C) {
 	key := ob.Info().Key()
 	NGO := 200
 	wg := new(sync.WaitGroup)
+	lock := new(sync.Mutex)
 	for i := 0; i < NGO; i++ {
 		wg.Add(1)
 		go func(key string, wg *sync.WaitGroup) {
 			nob := &TestObject{info: &Info{}}
 			err := tests.Fetch(nob, key)
 			if err != nil {
+				lock.Lock()
 				c.Error(err)
+				lock.Unlock()
 			}
 			wg.Done()
 		}(key, wg)

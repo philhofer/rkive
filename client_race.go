@@ -1,4 +1,5 @@
 // +build !race
+
 package rkive
 
 import "sync/atomic"
