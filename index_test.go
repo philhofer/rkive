@@ -51,6 +51,28 @@ func (s *riakSuite) TestIndexLookup(c *check.C) {
 	}
 
 	c.Logf("Found %d keys.", res.Len())
+
+	async := res.FetchAsync(ob, 4)
+	count := 0
+	for fres := range async {
+		count++
+		if fres.Error != nil {
+			c.Errorf("received error %q", err)
+		}
+		if fres.Value == nil {
+			c.Error("received nil value")
+		}
+		if val, ok := fres.Value.(*TestObject); !ok {
+			c.Error("value cannot be type-asserted to *TestObject")
+		} else {
+			if val.Info().GetIndex("testIdx") != "myValue" {
+				c.Errorf("Expected %q; got %q", "myValue", val.Info().GetIndex("testIdx"))
+			}
+		}
+	}
+	if count != res.Len() {
+		c.Errorf("Expected %d responses; got %d", res.Len(), count)
+	}
 }
 
 func (s *riakSuite) TestIndexRange(c *check.C) {

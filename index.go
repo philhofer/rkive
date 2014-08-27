@@ -5,6 +5,7 @@ import (
 	"github.com/philhofer/rkive/rpbc"
 	"io"
 	"strconv"
+	"sync"
 )
 
 // IndexQueryRes is the response to an index
@@ -77,6 +78,62 @@ search:
 		out = append(out, key)
 	}
 	return out, nil
+}
+
+// AsyncFetch represents the output of an
+// asynchronous fetch operation. Typically,
+// either Error will be nil OR Value will be
+// nil, but never both.
+type AsyncFetch struct {
+	Value Object
+	Error error
+}
+
+// FetchAsync returns a channel on which all of the objects
+// in the query are returned. 'procs' determines the
+// number of goroutines actively fetching. The channel will be closed once
+// all the objects have been returned. Objects are fetched
+// asynchronously. The (underlying) type of every object returned in each
+// AsyncFetch is the same as returned from o.NewEmpty().
+func (i *IndexQueryRes) FetchAsync(o Duplicator, procs int) <-chan *AsyncFetch {
+	nw := procs
+	if i.Len() < nw || nw <= 0 {
+		nw = i.Len()
+	}
+	// keys to fetch
+	keys := make(chan string, nw)
+
+	// responses from fetch
+	outs := make(chan *AsyncFetch, i.Len())
+
+	// start 'nw' workers
+	wg := new(sync.WaitGroup)
+	for j := 0; j < nw; j++ {
+		wg.Add(1)
+		go func(ks chan string, outs chan *AsyncFetch, o Duplicator, wg *sync.WaitGroup) {
+			ob := o.NewEmpty()
+			for key := range ks {
+				err := i.c.Fetch(ob, string(i.bucket), key, nil)
+				outs <- &AsyncFetch{Value: ob, Error: err}
+			}
+			wg.Done()
+		}(keys, outs, o, wg)
+
+	}
+
+	// close outs when all
+	// workers have exited.
+	go func(wg *sync.WaitGroup, os chan *AsyncFetch) {
+		wg.Wait()
+		close(os)
+	}(wg, outs)
+
+	for _, key := range i.Keys() {
+		keys <- key
+	}
+	close(keys)
+
+	return outs
 }
 
 // IndexLookup returns the keys that match the index-value pair specified. You

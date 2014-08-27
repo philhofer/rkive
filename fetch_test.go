@@ -57,10 +57,10 @@ func (t *TestObject) Marshal() ([]byte, error) {
 
 func (t *TestObject) Info() *Info { return t.info }
 
-func (t *TestObject) NewEmpty() ObjectM { return &TestObject{nil, &Info{}} }
+func (t *TestObject) NewEmpty() Object { return &TestObject{nil, &Info{}} }
 
 // naive merge
-func (t *TestObject) Merge(o ObjectM) {
+func (t *TestObject) Merge(o Object) {
 	tn := o.(*TestObject)
 	if len(tn.Data) > len(t.Data) {
 		t.Data = tn.Data

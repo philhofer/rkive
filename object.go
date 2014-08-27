@@ -39,24 +39,30 @@ type Object interface {
 	Unmarshal([]byte) error
 }
 
+// Duplicator types know how to return
+// an empty copy of themselves, on top of
+// fulfilling the Object interface.
+type Duplicator interface {
+	Object
+	// Empty should return an initialized
+	// (zero-value) object of the same underlying
+	// type as the parent.
+	NewEmpty() Object
+}
+
 // ObjectM is an object that also knows how to merge
 // itself with siblings. If an object has this interface
 // defined, this package will use the Merge method to transparently
 // handle siblings returned from Riak.
 type ObjectM interface {
-	Object
-
-	// Empty should return an initialized
-	// (zero-value) object of the same underlying
-	// type as the parent.
-	NewEmpty() ObjectM
+	Duplicator
 
 	// Merge should merge the argument object into the method receiver. It
 	// is safe to type-assert the argument of Merge to the same type
 	// as the type of the object satisfying the inteface. (Under the hood,
 	// the argument passed to Merge is simply the value of NewEmpty() after
 	// data has been read into it.) Merge is used to iteratively merge many sibling objects.
-	Merge(o ObjectM)
+	Merge(o Object)
 }
 
 // sibling merge - object should be Store()d after call
