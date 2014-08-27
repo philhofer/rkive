@@ -4,6 +4,7 @@ package rkive
 
 import (
 	check "gopkg.in/check.v1"
+	"time"
 )
 
 func (s *riakSuite) TestIndexLookup(c *check.C) {
@@ -53,6 +54,7 @@ func (s *riakSuite) TestIndexLookup(c *check.C) {
 
 	async := res.FetchAsync(ob, 4)
 	count := 0
+	ts := time.Now()
 	for fres := range async {
 		count++
 		if fres.Error != nil {
@@ -69,6 +71,8 @@ func (s *riakSuite) TestIndexLookup(c *check.C) {
 			}
 		}
 	}
+	elapsed := time.Since(ts)
+	c.Logf("AsyncFetch: %d fetches in %s", count, elapsed)
 	if count != res.Len() {
 		c.Errorf("Expected %d responses; got %d", res.Len(), count)
 	}
