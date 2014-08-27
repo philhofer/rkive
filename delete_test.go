@@ -8,7 +8,6 @@ import (
 
 func (s *riakSuite) TestDelete(c *check.C) {
 	ob := &TestObject{
-		info: &Info{},
 		Data: []byte("Blah."),
 	}
 

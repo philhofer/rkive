@@ -42,8 +42,8 @@ func (s *riakSuite) TearDownSuite(c *check.C) {
 }
 
 type TestObject struct {
+	info Info
 	Data []byte
-	info *Info
 }
 
 func (t *TestObject) Unmarshal(b []byte) error {
@@ -55,9 +55,9 @@ func (t *TestObject) Marshal() ([]byte, error) {
 	return t.Data, nil
 }
 
-func (t *TestObject) Info() *Info { return t.info }
+func (t *TestObject) Info() *Info { return &t.info }
 
-func (t *TestObject) NewEmpty() Object { return &TestObject{nil, &Info{}} }
+func (t *TestObject) NewEmpty() Object { return &TestObject{} }
 
 // naive merge
 func (t *TestObject) Merge(o Object) {
@@ -76,17 +76,15 @@ func (s *riakSuite) TestMultipleVclocks(c *check.C) {
 	}
 	oba := &TestObject{
 		Data: []byte("Body 1"),
-		info: &Info{},
 	}
 
 	obb := &TestObject{
 		Data: []byte("Body 2..."),
-		info: &Info{},
 	}
 
 	// manually create conflict - a user can't ordinarily do this
-	oba.Info().bucket, oba.Info().key = []byte("testbucket"), []byte("conflict")
-	obb.Info().bucket, obb.Info().key = []byte("testbucket"), []byte("conflict")
+	oba.info.bucket, oba.info.key = []byte("testbucket"), []byte("conflict")
+	obb.info.bucket, obb.info.key = []byte("testbucket"), []byte("conflict")
 
 	// The store operations should not error,
 	// because we are doing a fetch and merge
@@ -130,7 +128,6 @@ func (s *riakSuite) TestUpdate(c *check.C) {
 
 	lb := &TestObject{
 		Data: []byte("flibbertyibbitygibbit"),
-		info: &Info{},
 	}
 
 	err := test.New(lb, nil)
@@ -138,9 +135,7 @@ func (s *riakSuite) TestUpdate(c *check.C) {
 		c.Fatal(err)
 	}
 
-	newlb := &TestObject{
-		info: &Info{},
-	}
+	newlb := &TestObject{}
 
 	err = test.Fetch(newlb, lb.Info().Key())
 	if err != nil {
@@ -190,7 +185,6 @@ func (s *riakSuite) TestHead(c *check.C) {
 	tests := s.cl.Bucket("testbucket")
 
 	ob := &TestObject{
-		info: &Info{},
 		Data: []byte("exists."),
 	}
 
@@ -225,7 +219,6 @@ func (s *riakSuite) TestGoFlood(c *check.C) {
 	// of the connection cap
 
 	ob := &TestObject{
-		info: &Info{},
 		Data: []byte("Here's a body."),
 	}
 	tests := s.cl.Bucket("testbucket")
@@ -241,7 +234,7 @@ func (s *riakSuite) TestGoFlood(c *check.C) {
 	for i := 0; i < NGO; i++ {
 		wg.Add(1)
 		go func(key string, wg *sync.WaitGroup) {
-			nob := &TestObject{info: &Info{}}
+			nob := &TestObject{}
 			err := tests.Fetch(nob, key)
 			if err != nil {
 				lock.Lock()

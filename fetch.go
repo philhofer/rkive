@@ -214,11 +214,11 @@ func (c *Client) FetchHead(bucket string, key string) (*Info, error) {
 		gresPush(res)
 		return nil, handleMultiple(len(res.Content), key, bucket)
 	}
-	bl := &Blob{RiakInfo: &Info{}}
+	bl := &Blob{}
 	readHeader(bl, res.Content[0])
-	bl.Info().vclock = append(bl.Info().vclock[0:0], res.Vclock...)
-	bl.Info().key = append(bl.Info().key[0:0], req.Key...)
-	bl.Info().bucket = append(bl.Info().bucket[0:0], req.Bucket...)
+	bl.RiakInfo.vclock = append(bl.Info().vclock[0:0], res.Vclock...)
+	bl.RiakInfo.key = append(bl.Info().key[0:0], req.Key...)
+	bl.RiakInfo.bucket = append(bl.Info().bucket[0:0], req.Bucket...)
 	gresPush(res)
 	return bl.Info(), err
 }

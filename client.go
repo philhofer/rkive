@@ -65,7 +65,7 @@ func (m *ErrMultipleResponses) Error() string {
 // Blob is a generic riak key/value container that
 // implements the Object interface.
 type Blob struct {
-	RiakInfo *Info
+	RiakInfo Info
 	Content  []byte
 }
 
@@ -79,7 +79,7 @@ func handleMultiple(n int, key, bucket string) *ErrMultipleResponses {
 }
 
 // Info implements part of the Object interface.
-func (r *Blob) Info() *Info { return r.RiakInfo }
+func (r *Blob) Info() *Info { return &r.RiakInfo }
 
 // Unmarshal implements part of the Object interface
 func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }

@@ -12,7 +12,6 @@ import (
 func (s *riakSuite) TestNewObject(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Hello World"),
-		info: &Info{},
 	}
 
 	// random key assignment
@@ -27,7 +26,7 @@ func (s *riakSuite) TestNewObject(c *check.C) {
 		c.Error("object didn't get assigned a vclock")
 	}
 
-	nob := &TestObject{Data: []byte("Blah."), info: &Info{}}
+	nob := &TestObject{Data: []byte("Blah.")}
 	key := "testkey"
 	err = s.cl.New(nob, "testbucket", &key, nil)
 	if err != nil {
@@ -48,7 +47,6 @@ func (s *riakSuite) TestNewObject(c *check.C) {
 func (s *riakSuite) TestPushObject(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Hello World"),
-		info: &Info{},
 	}
 	// make new
 	err := s.cl.New(ob, "testbucket", nil, nil)
@@ -59,7 +57,6 @@ func (s *riakSuite) TestPushObject(c *check.C) {
 	// fetch 'n store
 	newob := &TestObject{
 		Data: nil,
-		info: &Info{},
 	}
 	// fetch the same
 	err = s.cl.Fetch(newob, "testbucket", ob.Info().Key(), nil)
@@ -86,7 +83,6 @@ func (s *riakSuite) TestPushObject(c *check.C) {
 func (s *riakSuite) TestStoreObject(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Hello World"),
-		info: &Info{},
 	}
 
 	// random key assignment
@@ -102,7 +98,7 @@ func (s *riakSuite) TestStoreObject(c *check.C) {
 	}
 
 	// fetch the same object
-	nob := &TestObject{info: &Info{}}
+	nob := &TestObject{}
 	err = s.cl.Fetch(nob, "testbucket", ob.Info().Key(), nil)
 	if err != nil {
 		c.Fatal(err)
@@ -125,9 +121,8 @@ func (s *riakSuite) TestStoreObject(c *check.C) {
 func (s *riakSuite) TestPushChangeset(c *check.C) {
 	ob := &TestObject{
 		Data: []byte("Here's a body."),
-		info: &Info{},
 	}
-	nob := &TestObject{info: &Info{}}
+	nob := &TestObject{}
 
 	err := s.cl.New(ob, "testbucket", nil, nil)
 	if err != nil {
@@ -201,7 +196,6 @@ func BenchmarkStore(b *testing.B) {
 
 	ob := &TestObject{
 		Data: []byte("Hello World"),
-		info: &Info{},
 	}
 
 	err = cl.New(ob, "tesbucket", nil, nil)
@@ -235,7 +229,6 @@ func BenchmarkMultiStore(b *testing.B) {
 	obs := make([]*TestObject, NCONN)
 	for i := range obs {
 		obs[i] = &TestObject{
-			info: &Info{},
 			Data: []byte("Hello World"),
 		}
 		err = cl.New(obs[i], "testbucket", nil, nil)
@@ -276,7 +269,6 @@ func BenchmarkFetch(b *testing.B) {
 	}
 
 	ob := &TestObject{
-		info: &Info{},
 		Data: []byte("Hello World"),
 	}
 
@@ -312,7 +304,6 @@ func BenchmarkMultiFetch(b *testing.B) {
 	obs := make([]*TestObject, NCONNS)
 	for i := range obs {
 		obs[i] = &TestObject{
-			info: &Info{},
 			Data: []byte("Hello World"),
 		}
 		err = cl.New(obs[i], "testbucket", nil, nil)

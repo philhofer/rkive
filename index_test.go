@@ -8,7 +8,6 @@ import (
 
 func (s *riakSuite) TestIndexLookup(c *check.C) {
 	ob := &TestObject{
-		info: &Info{},
 		Data: []byte("Hello world!"),
 	}
 
@@ -77,7 +76,6 @@ func (s *riakSuite) TestIndexLookup(c *check.C) {
 
 func (s *riakSuite) TestIndexRange(c *check.C) {
 	ob := &TestObject{
-		info: &Info{},
 		Data: []byte("Hello world!"),
 	}
 

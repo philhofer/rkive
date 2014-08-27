@@ -26,10 +26,7 @@ blobs := riak.Bucket("blob_bucket")
 
 
 // let's make an object
-myBlob := &rkive.Blob{
-	Data: []byte("Hello World!"),
-	RiakInfo: &rkive.Info{},
-}
+myBlob := &rkive.Blob{ Data: []byte("Hello World!") }
 
 // now let's put it in the database
 err = blobs.New(myBlob, nil)
@@ -56,10 +53,8 @@ if updated { /* the object has been changed! */ }
 // you can also fetch a new copy
 // of the object like so:
 
-// create a new container...
-newBlob := &rkive.Blob{ RiakInfo: &rkive.Info{} }
+newBlob := &rkive.Blob{}
 
-// ... and fetch using the old blob's key
 err = blobs.Fetch(newBlob, myBlob.Info().Key())
 // handle err...
 
@@ -81,15 +76,15 @@ to satisfy the `ObjectM` interface:
 // zero value for the type in question. The client
 // will marshal data into this object and pass it to
 // Merge().
-func (b *Blob) NewEmpty() ObjectM {
-     return &Blob{RiakInfo: &Info{}}
+func (b *Blob) NewEmpty() Object {
+     return &Blob{}
 }
 
 // Merge should make a best-effort attempt to merge
 // data from its argument into the method receiver.
 // It should be prepared to handle nil/zero values
 // for either object.
-func (b *Blob) Merge(o ObjectM) {
+func (b *Blob) Merge(o Object) {
      // you can always type-assert the argument
      // to Merge() to be the same type returned
      // by NewEmtpy(), which should also be the
