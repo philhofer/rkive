@@ -2,6 +2,7 @@ package rkive
 
 import (
 	"github.com/philhofer/rkive/rpbc"
+	"sync"
 )
 
 // Bucket represents a Riak bucket
@@ -74,4 +75,39 @@ func (b *Bucket) Reset() error {
 		return ErrUnexpectedResponse
 	}
 	return nil
+}
+
+// MultiFetchAsync returns fetch results as a future. Results
+// may return in any order. Every result on the channel will
+// have its "Value" field type-assertable to the underlying type of 'o'.
+// 'procs' goroutines will be used for fetching.
+func (b *Bucket) MultiFetchAsync(o Duplicator, procs int, keys ...string) <-chan *AsyncFetch {
+	if procs <= 0 {
+		procs = 1
+	}
+	kc := make(chan string, len(keys))
+	out := make(chan *AsyncFetch, len(keys))
+
+	wg := new(sync.WaitGroup)
+	for i := 0; i < procs; i++ {
+		wg.Add(1)
+		go func() {
+			for key := range kc {
+				v := o.NewEmpty()
+				err := b.Fetch(v, key)
+				out <- &AsyncFetch{v, err}
+			}
+			wg.Done()
+		}()
+	}
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+	for _, k := range keys {
+		kc <- k
+	}
+	close(kc)
+
+	return out
 }
