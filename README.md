@@ -60,6 +60,8 @@ err = blobs.Fetch(newBlob, myBlob.Info().Key())
 
 ```
 
+For more worked examples, check out the `/_examples` folder.
+
 If you want to run Riak with `allow_mult=true` (which you should *strongly* consider), take a look
 at the `ObjectM` interface, which allows you to specify a `Merge()` operation to be used for
 your object when multiple values are encountered on a read or write operation. If you have `allow_mult=true`
