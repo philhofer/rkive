@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/philhofer/rkive/rpbc"
+	"io"
 	"log"
 	"math/rand"
 	"net"
@@ -316,7 +317,7 @@ func (c *Client) writeClientID(cn *conn) error {
 	if err != nil {
 		return err
 	}
-	_, err = cn.Read(msg[:5])
+	_, err = io.ReadFull(cn, msg[:5])
 	if err != nil {
 		return err
 	}
@@ -332,20 +333,22 @@ func (c *Client) writeClientID(cn *conn) error {
 // and the given message code
 func writeMsg(n *conn, msg []byte, code byte) error {
 	// bigendian length + code byte
-	var lead [5]byte
-	msglen := uint32(len(msg) + 1)
-	binary.BigEndian.PutUint32(lead[:4], msglen)
-	lead[4] = code
+	//var lead [5]byte
+	//msglen := uint32(len(msg) + 1)
+	//binary.BigEndian.PutUint32(lead[:4], msglen)
+	//lead[4] = code
+	msg[4] = code
 
 	// keep this on the stack -
 	// don't allocate just for the
 	// five byte frame
-	mbd := make([]byte, len(msg)+5)
-	copy(mbd, lead[:])
-	copy(mbd[5:], msg)
+	//mbd := make([]byte, len(msg)+5)
+	//copy(mbd, lead[:])
+	//copy(mbd[5:], msg)
 
 	// send the message
-	_, err := n.Write(mbd)
+	//_, err := n.Write(mbd)
+	_, err := n.Write(msg)
 	if err != nil {
 		return err
 	}
@@ -355,7 +358,7 @@ func writeMsg(n *conn, msg []byte, code byte) error {
 // readLead reads the size of the inbound message
 func readLead(n *conn) (int, byte, error) {
 	var lead [5]byte
-	_, err := n.Read(lead[:])
+	_, err := io.ReadFull(n, lead[:])
 	if err != nil {
 		return 0, lead[4], err
 	}
@@ -367,7 +370,7 @@ func readLead(n *conn) (int, byte, error) {
 // readBody reads from the node into 'body'
 // body should be sized by the result from readLead
 func readBody(n *conn, body []byte) error {
-	_, err := n.Read(body)
+	_, err := io.ReadFull(n, body)
 	return err
 }
 
