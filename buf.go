@@ -1,6 +1,7 @@
 package rkive
 
 import (
+	"encoding/binary"
 	"sync"
 )
 
@@ -23,17 +24,17 @@ type protom interface {
 	Size() int
 }
 
-// opportunistic MarshalTo
+// opportunistic MarshalTo; leaves Body[4] open for code
 func (b *buf) Set(p protom) error {
 	sz := p.Size()
-	var err error
-	if cap(b.Body) >= sz {
-		b.Body = b.Body[0:sz]
-		_, err = p.MarshalTo(b.Body)
+	bsz := sz + 5
+	if cap(b.Body) >= bsz {
+		b.Body = b.Body[0:bsz]
 	} else {
-		b.Body = make([]byte, sz)
-		_, err = p.MarshalTo(b.Body)
+		b.Body = make([]byte, bsz)
 	}
+	binary.BigEndian.PutUint32(b.Body, uint32(sz+1))
+	_, err := p.MarshalTo(b.Body[5:])
 	return err
 }
 
