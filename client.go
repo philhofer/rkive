@@ -328,33 +328,6 @@ func (c *Client) writeClientID(cn *conn) error {
 	return nil
 }
 
-// writes the message to the node with
-// the appropriate leading message size
-// and the given message code
-func writeMsg(n *conn, msg []byte, code byte) error {
-	// bigendian length + code byte
-	//var lead [5]byte
-	//msglen := uint32(len(msg) + 1)
-	//binary.BigEndian.PutUint32(lead[:4], msglen)
-	//lead[4] = code
-	msg[4] = code
-
-	// keep this on the stack -
-	// don't allocate just for the
-	// five byte frame
-	//mbd := make([]byte, len(msg)+5)
-	//copy(mbd, lead[:])
-	//copy(mbd[5:], msg)
-
-	// send the message
-	//_, err := n.Write(mbd)
-	_, err := n.Write(msg)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // readLead reads the size of the inbound message
 func readLead(n *conn) (int, byte, error) {
 	var lead [5]byte
@@ -367,13 +340,6 @@ func readLead(n *conn) (int, byte, error) {
 	return int(msglen), rescode, nil
 }
 
-// readBody reads from the node into 'body'
-// body should be sized by the result from readLead
-func readBody(n *conn, body []byte) error {
-	_, err := io.ReadFull(n, body)
-	return err
-}
-
 // send the contents of a buffer and receive a response
 // back in the same buffer
 func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
@@ -382,7 +348,8 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 		return nil, 0, err
 	}
 
-	err = writeMsg(node, msg, code)
+	msg[4] = code
+	_, err = node.Write(msg)
 	if err != nil {
 		c.err(node)
 		return nil, 0, err
@@ -409,7 +376,7 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 	}
 
 	// read body
-	err = readBody(node, msg)
+	_, err = io.ReadFull(node, msg)
 	if err != nil {
 		c.err(node)
 		return msg, code, err
@@ -490,7 +457,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 	buf.setSz(msglen)
 
 	// read into s.bts
-	err = readBody(s.node, buf.Body)
+	_, err = io.ReadFull(s.node, buf.Body)
 	if err != nil {
 		s.c.err(s.node)
 		putBuf(buf)
@@ -530,7 +497,6 @@ func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 
 	buf := getBuf()
 	err := buf.Set(req)
-	//bts, err := req.Marshal()
 	if err != nil {
 		putBuf(buf)
 		return nil, err
@@ -540,7 +506,8 @@ func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 		return nil, err
 	}
 
-	err = writeMsg(node, buf.Body, code)
+	buf.Body[4] = code
+	_, err = node.Write(buf.Body)
 	putBuf(buf)
 	if err != nil {
 		c.err(node)
@@ -572,7 +539,6 @@ func ping(cn *conn) error {
 		return err
 	}
 	var res [5]byte
-	//_, err = cn.Read(res[:])
 	_, err = io.ReadFull(cn, res[:])
 	return err
 }
