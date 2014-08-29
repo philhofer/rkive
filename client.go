@@ -572,6 +572,7 @@ func ping(cn *conn) error {
 		return err
 	}
 	var res [5]byte
-	_, err = cn.Read(res[:])
+	//_, err = cn.Read(res[:])
+	_, err = io.ReadFull(cn, res[:])
 	return err
 }
