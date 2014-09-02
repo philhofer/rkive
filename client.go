@@ -95,6 +95,37 @@ type conn struct {
 	isClosed bool
 }
 
+// for testing and benchmarking
+type timerconn struct {
+	conn
+	twait  time.Duration
+	tcount int64
+}
+
+// average network wait, in nanoseconds
+func (t *timerconn) avgwait() int64 { return t.twait.Nanoseconds() / t.tcount }
+
+func (t *timerconn) Read(b []byte) (int, error) {
+	t.tcount++
+	now := time.Now()
+	n, err := t.conn.Read(b)
+	t.twait += time.Since(now)
+	return n, err
+}
+
+func (t *timerconn) Write(b []byte) (int, error) {
+	t.tcount++
+	now := time.Now()
+	n, err := t.conn.Write(b)
+	t.twait += time.Since(now)
+	return n, err
+}
+
+// netconn is the interface for a riak connection
+type netconn interface {
+	io.ReadWriteCloser
+}
+
 // write wraps the TCP write
 func (c *conn) Write(b []byte) (int, error) {
 	c.SetWriteDeadline(time.Now().Add(writeTimeout * time.Millisecond))
@@ -221,9 +252,7 @@ func (c *Client) try() bool {
 // decrement conn counter
 // MUST BE CALLED WHENEVER A CONNECTION
 // IS CLOSED, OR WE WILL HAVE PROBLEMS.
-func (c *Client) dec() {
-	atomic.AddInt32(&c.conns, -1)
-}
+func (c *Client) dec() { atomic.AddInt32(&c.conns, -1) }
 
 // newconn tries to return a valid
 // tcp connection to a node, dropping
