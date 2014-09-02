@@ -10,7 +10,7 @@ var bufPool *sync.Pool
 func init() {
 	bufPool = new(sync.Pool)
 	bufPool.New = func() interface{} {
-		return new(buf)
+		return &buf{Body: make([]byte, 512)}
 	}
 }
 
@@ -50,4 +50,4 @@ func getBuf() *buf {
 	return bufPool.Get().(*buf)
 }
 
-func putBuf(b *buf) { bufPool.Put(b) }
+func putBuf(b *buf) { b.Body = b.Body[:cap(b.Body)]; bufPool.Put(b) }

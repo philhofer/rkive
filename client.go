@@ -340,22 +340,26 @@ func readLead(n *conn) (int, byte, error) {
 	return int(msglen), rescode, nil
 }
 
-// read response into 'b'; truncate or append if necessary
+// read response into 'b'; truncate or append if necessary.
+// this is analagous to ReadFull into 'b', except that the buffer
+// may be extended, and is returned
 func readResponse(c *conn, b []byte) ([]byte, byte, error) {
 	var n int
 	var nn int
+	b = b[:cap(b)]
 	nn, err := c.Read(b)
 	n += nn
 	if err != nil {
 		return nil, 0, err
 	}
+	b = b[:n]
 	mlen := int(binary.BigEndian.Uint32(b[:4]) - 1)
 	var scratch [512]byte
 	for n < (mlen + 5) {
 		nn, err = c.Read(scratch[:])
 		n += nn
 		if err != nil {
-			return nil, b[4], err
+			return b, b[4], err
 		}
 		b = append(b, scratch[:nn]...)
 	}
@@ -381,39 +385,11 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 		return nil, 0, err
 	}
 	msg, code, err = readResponse(node, msg)
-	if err != nil {
-		return nil, code, err
+	if err == nil {
+		c.done(node)
+	} else {
+		c.err(node)
 	}
-	/*
-		// read lead
-		var msglen int
-		// read length and code
-		msglen, code, err = readLead(node)
-		if err != nil {
-			c.err(node)
-			return nil, code, err
-		}
-		if msglen == 0 {
-			msg = msg[0:0] // mark empty (necessary for ErrNotFound)
-			goto exit
-		}
-		// no alloc if response is smaller
-		// than request
-		if msglen > cap(msg) {
-			msg = make([]byte, msglen)
-		} else {
-			msg = msg[0:msglen]
-		}
-
-		// read body
-		_, err = io.ReadFull(node, msg)
-		if err != nil {
-			c.err(node)
-			return msg, code, err
-		}
-	*/
-	//exit:
-	c.done(node)
 	return msg, code, nil
 }
 
@@ -424,7 +400,7 @@ func (c *Client) req(msg protom, code byte, res unmarshaler) (byte, error) {
 		return 0, fmt.Errorf("rkive: client.Req marshal err: %s", err)
 	}
 	resbts, rescode, err := c.doBuf(code, buf.Body)
-	buf.Body = resbts // save the largest-cap byte slice
+	buf.Body = resbts // save the returned slice
 	if err != nil {
 		putBuf(buf)
 		return 0, fmt.Errorf("rkive: doBuf err: %s", err)
@@ -488,6 +464,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 
 	// read into s.bts
 	_, err = io.ReadFull(s.node, buf.Body)
+
 	if err != nil {
 		s.c.err(s.node)
 		putBuf(buf)
