@@ -13,7 +13,7 @@ func BenchmarkStore(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	b.N /= 100
+	b.N /= 10
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 	}
@@ -39,7 +39,7 @@ func BenchmarkStore(b *testing.B) {
 func BenchmarkFetch(b *testing.B) {
 	cl, err := DialOne("localhost:8087", "bench-client")
 
-	b.N /= 100
+	b.N /= 10
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 	}

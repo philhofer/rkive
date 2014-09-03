@@ -105,27 +105,27 @@ func (b *Blob) Merge(o Object) {
 This client library was built with performance in mind.
 
 To run benchmarks, start up Riak locally and run:
-`go test -v -tags 'riak' -bench .`
+`go test -v -tags 'riak' -check.vv -bench .`
 
 (You must be running the eLevelDB or memory backend with secondary
 indexes enabled.)
 
-The `Client` object maintains a pool of ephemeral TCP connections that
-are re-used under high load. The size of the pool grows and shrinks at runtime. In practice, it is
-unusual to see more than five or six connections open simultaneously. (There is a cap set at 30 live connections
-at a time for safety's sake.) Empirically, maintaining ephemeral connections in a `sync.Pool` is *at least* as fast
-as using long-lived connections in a buffered channel, and in many cases much faster and less resource-hungry.
+Here's what I get on my MacBook Pro, keeping in mind that time/op and iowait/op vary by +/- 10% on every benchmark run. (Client time per operation is more consisten between benchmark runs.) Memory allocations are perfectly consistent between benchmark runs.
+
+| Operation | time/op | iowait/op | client time / op | allocs | heap/op |
+|:---------:|:-------:|:---------:|:----------------:|:------:|:--------|
+|   Fetch   | 418598ns| 413398ns  |      5200ns      |   7    |   753B  |
+|   Store   | 782187ns| 775353ns  |      6834ns      |   5    |   583B  |
 
 ## Design & TODOs
 
 This package is focused on using Riak the way it was intended: with `allow_mult` set to `true`. This library will *always* use vclocks when getting and setting values. Additionally, this library adheres strictly to Riak's read-before-write policy.
 
-Internally, Return-Head is always set to `true`, so every Push() or Store() operation updates the local object's metadata. Consequently, you can carry out a series of transactions on an object in parallel, and avoid conflicts by using Push() (which enforces an If-Not-Modified precondition). You can retreive the latest version of an object by calling Update().
+Internally, Return-Head is always set to `true`, so every `Push()` or `Store()` operation updates the local object's metadata. Consequently, you can carry out a series of transactions on an object in parallel and still avoid conflicts. (`PushChangeset()` is particularly useful in this regard.) You can retreive the latest version of an object by calling Update().
 
-The core "verbs" of this library (New, Fetch, Store, Push, Update, Delete) are meant to have intuitive and sane default behavior. For instance, New always asks Riak to abort the transaction if an object already exists at the given key, and Update doesn't return the whole
-body of the object back from the database if it hasn't been modified.
+The core "verbs" of this library (New, Fetch, Store, Push, Update, Delete) are meant to have intuitive and sane default behavior. For instance, New always asks Riak to abort the transaction if an object already exists at the given key, and Update doesn't return the whole body of the object back from the database if it hasn't been modified.
 
-Since garbage collection time bottlenecks many Go applications, a lot of effort was put into reducing memory allocations on database reads and writes. Much of the remaining improvement will have to come from carefully re-writing the `Marshal()` and `Unmarshal()` methods of the most frequently used protocol buffers messages. At the very least we may be able to reduce the total number of allocations by taking (better) advantage of `sync.Pool`. Right now we generate 581B (8 allocs) of garbage per read and 614B (5 allocs) of garbage per write. (For comparison, the zero value of an `http.Request` object is well over 1KB.)
+Since garbage collection time bottlenecks many Go applications, a lot of effort was put into reducing memory allocations on database reads and writes. The implementation can only become more memory efficient when Go's escape analysis becomes less pessimistic about escaping pointers.
 
 There is an open issue for cache buckets, which has the potential to dramatically improve performance in query-heavy (2i, map-reduce, Yokozuna) use cases. There are also some open issues related to implementing Riak 2.0 features.
 
