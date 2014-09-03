@@ -1,4 +1,4 @@
-// +build bench
+// +build riak
 
 package rkive
 
@@ -62,3 +62,4 @@ func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
 }
 
 func (c *Client) AvgWait() uint64 { return atomic.LoadUint64(&c.twait) / atomic.LoadUint64(&c.nwait) }
+func (c *Client) TimerReset()     { atomic.StoreUint64(&c.twait, 0); atomic.StoreUint64(&c.nwait, 0) }

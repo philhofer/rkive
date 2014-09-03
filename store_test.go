@@ -5,9 +5,11 @@ package rkive
 import (
 	"bytes"
 	check "gopkg.in/check.v1"
+	"time"
 )
 
 func (s *riakSuite) TestNewObject(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 	}
@@ -40,9 +42,11 @@ func (s *riakSuite) TestNewObject(c *check.C) {
 	if ob.Info().Key() == "" {
 		c.Errorf("object didn't get assigned a key")
 	}
+	s.runtime += time.Since(startt)
 }
 
 func (s *riakSuite) TestPushObject(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 	}
@@ -76,9 +80,11 @@ func (s *riakSuite) TestPushObject(c *check.C) {
 	if err != ErrModified {
 		c.Fatalf("Expected ErrModified; got %q", err)
 	}
+	s.runtime += time.Since(startt)
 }
 
 func (s *riakSuite) TestStoreObject(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Hello World"),
 	}
@@ -114,9 +120,11 @@ func (s *riakSuite) TestStoreObject(c *check.C) {
 	if err != nil {
 		c.Fatal(err)
 	}
+	s.runtime += time.Since(startt)
 }
 
 func (s *riakSuite) TestPushChangeset(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Here's a body."),
 	}
@@ -182,4 +190,5 @@ func (s *riakSuite) TestPushChangeset(c *check.C) {
 	if !bytes.Equal(ob.Data, []byte("New Body")) {
 		c.Errorf(`Expected "New Body"; got %q`, ob.Data)
 	}
+	s.runtime += time.Since(startt)
 }

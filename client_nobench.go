@@ -1,4 +1,4 @@
-// +build !bench
+// +build !riak
 
 package rkive
 

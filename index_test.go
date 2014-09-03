@@ -8,6 +8,7 @@ import (
 )
 
 func (s *riakSuite) TestIndexLookup(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Hello world!"),
 	}
@@ -51,6 +52,27 @@ func (s *riakSuite) TestIndexLookup(c *check.C) {
 	}
 
 	c.Logf("Found %d keys.", res.Len())
+	s.runtime += time.Since(startt)
+}
+
+func (s *riakAsync) TestFetchAsync(c *check.C) {
+	ob := &TestObject{
+		Data: []byte("Hello world!"),
+	}
+
+	ob.Info().AddIndex("testIdx", "myValue")
+
+	bucket := s.cl.Bucket("testbucket")
+
+	err := bucket.New(ob, nil)
+	if err != nil {
+		c.Fatal(err)
+	}
+
+	res, err := bucket.IndexLookup("testIdx", "myValue")
+	if err != nil {
+		c.Fatal(err)
+	}
 
 	async := res.FetchAsync(ob, 4)
 	count := 0
@@ -76,9 +98,11 @@ func (s *riakSuite) TestIndexLookup(c *check.C) {
 	if count != res.Len() {
 		c.Errorf("Expected %d responses; got %d", res.Len(), count)
 	}
+
 }
 
 func (s *riakSuite) TestIndexRange(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Hello world!"),
 	}
@@ -103,4 +127,5 @@ func (s *riakSuite) TestIndexRange(c *check.C) {
 		c.Errorf("Response doesn't contain original key...?")
 	}
 	c.Logf("Found %d keys.", res.Len())
+	s.runtime += time.Since(startt)
 }
