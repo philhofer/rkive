@@ -9,15 +9,41 @@ import (
 	"os"
 	"sync"
 	"testing"
+	"time"
 )
 
+// timed suite - CAN ONLY USE 1 CONNECTION, otherwise timing is useless
 type riakSuite struct {
+	cl      *Client
+	runtime time.Duration // needs to be incremented on tests
+}
+
+// untimed suite - can use many connections
+type riakAsync struct {
 	cl *Client
 }
 
-func TestRiakSuite(t *testing.T) {
+func TestAll(t *testing.T) {
+	check.Suite(&riakAsync{})
 	check.Suite(&riakSuite{})
 	check.TestingT(t)
+}
+
+func (s *riakAsync) SetUpSuite(c *check.C) {
+	addr := os.Getenv("RIAK_PB_URL")
+	if addr == "" {
+		addr = "localhost:8087"
+	}
+	var err error
+	s.cl, err = DialOne(addr, "testClient")
+	if err != nil {
+		fmt.Printf("Couldn't connect to Riak: %s\n", err)
+		os.Exit(1)
+	}
+	err = s.cl.Ping()
+	if err != nil {
+		c.Fatalf("Error on ping: %s", err)
+	}
 }
 
 func (s *riakSuite) SetUpSuite(c *check.C) {
@@ -37,7 +63,20 @@ func (s *riakSuite) SetUpSuite(c *check.C) {
 	}
 }
 
+func (s *riakAsync) TearDownSuite(c *check.C) {
+	s.cl.Close()
+}
+
 func (s *riakSuite) TearDownSuite(c *check.C) {
+	c.Log("------------ STATS -----------")
+	c.Logf("Total elapsed time: %s", s.runtime)
+	c.Logf("total iowait time:  %s", time.Duration(s.cl.twait))
+	c.Logf("total client time:  %s", s.runtime-time.Duration(s.cl.twait))
+	c.Logf("non-iowait %%:       %.2f%%", 100*float64((s.runtime-time.Duration(s.cl.twait)))/float64(s.runtime))
+	c.Logf("request count:      %d", s.cl.nwait)
+	c.Logf("avg request time:   %s", time.Duration(s.cl.AvgWait()))
+	c.Logf("nowait rate:        %d req/s", (uint64(time.Second))*(s.cl.nwait)/uint64(s.runtime-time.Duration(s.cl.twait)))
+	c.Log("------------------------------")
 	s.cl.Close()
 }
 
@@ -69,6 +108,7 @@ func (t *TestObject) Merge(o Object) {
 
 //func TestMultipleVclocks(t *testing.T) {
 func (s *riakSuite) TestMultipleVclocks(c *check.C) {
+	startt := time.Now()
 	travis := os.Getenv("TRAVIS")
 	wercker := os.Getenv("WERCKER")
 	if travis != "" || wercker != "" {
@@ -109,9 +149,11 @@ func (s *riakSuite) TestMultipleVclocks(c *check.C) {
 	if !bytes.Equal(oba.Data, []byte("Body 2...")) {
 		c.Errorf("Data should be %q; got %q", "Body 2...", oba.Data)
 	}
+	s.runtime += time.Since(startt)
 }
 
 func (s *riakSuite) TestFetchNotFound(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{}
 
 	err := s.cl.Fetch(ob, "anybucket", "dne", nil)
@@ -121,9 +163,11 @@ func (s *riakSuite) TestFetchNotFound(c *check.C) {
 	if err != ErrNotFound {
 		c.Errorf("err is not ErrNotFound: %q", err)
 	}
+	s.runtime += time.Since(startt)
 }
 
 func (s *riakSuite) TestUpdate(c *check.C) {
+	startt := time.Now()
 	test := s.cl.Bucket("testbucket")
 
 	lb := &TestObject{
@@ -178,10 +222,11 @@ func (s *riakSuite) TestUpdate(c *check.C) {
 	if upd {
 		c.Error("Object was spuriously updated...?")
 	}
+	s.runtime += time.Since(startt)
 }
 
 func (s *riakSuite) TestHead(c *check.C) {
-
+	startt := time.Now()
 	tests := s.cl.Bucket("testbucket")
 
 	ob := &TestObject{
@@ -209,10 +254,11 @@ func (s *riakSuite) TestHead(c *check.C) {
 	if err != ErrNotFound {
 		c.Errorf("expected ErrNotFound, got: %q", err)
 	}
+	s.runtime += time.Since(startt)
 }
 
-func (s *riakSuite) TestGoFlood(c *check.C) {
-	//c.Skip("Don't run this unless you mean it.")
+func (s *riakAsync) TestGoFlood(c *check.C) {
+	c.Skip("This isn't necessary unless the connection handler changes.")
 
 	// flood with goroutines
 	// to test the stability

@@ -1,0 +1,117 @@
+// +build riak
+
+package rkive
+
+import (
+	"runtime"
+	"testing"
+	"time"
+)
+
+func BenchmarkStore(b *testing.B) {
+	cl, err := DialOne("localhost:8087", "bench-client")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.N /= 10
+	ob := &TestObject{
+		Data: []byte("Hello World"),
+	}
+
+	err = cl.New(ob, "tesbucket", nil, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err = cl.Store(ob, nil)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+	b.StopTimer()
+	b.Logf("Avg iowait: %s", time.Duration(cl.AvgWait()))
+	cl.Close()
+}
+
+func BenchmarkParallelStore(b *testing.B) {
+	b.Skip("Doesn't run by default.")
+	cl, err := DialOne("localhost:8087", "bench-client")
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer cl.Close()
+	b.N /= 10
+	b.SetParallelism(maxConns / runtime.GOMAXPROCS(0))
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		obj := &TestObject{
+			Data: []byte("Hello World"),
+		}
+		err = cl.New(obj, "testbucket", nil, nil)
+		if err != nil {
+			b.Fatal(err)
+		}
+		for pb.Next() {
+			cl.Store(obj, nil)
+		}
+	})
+	b.StopTimer()
+}
+
+func BenchmarkFetch(b *testing.B) {
+	cl, err := DialOne("localhost:8087", "bench-client")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.N /= 10
+	ob := &TestObject{
+		Data: []byte("Hello World"),
+	}
+
+	err = cl.New(ob, "testbucket", nil, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err = cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+	b.StopTimer()
+	b.Logf("Avg iowait: %s", time.Duration(cl.AvgWait()))
+	cl.Close()
+}
+
+func BenchmarkParallelFetch(b *testing.B) {
+	b.Skip("Doesn't run by default.")
+	cl, err := DialOne("localhost:8087", "bench-client")
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer cl.Close()
+	b.N /= 10
+	b.SetParallelism(maxConns / runtime.GOMAXPROCS(0))
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		obj := &TestObject{
+			Data: []byte("Hello World"),
+		}
+		err = cl.New(obj, "testbucket", nil, nil)
+		if err != nil {
+			b.Fatal(err)
+		}
+		for pb.Next() {
+			cl.Fetch(obj, "testbucket", obj.Info().Key(), nil)
+		}
+	})
+	b.StopTimer()
+}

@@ -88,11 +88,42 @@ func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }
 // Marshal implements part of the Object interface
 func (r *Blob) Marshal() ([]byte, error) { return r.Content, nil }
 
+// netconn is the interface for a riak connection
+type netconn interface {
+	io.ReadWriteCloser
+}
+
 // conn is a connection
 type conn struct {
 	*net.TCPConn
 	parent   *Client
 	isClosed bool
+}
+
+// for testing and benchmarking
+type timerconn struct {
+	conn
+	twait  time.Duration
+	tcount int64
+}
+
+// average network wait, in nanoseconds
+func (t *timerconn) avgwait() int64 { return t.twait.Nanoseconds() / t.tcount }
+
+func (t *timerconn) Read(b []byte) (int, error) {
+	t.tcount++
+	now := time.Now()
+	n, err := t.conn.Read(b)
+	t.twait += time.Since(now)
+	return n, err
+}
+
+func (t *timerconn) Write(b []byte) (int, error) {
+	t.tcount++
+	now := time.Now()
+	n, err := t.conn.Write(b)
+	t.twait += time.Since(now)
+	return n, err
 }
 
 // write wraps the TCP write
@@ -138,7 +169,6 @@ func Dial(addrs []string, clientID string) (*Client, error) {
 	cl := &Client{
 		tag:   0,
 		id:    []byte(clientID),
-		pool:  new(sync.Pool),
 		addrs: naddrs,
 	}
 
@@ -173,7 +203,7 @@ func (c *Client) Close() {
 	// we'll hang if we don't make
 	// the connection pool immediately
 	// GC-able
-	c.pool = nil
+	c.pool = sync.Pool{}
 
 	runtime.GC()
 	nspin := 0
@@ -193,20 +223,6 @@ func (c *Client) closed() bool {
 	return atomic.LoadInt32(&c.tag) == 1
 }
 
-// Client represents a pool of connections
-// to a Riak cluster.
-type Client struct {
-	conns int32 // total live conns
-	pad1  [4]byte
-	inuse int32 // conns in use
-	pad2  [4]byte
-	tag   int32 // 0 = open; 1 = closed
-	pad3  [4]byte
-	id    []byte
-	pool  *sync.Pool
-	addrs []*net.TCPAddr
-}
-
 // can we add another connection?
 // if so, increment
 func (c *Client) try() bool {
@@ -221,9 +237,7 @@ func (c *Client) try() bool {
 // decrement conn counter
 // MUST BE CALLED WHENEVER A CONNECTION
 // IS CLOSED, OR WE WILL HAVE PROBLEMS.
-func (c *Client) dec() {
-	atomic.AddInt32(&c.conns, -1)
-}
+func (c *Client) dec() { atomic.AddInt32(&c.conns, -1) }
 
 // newconn tries to return a valid
 // tcp connection to a node, dropping
@@ -340,51 +354,30 @@ func readLead(n *conn) (int, byte, error) {
 	return int(msglen), rescode, nil
 }
 
-// send the contents of a buffer and receive a response
-// back in the same buffer
-func (c *Client) doBuf(code byte, msg []byte) ([]byte, byte, error) {
-	node, err := c.popConn()
+// read response into 'b'; truncate or append if necessary.
+// this is analagous to ReadFull into 'b', except that the buffer
+// may be extended, and is returned
+func readResponse(c *conn, b []byte) ([]byte, byte, error) {
+	var n int
+	var nn int
+	b = b[:cap(b)]
+	nn, err := c.Read(b)
+	n += nn
 	if err != nil {
 		return nil, 0, err
 	}
-
-	msg[4] = code
-	_, err = node.Write(msg)
-	if err != nil {
-		c.err(node)
-		return nil, 0, err
+	b = b[:n]
+	mlen := int(binary.BigEndian.Uint32(b[:4]) - 1)
+	var scratch [512]byte
+	for n < (mlen + 5) {
+		nn, err = c.Read(scratch[:])
+		n += nn
+		if err != nil {
+			return b, b[4], err
+		}
+		b = append(b, scratch[:nn]...)
 	}
-
-	// read lead
-	var msglen int
-	// read length and code
-	msglen, code, err = readLead(node)
-	if err != nil {
-		c.err(node)
-		return nil, code, err
-	}
-	if msglen == 0 {
-		msg = msg[0:0] // mark empty (necessary for ErrNotFound)
-		goto exit
-	}
-	// no alloc if response is smaller
-	// than request
-	if msglen > cap(msg) {
-		msg = make([]byte, msglen)
-	} else {
-		msg = msg[0:msglen]
-	}
-
-	// read body
-	_, err = io.ReadFull(node, msg)
-	if err != nil {
-		c.err(node)
-		return msg, code, err
-	}
-
-exit:
-	c.done(node)
-	return msg, code, nil
+	return b[5:n], b[4], err
 }
 
 func (c *Client) req(msg protom, code byte, res unmarshaler) (byte, error) {
@@ -394,7 +387,7 @@ func (c *Client) req(msg protom, code byte, res unmarshaler) (byte, error) {
 		return 0, fmt.Errorf("rkive: client.Req marshal err: %s", err)
 	}
 	resbts, rescode, err := c.doBuf(code, buf.Body)
-	buf.Body = resbts // save the largest-cap byte slice
+	buf.Body = resbts // save the returned slice
 	if err != nil {
 		putBuf(buf)
 		return 0, fmt.Errorf("rkive: doBuf err: %s", err)
@@ -458,6 +451,7 @@ func (s *streamRes) unmarshal(res protoStream) (bool, byte, error) {
 
 	// read into s.bts
 	_, err = io.ReadFull(s.node, buf.Body)
+
 	if err != nil {
 		s.c.err(s.node)
 		putBuf(buf)

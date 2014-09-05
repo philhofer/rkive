@@ -81,9 +81,10 @@ search:
 }
 
 // AsyncFetch represents the output of an
-// asynchronous fetch operation. Typically,
-// either Error will be nil OR Value will be
-// nil, but never both.
+// asynchronous fetch operation. 'Value' is
+// never nil, but 'Error' may or may not be nil.
+// If 'Error' is non-nil, then 'Value' is usually
+// the zero value of the underlying object.
 type AsyncFetch struct {
 	Value Object
 	Error error
