@@ -16,7 +16,7 @@ Core functionality (fetch, store, secondary indexes, links) is complete, but man
  - Easy RAM-backed caching (see `MakeCache`).
  - Transparent sibling conflict resolution.
  - Compare-and-swap (see: `PushChangeset`).
- - Low per-operation heap allocation overhead (5 alloc writes and 7 alloc reads).
+ - Low per-operation heap allocation overhead.
 
 
 ## Usage
@@ -117,15 +117,15 @@ This client library was built with performance in mind.
 To run benchmarks, start up Riak locally and run:
 `go test -v -tags 'riak' -check.vv -bench .`
 
-(You must be running the eLevelDB or memory backend with secondary
-indexes enabled.)
+You will need to be running Riak 2.0+ using the configuration file found at `$GOPATH/github.com/philhofer/rkive/_conf/riak.conf`.
 
 Here's what I get on my MacBook Pro, keeping in mind that time/op and iowait/op vary by +/- 10% on every benchmark run. (Client time per operation is more consistent between benchmark runs.) Memory allocations are perfectly consistent between benchmark runs.
 
 | Operation | time/op | iowait/op | client time / op | allocs | heap/op |
-|:---------:|:-------:|:---------:|:----------------:|:------:|:--------|
-|   Fetch   | 418598ns| 413398ns  |      5200ns      |   7    |   753B  |
-|   Store   | 782187ns| 775353ns  |      6834ns      |   5    |   583B  |
+|:---------:|:-------:|:---------:|:----------------:|:------:|:-------:|
+|   Fetch   | 418598ns| 413398ns  |      5200ns      |   6    |   550B  |
+|   Store   | 782187ns| 775353ns  |      6834ns      |   5    |   750B  |
+
 
 ## Design & TODOs
 

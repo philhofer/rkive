@@ -78,10 +78,12 @@ func BenchmarkFetch(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	key := ob.Info().Key()
+
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		err = cl.Fetch(ob, "testbucket", ob.Info().Key(), nil)
+		err = cl.Fetch(ob, "testbucket", key, nil)
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -114,4 +116,39 @@ func BenchmarkParallelFetch(b *testing.B) {
 		}
 	})
 	b.StopTimer()
+}
+
+func BenchmarkCacheFetch(b *testing.B) {
+	cl, err := DialOne("localhost:8087", "bench-client")
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer cl.Close()
+	b.N /= 10
+	cache := cl.Bucket("test-cache")
+	err = cache.MakeCache()
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	// make test object
+	ob := &TestObject{
+		Data: []byte("Hello, World!"),
+	}
+
+	err = cache.New(ob, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	key := ob.Info().Key()
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err = cache.Fetch(ob, key)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
 }
