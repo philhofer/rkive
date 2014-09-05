@@ -95,6 +95,11 @@ var (
 //   multi_backend.std.storage_backend = <leveldb OR bitcask>
 //   multi_backend.default = std
 //
+// MakeCache will error if your configuration is incorrect.
+//
+// NB: keep in mind that this bucket will only be backed by RAM and
+// uses no replication. This bucket should only be used to store
+// ephemeral objects.
 func (b *Bucket) MakeCache() error {
 	return b.SetProperties(&cacheProps)
 
