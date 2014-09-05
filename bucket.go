@@ -62,6 +62,34 @@ func (b *Bucket) SetProperties(props *rpbc.RpbBucketProps) error {
 	return err
 }
 
+var (
+	ptrTrue         = true
+	ptrFalse        = false
+	memNval  uint32 = 1
+	memR     uint32 = 1
+	memW     uint32 = 1
+	// properties for memory-backed cache bucket
+	cacheProps = rpbc.RpbBucketProps{
+		Backend:       []byte("cache"), // this has to come from the riak.conf
+		NotfoundOk:    &ptrTrue,
+		AllowMult:     &ptrFalse,
+		LastWriteWins: &ptrFalse,
+		BasicQuorum:   &ptrFalse,
+		NVal:          &memNval,
+		R:             &memR,
+		W:             &memW,
+	}
+)
+
+// MakeCache makes a memory-backed bucket. You
+// must have the "multi"-backend option enabled
+// in your configuration in order for this to
+// work.
+func (b *Bucket) MakeCache() error {
+	return b.SetProperties(&cacheProps)
+
+}
+
 // Reset resets the bucket's properties
 func (b *Bucket) Reset() error {
 	req := &rpbc.RpbResetBucketReq{
