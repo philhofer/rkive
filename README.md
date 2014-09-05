@@ -9,6 +9,16 @@ Complete documentation is at [godoc](http://godoc.org/github.com/philhofer/rkive
 
 Core functionality (fetch, store, secondary indexes, links) is complete, but many advanced features (MapReduce, Yokozuna search) are still on the way. There is no short-term guarantee that the API will remain stable. (We are shooting for a beta release in Nov. '14, followed by a "stable" 1.0 in December.) That being said, this code is already being actively tested in some production applications.
 
+## Features
+
+ - Efficient connection pooling and re-dialing.
+ - Asynchronous batch fetches (see `FetchAsync` and `MultiFetchAsync`).
+ - Easy RAM-backed caching (see `MakeCache`).
+ - Transparent sibling conflict resolution.
+ - Compare-and-swap (see: `PushChangeset`).
+ - Low per-operation heap allocation overhead (5 alloc writes and 7 alloc reads).
+
+
 ## Usage
 
 Satisfy the `Object` interface and you're off to the races. The included 'Blob' object is the simplest possible Object implementation.
