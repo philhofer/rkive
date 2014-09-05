@@ -88,13 +88,12 @@ func (c *Client) New(o Object, bucket string, key *string, opts *WriteOpts) erro
 	}
 
 	// return head
-	rth := true
-	req.ReturnHead = &rth
+	req.ReturnHead = &ptrTrue
 
 	// set keys if specified
 	if key != nil {
 		req.Key = ustr(*key)
-		req.IfNoneMatch = &rth
+		req.IfNoneMatch = &ptrTrue
 		o.Info().key = append(o.Info().key[0:0], req.Key...)
 	}
 	var err error
@@ -154,8 +153,7 @@ dostore:
 		Vclock: o.Info().vclock,
 	}
 
-	rth := true
-	req.ReturnHead = &rth
+	req.ReturnHead = &ptrTrue
 	if o.Info().vclock != nil {
 		req.Vclock = append(req.Vclock, o.Info().vclock...)
 	}
@@ -221,9 +219,8 @@ func (c *Client) Push(o Object, opts *WriteOpts) error {
 	}
 
 	// Return-Head = true; If-Not-Modified = true
-	rth := true
-	req.ReturnHead = &rth
-	req.IfNotModified = &rth
+	req.ReturnHead = &ptrTrue
+	req.IfNotModified = &ptrTrue
 	parseOpts(opts, &req)
 	ntry := 0
 

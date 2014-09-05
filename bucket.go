@@ -63,11 +63,6 @@ func (b *Bucket) SetProperties(props *rpbc.RpbBucketProps) error {
 }
 
 var (
-	ptrTrue         = true
-	ptrFalse        = false
-	memNval  uint32 = 1
-	memR     uint32 = 1
-	memW     uint32 = 1
 	// properties for memory-backed cache bucket
 	cacheProps = rpbc.RpbBucketProps{
 		Backend:       []byte("cache"), // this has to come from the riak.conf
@@ -75,9 +70,9 @@ var (
 		AllowMult:     &ptrFalse,
 		LastWriteWins: &ptrFalse,
 		BasicQuorum:   &ptrFalse,
-		NVal:          &memNval,
-		R:             &memR,
-		W:             &memW,
+		NVal:          &ptrOne,
+		R:             &ptrOne,
+		W:             &ptrOne,
 	}
 )
 

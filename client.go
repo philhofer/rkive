@@ -28,6 +28,14 @@ var (
 	ErrUnavail = errors.New("no connection to could be established")
 
 	logger = log.New(os.Stderr, "[RKIVE] ", log.LstdFlags)
+
+	// since protocol buffers
+	// use pointers for optional fields,
+	// let's create some static references:
+	ptrTrue         = true
+	ptrFalse        = false
+	ptrOne   uint32 = 1
+	ptrZero  uint32 = 0
 )
 
 // read timeout (ms)

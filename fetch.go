@@ -187,12 +187,11 @@ func (c *Client) Update(o Object, opts *ReadOpts) (bool, error) {
 // stored in Riak. This is the least expensive way
 // to check for the existence of an object.
 func (c *Client) FetchHead(bucket string, key string) (*Info, error) {
-	rth := true
 	req := &rpbc.RpbGetReq{
 		Key:     []byte(key),
 		Bucket:  []byte(bucket),
 		Timeout: &dfltreq,
-		Head:    &rth,
+		Head:    &ptrTrue,
 	}
 	res := gresPop()
 	rescode, err := c.req(req, 9, res)
@@ -231,12 +230,11 @@ func (c *Client) PullHead(o Object) error {
 	if len(o.Info().key) == 0 {
 		return ErrNoPath
 	}
-	rth := true
 	req := &rpbc.RpbGetReq{
 		Key:        o.Info().key,
 		Bucket:     o.Info().bucket,
 		Timeout:    &dfltreq,
-		Head:       &rth,
+		Head:       &ptrTrue,
 		IfModified: o.Info().vclock,
 	}
 	res := gresPop()
