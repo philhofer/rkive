@@ -110,7 +110,7 @@ To run benchmarks, start up Riak locally and run:
 (You must be running the eLevelDB or memory backend with secondary
 indexes enabled.)
 
-Here's what I get on my MacBook Pro, keeping in mind that time/op and iowait/op vary by +/- 10% on every benchmark run. (Client time per operation is more consisten between benchmark runs.) Memory allocations are perfectly consistent between benchmark runs.
+Here's what I get on my MacBook Pro, keeping in mind that time/op and iowait/op vary by +/- 10% on every benchmark run. (Client time per operation is more consistent between benchmark runs.) Memory allocations are perfectly consistent between benchmark runs.
 
 | Operation | time/op | iowait/op | client time / op | allocs | heap/op |
 |:---------:|:-------:|:---------:|:----------------:|:------:|:--------|
