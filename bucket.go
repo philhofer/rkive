@@ -81,10 +81,20 @@ var (
 	}
 )
 
-// MakeCache makes a memory-backed bucket. You
-// must have the "multi"-backend option enabled
-// in your configuration in order for this to
-// work.
+// MakeCache makes a memory-backed cache bucket. You will
+// most likely need the following options enabled in your riak.conf:
+//
+//   # this enables multiple backends
+//   storage_backend = multi
+//
+//   # this creates a backend called 'cache' backed by RAM
+//   multi_backend.cache.storage_backend = memory
+//
+//   # this makes a backend called 'std' and sets its storage backend
+//   # (you can name this one whatever you would like)
+//   multi_backend.std.storage_backend = <leveldb OR bitcask>
+//   multi_backend.default = std
+//
 func (b *Bucket) MakeCache() error {
 	return b.SetProperties(&cacheProps)
 
