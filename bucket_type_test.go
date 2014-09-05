@@ -13,12 +13,10 @@ func (s *riakSuite) TestGetBucketTypeProperties(c *check.C) {
 
 func (s *riakSuite) TestCache(c *check.C) {
 	cache := s.cl.Bucket("test-cache")
-
 	err := cache.MakeCache()
 	if err != nil {
 		c.Fatal(err)
 	}
-
 	props, err := cache.GetProperties()
 	if err != nil {
 		c.Error(err)

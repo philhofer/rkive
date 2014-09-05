@@ -102,7 +102,6 @@ var (
 // ephemeral objects.
 func (b *Bucket) MakeCache() error {
 	return b.SetProperties(&cacheProps)
-
 }
 
 // Reset resets the bucket's properties
