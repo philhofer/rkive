@@ -8,8 +8,7 @@ import (
 	"sync"
 )
 
-// IndexQueryRes is the response to an index
-// query.
+// IndexQueryRes is the response to a secondary index query.
 type IndexQueryRes struct {
 	c      *Client
 	ftchd  int
@@ -146,14 +145,13 @@ func (c *Client) IndexLookup(bucket string, index string, value string, max *int
 	copy(idx[0:], index)
 	copy(idx[len(index):], []byte("_bin"))
 	kv := []byte(value)
-	rth := true
 	var qtype rpbc.RpbIndexReq_IndexQueryType = 0
 	req := &rpbc.RpbIndexReq{
 		Bucket: bckt,
 		Index:  idx,
 		Key:    kv,
 		Qtype:  &qtype,
-		Stream: &rth,
+		Stream: &ptrTrue,
 	}
 
 	if max != nil {
@@ -200,13 +198,12 @@ func (c *Client) IndexRange(bucket string, index string, min int64, max int64, m
 	idx := make([]byte, len(index)+4)
 	copy(idx[0:], index)
 	copy(idx[len(index):], []byte("_int"))
-	rth := true
 	var qtype rpbc.RpbIndexReq_IndexQueryType = 1
 	req := &rpbc.RpbIndexReq{
 		Bucket:   bckt,
 		Index:    idx,
 		Qtype:    &qtype,
-		Stream:   &rth,
+		Stream:   &ptrTrue,
 		RangeMin: strconv.AppendInt([]byte{}, min, 10),
 		RangeMax: strconv.AppendInt([]byte{}, max, 10),
 	}

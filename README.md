@@ -1,9 +1,13 @@
-Riak for Go [![Build Status](https://travis-ci.org/philhofer/rkive.svg?branch=master)](https://travis-ci.org/philhofer/rkive)[![docs examples](https://sourcegraph.com/api/repos/github.com/philhofer/rkive/.badges/docs-examples.png)](https://sourcegraph.com/github.com/philhofer/rkive) [![dependencies](https://sourcegraph.com/api/repos/github.com/philhofer/rkive/.badges/dependencies.png)](https://sourcegraph.com/github.com/philhofer/rkive)
+Riak for Go
 ================
+[![Build Status](https://travis-ci.org/philhofer/rkive.svg?branch=master)](https://travis-ci.org/philhofer/rkive) 
+[![docs examples](https://sourcegraph.com/api/repos/github.com/philhofer/rkive/.badges/docs-examples.png)](https://sourcegraph.com/github.com/philhofer/rkive) 
 
 A Riak client for Go(1.3+).
 
-Complete documentation is at [godoc](http://godoc.org/github.com/philhofer/rkive).
+[![Riak](http://basho.com/design-assets/Riak-Product-Logos/png/riak-logo-color.png)](http://basho.com/riak)
+
+Complete documentation is available at [godoc](http://godoc.org/github.com/philhofer/rkive).
 
 ## Status
 

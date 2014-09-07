@@ -5,6 +5,7 @@ package rkive
 import (
 	"bytes"
 	check "gopkg.in/check.v1"
+	"time"
 )
 
 func (s *riakSuite) TestGetBucketTypeProperties(c *check.C) {
@@ -12,6 +13,8 @@ func (s *riakSuite) TestGetBucketTypeProperties(c *check.C) {
 }
 
 func (s *riakSuite) TestCache(c *check.C) {
+	startt := time.Now()
+
 	cache := s.cl.Bucket("test-cache")
 	err := cache.MakeCache()
 	if err != nil {
@@ -25,4 +28,5 @@ func (s *riakSuite) TestCache(c *check.C) {
 		c.Errorf("Expected backend %q; got %q", "cache", props.GetBackend())
 	}
 
+	s.runtime += time.Since(startt)
 }
