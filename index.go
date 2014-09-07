@@ -111,8 +111,8 @@ func (i *IndexQueryRes) FetchAsync(o Duplicator, procs int) <-chan *AsyncFetch {
 	for j := 0; j < nw; j++ {
 		wg.Add(1)
 		go func(ks chan string, outs chan *AsyncFetch, o Duplicator, wg *sync.WaitGroup) {
-			ob := o.NewEmpty()
 			for key := range ks {
+				ob := o.NewEmpty()
 				err := i.c.Fetch(ob, string(i.bucket), key, nil)
 				outs <- &AsyncFetch{Value: ob, Error: err}
 			}
@@ -121,7 +121,7 @@ func (i *IndexQueryRes) FetchAsync(o Duplicator, procs int) <-chan *AsyncFetch {
 
 	}
 
-	// close outs when all
+	// close 'outs' when all
 	// workers have exited.
 	go func(wg *sync.WaitGroup, os chan *AsyncFetch) {
 		wg.Wait()

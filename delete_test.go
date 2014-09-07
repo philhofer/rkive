@@ -4,9 +4,11 @@ package rkive
 
 import (
 	check "gopkg.in/check.v1"
+	"time"
 )
 
 func (s *riakSuite) TestDelete(c *check.C) {
+	startt := time.Now()
 	ob := &TestObject{
 		Data: []byte("Blah."),
 	}
@@ -25,4 +27,6 @@ func (s *riakSuite) TestDelete(c *check.C) {
 	if err != ErrNotFound {
 		c.Fatalf("Expected ErrNotFound; got %s", err)
 	}
+
+	s.runtime += time.Since(startt)
 }

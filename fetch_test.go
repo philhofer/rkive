@@ -68,6 +68,7 @@ func (s *riakAsync) TearDownSuite(c *check.C) {
 }
 
 func (s *riakSuite) TearDownSuite(c *check.C) {
+	s.cl.Close()
 	c.Log("------------ STATS -----------")
 	c.Logf("Total elapsed time: %s", s.runtime)
 	c.Logf("total iowait time:  %s", time.Duration(s.cl.twait))
@@ -77,7 +78,6 @@ func (s *riakSuite) TearDownSuite(c *check.C) {
 	c.Logf("avg request time:   %s", time.Duration(s.cl.AvgWait()))
 	c.Logf("nowait rate:        %d req/s", (uint64(time.Second))*(s.cl.nwait)/uint64(s.runtime-time.Duration(s.cl.twait)))
 	c.Log("------------------------------")
-	s.cl.Close()
 }
 
 type TestObject struct {
