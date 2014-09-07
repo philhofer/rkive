@@ -518,8 +518,7 @@ func (c *Client) streamReq(req protom, code byte) (*streamRes, error) {
 	return &streamRes{c: c, node: node}, nil
 }
 
-// Ping pings a random node. It will
-// return an error if no nodes can be dialed.
+// Ping pings a random node.
 func (c *Client) Ping() error {
 	conn, err := c.popConn()
 	if err != nil {
@@ -527,7 +526,6 @@ func (c *Client) Ping() error {
 	}
 	err = ping(conn)
 	if err != nil {
-		c.dec()
 		conn.Close()
 		return err
 	}
