@@ -49,5 +49,10 @@ func (s *riakSuite) TestCounter(c *check.C) {
 		c.Error(err)
 	}
 
+	nct, err = s.cl.Bucket("testbucket").GetCounter("test-counter")
+	if err != ErrNotFound {
+		c.Errorf("Expected ErrNotFound (%q); got %q", ErrNotFound, err)
+	}
+
 	s.runtime += time.Since(startt)
 }
