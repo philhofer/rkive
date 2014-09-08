@@ -152,3 +152,29 @@ func BenchmarkCacheFetch(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkCounterInc(b *testing.B) {
+	b.Skip("Doesn't run by default.")
+
+	cl, err := DialOne("localhost:8087", "bench-client")
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer cl.Close()
+	b.N /= 10
+	ctr, err := cl.Bucket("testbucket").NewCounter("bench-counter", 0)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		err = ctr.Add(1)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+	b.StopTimer()
+	ctr.Destroy()
+}

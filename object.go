@@ -114,8 +114,6 @@ type Info struct {
 }
 
 func readHeader(o Object, ctnt *rpbc.RpbContent) {
-	// ctnt is not a leaky parameter if we use append
-	// confirmed that 6g does not escape ctnt
 	o.Info().ctype = append(o.Info().ctype[0:0], ctnt.ContentType...)
 	o.Info().links = append(o.Info().links[0:0], ctnt.Links...)
 	o.Info().idxs = append(o.Info().idxs[0:0], ctnt.Indexes...)
@@ -124,6 +122,9 @@ func readHeader(o Object, ctnt *rpbc.RpbContent) {
 
 // read into 'o' from content
 func readContent(o Object, ctnt *rpbc.RpbContent) error {
+	if ctnt.GetDeleted() {
+		return ErrDeleted
+	}
 	readHeader(o, ctnt)
 	return o.Unmarshal(ctnt.Value)
 }
