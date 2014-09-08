@@ -2,10 +2,17 @@ package rkive
 
 import (
 	check "gopkg.in/check.v1"
+	"os"
 	"time"
 )
 
 func (s *riakSuite) TestCounter(c *check.C) {
+	travis := os.Getenv("TRAVIS")
+	werck := os.Getenv("WERCKER")
+	if travis != "" || werck != "" {
+		c.Skip(`The CI environment does not have "allow_mult" set to 'true'`)
+	}
+
 	startt := time.Now()
 
 	var ct *Counter
