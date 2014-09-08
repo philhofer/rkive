@@ -96,42 +96,11 @@ func (r *Blob) Unmarshal(b []byte) error { r.Content = b; return nil }
 // Marshal implements part of the Object interface
 func (r *Blob) Marshal() ([]byte, error) { return r.Content, nil }
 
-// netconn is the interface for a riak connection
-type netconn interface {
-	io.ReadWriteCloser
-}
-
 // conn is a connection
 type conn struct {
-	*net.TCPConn
-	parent   *Client
-	isClosed bool
-}
-
-// for testing and benchmarking
-type timerconn struct {
-	conn
-	twait  time.Duration
-	tcount int64
-}
-
-// average network wait, in nanoseconds
-func (t *timerconn) avgwait() int64 { return t.twait.Nanoseconds() / t.tcount }
-
-func (t *timerconn) Read(b []byte) (int, error) {
-	t.tcount++
-	now := time.Now()
-	n, err := t.conn.Read(b)
-	t.twait += time.Since(now)
-	return n, err
-}
-
-func (t *timerconn) Write(b []byte) (int, error) {
-	t.tcount++
-	now := time.Now()
-	n, err := t.conn.Write(b)
-	t.twait += time.Since(now)
-	return n, err
+	*net.TCPConn         // underlying connection
+	parent       *Client // parent Client
+	isClosed     bool    // has Close() been called?
 }
 
 // write wraps the TCP write

@@ -13,9 +13,7 @@ type Bucket struct {
 
 // Bucket returns a Riak bucket
 // with the provided name
-func (c *Client) Bucket(name string) *Bucket {
-	return &Bucket{c: c, nm: name}
-}
+func (c *Client) Bucket(name string) *Bucket { return &Bucket{c: c, nm: name} }
 
 // Fetch performs a fetch with the bucket's default properties
 func (b *Bucket) Fetch(o Object, key string) error { return b.c.Fetch(o, b.nm, key, nil) }
@@ -55,7 +53,7 @@ func (b *Bucket) GetProperties() (*rpbc.RpbBucketProps, error) {
 // SetProperties sets the properties of the bucket
 func (b *Bucket) SetProperties(props *rpbc.RpbBucketProps) error {
 	req := &rpbc.RpbSetBucketReq{
-		Bucket: []byte(b.nm),
+		Bucket: ustr(b.nm),
 		Props:  props,
 	}
 	_, err := b.c.req(req, 21, nil)
