@@ -175,4 +175,6 @@ func BenchmarkCounterInc(b *testing.B) {
 			b.Fatal(err)
 		}
 	}
+	b.StopTimer()
+	ctr.Destroy()
 }

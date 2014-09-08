@@ -62,6 +62,7 @@ func (c *Counter) Refresh() error {
 	return nil
 }
 
+// Destroy deletes the counter.
 func (c *Counter) Destroy() error {
 	req := rpbc.RpbDelReq{
 		Bucket: c.bucket,
