@@ -2,11 +2,15 @@ package rkive
 
 import (
 	check "gopkg.in/check.v1"
+	"time"
 )
 
 func (s *riakSuite) TestCounter(c *check.C) {
+	startt := time.Now()
 
-	ct, err := s.cl.Bucket("testbucket").NewCounter("test-counter", 0)
+	var ct *Counter
+	var err error
+	ct, err = s.cl.Bucket("testbucket").NewCounter("test-counter", 0)
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -15,7 +19,7 @@ func (s *riakSuite) TestCounter(c *check.C) {
 
 	err = ct.Add(5)
 	if err != nil {
-		c.Fatal(err)
+		c.Error(err)
 	}
 
 	if ct.Val() != start+5 {
@@ -23,6 +27,10 @@ func (s *riakSuite) TestCounter(c *check.C) {
 	}
 
 	err = ct.Refresh()
+	if err != nil {
+		c.Error(err)
+	}
+
 	if ct.Val() != start+5 {
 		c.Errorf("Expected value %d; got %d", start+5, ct.Val())
 	}
@@ -35,4 +43,11 @@ func (s *riakSuite) TestCounter(c *check.C) {
 	if nct.Val() != start+5 {
 		c.Errorf("Expected value %d; got %d", start+5, nct.Val())
 	}
+
+	err = ct.Destroy()
+	if err != nil {
+		c.Error(err)
+	}
+
+	s.runtime += time.Since(startt)
 }

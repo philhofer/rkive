@@ -5,7 +5,8 @@ import (
 )
 
 // Counter is a Riak CRDT that
-// acts as a distributed counter.
+// acts as a distributed counter. Counters
+// only work in buckets with 'allow_mult' turned on.
 type Counter struct {
 	key    []byte
 	bucket []byte
@@ -43,7 +44,7 @@ func (c *Counter) Add(v int64) error {
 }
 
 // Refresh gets the latest value of the counter
-// from the database
+// from the database.
 func (c *Counter) Refresh() error {
 	req := rpbc.RpbCounterGetReq{
 		Key:    c.key,
@@ -61,8 +62,19 @@ func (c *Counter) Refresh() error {
 	return nil
 }
 
+func (c *Counter) Destroy() error {
+	req := rpbc.RpbDelReq{
+		Bucket: c.bucket,
+		Key:    c.key,
+	}
+	_, err := c.parent.req(&req, 13, nil)
+	return err
+}
+
 // NewCounter creates a new counter with
-// an optional starting value.
+// an optional starting value. If the counter
+// already exists, the value returned will be
+// the existing value plus "start".
 func (b *Bucket) NewCounter(name string, start int64) (*Counter, error) {
 	req := rpbc.RpbCounterUpdateReq{
 		Amount:      &start,
@@ -86,7 +98,7 @@ func (b *Bucket) NewCounter(name string, start int64) (*Counter, error) {
 	}, nil
 }
 
-// GetCounter gets a counter
+// GetCounter gets a counter.
 func (b *Bucket) GetCounter(name string) (*Counter, error) {
 	req := rpbc.RpbCounterGetReq{
 		Key:    []byte(name),
@@ -104,5 +116,6 @@ func (b *Bucket) GetCounter(name string) (*Counter, error) {
 		key:    req.Key,
 		bucket: req.Bucket,
 		val:    res.GetValue(),
+		parent: b.c,
 	}, nil
 }
