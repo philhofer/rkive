@@ -275,3 +275,41 @@ dopush:
 	hdrput(res)
 	return nil
 }
+
+// Overwrite performs a store operation on an arbitrary
+// location. It does not send a vclock, and the object itself
+// is not modified. Overwrite ignores NotFound errors.
+// This function is only safe to use with buckets in which "last_write_wins" is turned on.
+// Ideally, this function is only used for caches.
+func (c *Client) Overwrite(o Object, bucket string, key string, opts *WriteOpts) error {
+	req := rpbc.RpbPutReq{
+		Bucket:     ustr(bucket),
+		Key:        ustr(key),
+		ReturnBody: &ptrFalse,
+	}
+
+	parseOpts(opts, &req)
+
+	var err error
+	req.Content, err = ctpop(o)
+	if err != nil {
+		return err
+	}
+
+	res := hdrpop()
+
+	var code byte
+	code, err = c.req(&req, 11, res)
+	ctput(req.Content)
+	hdrput(res)
+	if err != nil {
+		if err == ErrNotFound {
+			return nil
+		}
+		return err
+	}
+	if code != 12 {
+		return ErrUnexpectedResponse
+	}
+	return nil
+}

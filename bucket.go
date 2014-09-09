@@ -30,6 +30,9 @@ func (b *Bucket) Store(o Object) error { return b.c.Store(o, nil) }
 // Update updates an object in a bucket
 func (b *Bucket) Update(o Object) (bool, error) { return b.c.Update(o, nil) }
 
+// Overwrite performs an overwrite on the specified key
+func (b *Bucket) Overwrite(o Object, key string) error { return b.c.Overwrite(o, b.nm, key, nil) }
+
 // IndexLookup performs a secondary index query on the bucket
 func (b *Bucket) IndexLookup(idx string, val string) (*IndexQueryRes, error) {
 	return b.c.IndexLookup(b.nm, idx, val, nil)
